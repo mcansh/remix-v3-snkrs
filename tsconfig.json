@@ -3,6 +3,6 @@
   "compilerOptions": {
     "jsxImportSource": "@remix-run/dom",
     "strict": true,
-    "types": ["node", "vite/client", "@jacob-ebey/vite-plugin-remix/types"]
+    "types": ["vite/client", "@jacob-ebey/vite-plugin-remix/types"]
   }
 }

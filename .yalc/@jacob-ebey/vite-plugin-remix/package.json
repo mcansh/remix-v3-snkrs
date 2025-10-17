@@ -16,6 +16,9 @@
   "scripts": {
     "build": "tsc"
   },
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "vite": "*"
   },
@@ -23,5 +26,5 @@
     "@hiogawa/vite-plugin-fullstack": "0.0.2",
     "magic-string": "0.30.19"
   },
-  "yalcSig": "16010a82e1ed6f538729b153b6f8908d"
+  "yalcSig": "96b6e12719146616c92f99b94624d9a5"
 }

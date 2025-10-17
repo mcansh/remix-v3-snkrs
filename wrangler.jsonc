@@ -1,0 +1,5 @@
+{
+  "name": "remix-3-cloudflare",
+  "compatibility_date": "2025-10-12",
+  "main": "./src/entry.server"
+}

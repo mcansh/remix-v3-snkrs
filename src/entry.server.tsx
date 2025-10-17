@@ -49,10 +49,10 @@ const handlers = {
 router.map(routes, handlers);
 
 export default {
-  fetch(request: Request) {
+  fetch(request) {
     return router.fetch(request);
   },
-};
+} satisfies ExportedHandler;
 
 if (import.meta.hot) {
   import.meta.hot.accept();

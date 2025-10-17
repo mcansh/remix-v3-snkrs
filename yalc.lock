@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "@jacob-ebey/vite-plugin-remix": {
+      "signature": "16010a82e1ed6f538729b153b6f8908d",
+      "file": true,
+      "replaced": "workspace:*"
+    }
+  }
+}

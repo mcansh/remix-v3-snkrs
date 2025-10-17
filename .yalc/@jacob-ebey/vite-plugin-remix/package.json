@@ -1,0 +1,27 @@
+{
+  "name": "@jacob-ebey/vite-plugin-remix",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.18.3",
+  "exports": {
+    ".": "./dist/vite-plugin-remix.js",
+    "./runtime": "./dist/runtime.js",
+    "./types": "./dist/types.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "vite": "*"
+  },
+  "dependencies": {
+    "@hiogawa/vite-plugin-fullstack": "0.0.2",
+    "magic-string": "0.30.19"
+  },
+  "yalcSig": "16010a82e1ed6f538729b153b6f8908d"
+}

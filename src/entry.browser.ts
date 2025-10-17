@@ -4,7 +4,7 @@ const frame = createFrame(document, {
   async loadModule(src, name) {
     const chunks = JSON.parse(src) as string[];
     const [mod] = await Promise.all(
-      chunks.map((chunk) => import(/* @vite-ignore */ chunk))
+      chunks.map((chunk) => import(/* @vite-ignore */ chunk)),
     );
     return mod[name];
   },

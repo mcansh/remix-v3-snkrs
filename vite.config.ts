@@ -1,5 +1,6 @@
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { remix } from "@jacob-ebey/vite-plugin-remix";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import devtoolsJson from "vite-plugin-devtools-json";
 
@@ -15,9 +16,9 @@ export default defineConfig({
   },
   plugins: [
     remix({ serverHandler: false }),
-    cloudflare({
-      viteEnvironment: { name: "ssr" },
-    }),
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
     devtoolsJson(),
+    // @ts-expect-error
+    tailwindcss(),
   ],
 });

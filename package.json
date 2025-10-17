@@ -11,15 +11,17 @@
     "@remix-run/dom": "0.0.0-experimental-remix-jam.6",
     "@remix-run/events": "0.0.0-experimental-remix-jam.5",
     "@remix-run/fetch-router": "0.6.0",
-    "@remix-run/library": "0.0.0-experimental-remix-jam.6",
-    "@remix-run/theme": "0.0.0-experimental-remix-jam.5",
-    "canvas-confetti": "1.9.3"
+    "@remix-run/library": "0.0.0-experimental-remix-jam.6"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.13.12",
     "@jacob-ebey/vite-plugin-remix": "file:.yalc/@jacob-ebey/vite-plugin-remix",
+    "@tailwindcss/vite": "^4.1.14",
     "@tsconfig/vite-react": "7.0.1",
-    "@types/canvas-confetti": "1.9.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-tailwindcss": "^0.7.1",
+    "tailwindcss": "^4.1.14",
     "typescript": "5.9.3",
     "vite": "7.1.9",
     "vite-plugin-devtools-json": "1.0.0",

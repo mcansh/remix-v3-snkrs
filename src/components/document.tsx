@@ -1,7 +1,6 @@
 import { mergeAssets } from "@jacob-ebey/vite-plugin-remix/runtime";
 import type { Remix } from "@remix-run/dom";
-import { theme } from "@remix-run/theme";
-import { IconSpriteSheet, RMX02 } from "@remix-run/theme/RMX-02";
+import appStylesHref from "../styles/app.css?url";
 
 import clientAssets from "../entry.browser.ts?assets=client";
 import serverAssets from "../entry.server.tsx?assets=ssr";
@@ -14,14 +13,7 @@ export function Document({ children }: { children: Remix.RemixNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>{RMX02}</style>
-        <style>{`
-          body {
-            background-color: ${theme.surface.l3};
-            color: ${theme.text.primary};
-            font-family: Inter, sans-serif;
-          }
-        `}</style>
+        <link rel="stylesheet" href={appStylesHref} />
         {assets.css.map((attrs) => (
           <link key={attrs.href} {...attrs} rel="stylesheet" />
         ))}
@@ -30,10 +22,7 @@ export function Document({ children }: { children: Remix.RemixNode }) {
         ))}
         <script async type="module" src={clientAssets.entry} />
       </head>
-      <body>
-        <IconSpriteSheet />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

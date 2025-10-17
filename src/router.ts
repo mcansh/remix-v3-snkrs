@@ -1,6 +1,6 @@
 import { createRouter } from "@remix-run/fetch-router";
-import { handlers } from "./routes/home";
 import { routes } from "./routes";
+import { handlers } from "./routes/home";
 
 export const router = createRouter();
 

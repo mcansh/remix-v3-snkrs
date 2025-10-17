@@ -5,8 +5,8 @@ import { Document } from "../components/document";
 import { render } from "../lib/html";
 import { routes } from "../routes";
 
-export const handlers = {
-  home() {
+export const homeHandlers = {
+  index() {
     return render(
       <Document>
         <title>Hello, World!</title>
@@ -15,4 +15,4 @@ export const handlers = {
       </Document>,
     );
   },
-} satisfies RouteHandlers<typeof routes>;
+} satisfies RouteHandlers<typeof routes.home>;

@@ -18,7 +18,6 @@ export default defineConfig({
     remix({ serverHandler: false }),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     devtoolsJson(),
-    // @ts-expect-error
     tailwindcss(),
   ],
 });

@@ -1,9 +1,9 @@
 import { mergeAssets } from "@jacob-ebey/vite-plugin-remix/runtime";
 import type { Remix } from "@remix-run/dom";
-import appStylesHref from "../styles/app.css?url";
 
 import clientAssets from "../entry.browser.ts?assets=client";
 import serverAssets from "../entry.server.tsx?assets=ssr";
+import appStylesHref from "../styles/app.css?url";
 
 export function Document({ children }: { children: Remix.RemixNode }) {
   const assets = mergeAssets(clientAssets, serverAssets);

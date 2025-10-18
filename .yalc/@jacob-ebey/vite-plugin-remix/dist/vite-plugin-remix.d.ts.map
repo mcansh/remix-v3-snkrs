@@ -1,0 +1,1 @@
+{"version":3,"file":"vite-plugin-remix.d.ts","sourceRoot":"","sources":["../src/vite-plugin-remix.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,YAAY,EAAU,MAAM,MAAM,CAAC;AAEjD,wBAAgB,KAAK,CAAC,EACpB,kBAAkB,EAAE,aAAuB,EAC3C,aAAoB,GACrB,GAAE;IACD,kBAAkB,CAAC,EAAE,MAAM,EAAE,CAAC;IAC9B,aAAa,CAAC,EAAE,OAAO,CAAC;CACpB,GAAG,YAAY,CAgCpB"}

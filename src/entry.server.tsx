@@ -1,11 +1,11 @@
-import { router } from "./router";
+import { router } from "./router"
 
 export default {
-  fetch(request) {
-    return router.fetch(request);
-  },
-} satisfies ExportedHandler;
+	fetch(request) {
+		return router.fetch(request)
+	},
+} satisfies ExportedHandler
 
 if (import.meta.hot) {
-  import.meta.hot.accept();
+	import.meta.hot.accept()
 }

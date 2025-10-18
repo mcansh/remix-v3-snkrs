@@ -1,5 +1,15 @@
 {
-  "name": "remix-3-snkrs",
-  "compatibility_date": "2025-10-12",
-  "main": "./src/entry.server",
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "remix-3-snkrs",
+	"compatibility_date": "2025-10-12",
+	"main": "./src/entry.server",
+	"compatibility_flags": ["nodejs_compat"],
+	"d1_databases": [
+		{
+			"binding": "db",
+			"database_name": "remix-v3-snkrs",
+			"database_id": "349ce9ee-1c8f-4fab-8f9c-3abf1ea57b4c",
+			"remote": true,
+		},
+	],
 }

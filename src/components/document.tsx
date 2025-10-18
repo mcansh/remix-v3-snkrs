@@ -41,11 +41,6 @@ export function Document({ children }: { children: Remix.RemixNode }) {
 						<li>
 							<a href={routes.sneakers.show.href({ id: 1 })}>Show Sneaker</a>
 						</li>
-						<li>
-							<a href={routes.sneakers.destroy.href({ id: 1 })}>
-								Destroy Sneaker
-							</a>
-						</li>
 					</ul>
 				</nav>
 				{children}

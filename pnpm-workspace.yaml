@@ -1,4 +1,11 @@
+packages:
+  - ./
+  - ./.yalc/@jacob-ebey/vite-plugin-remix
+
 onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
+
+patchedDependencies:
+  '@hiogawa/vite-plugin-fullstack@0.0.2': patches/@hiogawa__vite-plugin-fullstack@0.0.2.patch

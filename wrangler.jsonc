@@ -4,6 +4,7 @@
 	"compatibility_date": "2025-10-12",
 	"main": "./src/entry.server",
 	"compatibility_flags": ["nodejs_compat"],
+	"preview_urls": true,
 	"d1_databases": [
 		{
 			"binding": "db",

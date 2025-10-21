@@ -1,4 +1,4 @@
-import { generateSalt, hash } from "@brielov/crypto"
+import { generateSalt, hash, toBase64 } from "@brielov/crypto"
 import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
 import { Button } from "@remix-run/library/button"
 import { decode } from "decode-formdata"
@@ -25,7 +25,6 @@ export const sneakerHandlers = {
 		const salt = generateSalt()
 
 		let passwordHash = await hash("password", salt)
-		let password = new TextDecoder().decode(passwordHash)
 
 		let createdUsers = await env.db
 			.insert(schema.users)
@@ -34,15 +33,14 @@ export const sneakerHandlers = {
 				family_name: "McAnsh",
 				given_name: "Logan",
 				username: "logan",
-				password: password,
+				password: toBase64(passwordHash),
+				password_salt: toBase64(salt),
 			})
 			.returning()
 
 		let createdUser = createdUsers.at(0)
 
-		if (!createdUser) {
-			throw new Error("Failed to create user")
-		}
+		if (!createdUser) throw new Error("Failed to create user")
 
 		let createdBrands = await env.db
 			.insert(schema.brands)
@@ -51,9 +49,7 @@ export const sneakerHandlers = {
 
 		let brand = createdBrands.at(0)
 
-		if (!brand) {
-			throw new Error("Failed to create brand")
-		}
+		if (!brand) throw new Error("Failed to create brand")
 
 		let created = await env.db
 			.insert(schema.sneakers)

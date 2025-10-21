@@ -3,7 +3,6 @@ import { int, sqliteTable, text } from "drizzle-orm/sqlite-core"
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod"
 
 // TODO: maybe make a user_sneakers table so we can reuse a lot of the core sneaker info
-
 export const sneakers = sqliteTable("sneakers", {
 	id: text("id", { length: 36 })
 		.primaryKey()
@@ -77,6 +76,7 @@ export const users = sqliteTable("users", {
 	family_name: text({ length: 255 }).notNull(),
 	password: text({ length: 255 }).notNull(),
 	username: text({ length: 255 }).notNull(),
+	password_salt: text({ length: 255 }).notNull(),
 
 	created_at: int({ mode: "timestamp" })
 		.notNull()
@@ -87,7 +87,7 @@ export const users = sqliteTable("users", {
 		.$onUpdateFn(() => new Date()),
 })
 
-export const usersRelations = relations(users, ({ many, one }) => {
+export const usersRelations = relations(users, ({ one, many }) => {
 	return {
 		// a user can have many sneakers
 		sneakers: many(sneakers),
@@ -97,6 +97,15 @@ export const usersRelations = relations(users, ({ many, one }) => {
 		settings: one(settings, {
 			fields: [users.id],
 			references: [settings.user_id],
+		}),
+	}
+})
+
+export const settingsRelations = relations(settings, ({ one }) => {
+	return {
+		user: one(users, {
+			fields: [settings.user_id],
+			references: [users.id],
 		}),
 	}
 })
@@ -117,16 +126,27 @@ export const sneakersRelations = relations(sneakers, ({ one }) => {
 	}
 })
 
+export const brandsRelations = relations(brands, ({ many }) => {
+	return {
+		sneakers: many(sneakers),
+	}
+})
+
 export type User = typeof users.$inferSelect
 export type UsersRelation = typeof usersRelations
-
-export type Sneaker = typeof sneakers.$inferSelect
-export type SneakerRelation = typeof sneakersRelations
-
-export type Brand = typeof brands.$inferSelect
-
 export let insertUserSchema = createInsertSchema(users)
 export let updateUserSchema = createUpdateSchema(users)
 
+export type Sneaker = typeof sneakers.$inferSelect
+export type SneakerRelation = typeof sneakersRelations
 export let insertSneakerSchema = createInsertSchema(sneakers)
 export let updateSneakerSchema = createUpdateSchema(sneakers)
+
+export type Brand = typeof brands.$inferSelect
+export let insertBrandSchema = createInsertSchema(brands)
+export let updateBrandSchema = createUpdateSchema(brands)
+
+export type Setting = typeof settings.$inferSelect
+export type SettingRelation = typeof settingsRelations
+export let insertSettingSchema = createInsertSchema(settings)
+export let updateSettingSchema = createUpdateSchema(settings)

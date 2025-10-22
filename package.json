@@ -1,7 +1,6 @@
 {
 	"private": true,
 	"type": "module",
-	"packageManager": "pnpm@10.18.3",
 	"scripts": {
 		"build": "vite build",
 		"dev": "vite",
@@ -20,18 +19,22 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "1.13.14",
-		"@jacob-ebey/vite-plugin-remix": "file:.yalc/@jacob-ebey/vite-plugin-remix",
+		"@hiogawa/vite-plugin-fullstack": "0.0.5",
 		"@tailwindcss/vite": "4.1.15",
 		"@tsconfig/vite-react": "7.0.1",
+		"@types/estree": "1.0.8",
 		"@types/node": "24.9.1",
 		"drizzle-kit": "0.31.5",
+		"magic-string": "0.30.19",
 		"prettier": "3.6.2",
 		"prettier-plugin-organize-imports": "4.3.0",
+		"prettier-plugin-packagejson": "2.5.19",
 		"prettier-plugin-tailwindcss": "0.7.1",
 		"tailwindcss": "4.1.15",
 		"typescript": "5.9.3",
 		"vite": "7.1.11",
 		"vite-plugin-devtools-json": "1.0.0",
 		"wrangler": "4.44.0"
-	}
+	},
+	"packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"
 }

@@ -1,8 +1,8 @@
 import { cloudflare } from "@cloudflare/vite-plugin"
-import { remix } from "@jacob-ebey/vite-plugin-remix"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vite"
 import devtoolsJson from "vite-plugin-devtools-json"
+import { remix } from "./vite-plugin-remix"
 
 export default defineConfig({
 	environments: {

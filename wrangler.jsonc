@@ -5,11 +5,14 @@
 	"main": "./src/entry.server",
 	"compatibility_flags": ["nodejs_compat"],
 	"preview_urls": true,
+	"observability": {
+		"enabled": true,
+	},
 	"d1_databases": [
 		{
 			"binding": "db",
 			"database_name": "remix-v3-snkrs",
-			"database_id": "f9f8899d-4aa2-4f1d-bd84-c948286ed318",
+			"database_id": "54573fc1-ee11-4b9b-8ac6-0ec0afffa586",
 			"remote": true,
 		},
 	],

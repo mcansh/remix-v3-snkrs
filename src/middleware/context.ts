@@ -8,5 +8,7 @@ import { requestContextStorage } from "../utils/context.ts"
  * the context is available to all subsequent middleware and handlers.
  */
 export let storeContext: Middleware = (context, next) => {
-	return requestContextStorage.run(context, () => next())
+	return requestContextStorage.run(context, async () => {
+		return await next()
+	})
 }

@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"jsxImportSource": "@remix-run/dom",
 		"strict": true,
+		"allowImportingTsExtensions": true,
 		"types": [
 			"vite/client",
 			"@hiogawa/vite-plugin-fullstack/types",

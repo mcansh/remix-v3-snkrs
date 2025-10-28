@@ -1,4 +1,8 @@
-import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
+import {
+	redirect,
+	type InferRouteHandler,
+	type RouteHandlers,
+} from "@remix-run/fetch-router"
 import { eq } from "drizzle-orm"
 import * as z from "zod/mini"
 
@@ -7,15 +11,16 @@ import { SneakerGrid } from "../components/sneaker-grid"
 import { schema } from "../db"
 import { env } from "../lib/env"
 import { render } from "../lib/html"
-import { requireAuth } from "../middleware/auth"
+import { requireAuth, USER_KEY } from "../middleware/auth"
 import { createSneaker, getAllSneakers } from "../models/sneaker"
 import { getUserById } from "../models/user"
 import { routes } from "../routes"
 import { getSession, getUserIdFromSession } from "../utils/session"
 
-export const sneakerHandlers = {
+const sneakerIndexHandler: InferRouteHandler<typeof routes.sneakers.index> = {
 	use: [requireAuth],
-	async index({ request }) {
+	async handler({ request, storage }) {
+		console.log({ USER_KEY: storage.has(USER_KEY) })
 		let session = getSession(request)
 		let userId = getUserIdFromSession(session.sessionId)
 		let user = userId ? await getUserById(userId) : null
@@ -34,8 +39,11 @@ export const sneakerHandlers = {
 			</Document>,
 		)
 	},
+}
 
-	async user({ params }) {
+const sneakerUserHandler: InferRouteHandler<typeof routes.sneakers.user> = {
+	use: [],
+	async handler({ params }) {
 		let user = await env.db.query.users.findFirst({
 			where: eq(schema.users.username, params.user),
 		})
@@ -45,7 +53,7 @@ export const sneakerHandlers = {
 				<Document>
 					<h1>User not found</h1>
 				</Document>,
-				{ status: 404 },
+				{ status: 404, statusText: "Not Found" },
 			)
 		}
 
@@ -61,8 +69,11 @@ export const sneakerHandlers = {
 			</Document>,
 		)
 	},
+}
 
-	new() {
+const sneakerNewHandler: InferRouteHandler<typeof routes.sneakers.new> = {
+	use: [requireAuth],
+	handler() {
 		let data = Object.freeze({
 			brand: "Vans",
 			model: "Slip On",
@@ -91,8 +102,11 @@ export const sneakerHandlers = {
 			</Document>,
 		)
 	},
+}
 
-	async create({ formData, request }) {
+const sneakerCreateHandler: InferRouteHandler<typeof routes.sneakers.create> = {
+	use: [requireAuth],
+	async handler({ formData, request }) {
 		let session = getSession(request)
 		let userId = getUserIdFromSession(session.sessionId)
 		let user = userId ? await getUserById(userId) : null
@@ -100,26 +114,33 @@ export const sneakerHandlers = {
 		let sneakerId = await createSneaker(formData, user.id)
 		return redirect(routes.sneakers.show.href({ id: sneakerId }))
 	},
+}
 
-	async destroy({ params, request }) {
-		let session = getSession(request)
-		let userId = getUserIdFromSession(session.sessionId)
-		let user = userId ? await getUserById(userId) : null
-		if (!user) return redirect(routes.auth.login.index.href())
+const sneakerDestroyHandler: InferRouteHandler<typeof routes.sneakers.destroy> =
+	{
+		use: [requireAuth],
+		async handler({ params, request }) {
+			let session = getSession(request)
+			let userId = getUserIdFromSession(session.sessionId)
+			let user = userId ? await getUserById(userId) : null
+			if (!user) return redirect(routes.auth.login.index.href())
 
-		let destroySchema = z.object({ id: z.cuid2() })
-		let result = destroySchema.parse(params)
+			let destroySchema = z.object({ id: z.cuid2() })
+			let result = destroySchema.parse(params)
 
-		let deleted = await env.db
-			.delete(schema.sneakers)
-			.where(eq(schema.sneakers.id, result.id))
+			let deleted = await env.db
+				.delete(schema.sneakers)
+				.where(eq(schema.sneakers.id, result.id))
 
-		console.log({ deleted })
+			console.log({ deleted })
 
-		return redirect(routes.sneakers.index.href())
-	},
+			return redirect(routes.sneakers.index.href())
+		},
+	}
 
-	async edit({ params }) {
+const sneakerEditHandler: InferRouteHandler<typeof routes.sneakers.edit> = {
+	use: [requireAuth],
+	async handler({ params }) {
 		let sneaker = await env.db.query.sneakers.findFirst({
 			where: eq(schema.sneakers.id, params.id),
 		})
@@ -142,8 +163,11 @@ export const sneakerHandlers = {
 			</Document>,
 		)
 	},
+}
 
-	async show({ params }) {
+const sneakerShowHandler: InferRouteHandler<typeof routes.sneakers.show> = {
+	use: [],
+	async handler({ params }) {
 		let sneaker = await env.db.query.sneakers.findFirst({
 			where: eq(schema.sneakers.id, params.id),
 		})
@@ -170,8 +194,11 @@ export const sneakerHandlers = {
 			</Document>,
 		)
 	},
+}
 
-	update({ params }) {
+const sneakerUpdateHandler: InferRouteHandler<typeof routes.sneakers.update> = {
+	use: [requireAuth],
+	handler({ params }) {
 		return render(
 			<Document>
 				<title>Update Sneaker</title>
@@ -179,4 +206,18 @@ export const sneakerHandlers = {
 			</Document>,
 		)
 	},
+}
+
+export const sneakerHandlers = {
+	new: sneakerNewHandler,
+	create: sneakerCreateHandler,
+
+	index: sneakerIndexHandler,
+	show: sneakerShowHandler,
+	user: sneakerUserHandler,
+
+	edit: sneakerEditHandler,
+	update: sneakerUpdateHandler,
+
+	destroy: sneakerDestroyHandler,
 } satisfies RouteHandlers<typeof routes.sneakers>

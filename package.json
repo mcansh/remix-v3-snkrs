@@ -32,6 +32,7 @@
 		"@tsconfig/vite-react": "7.0.1",
 		"@types/estree": "1.0.8",
 		"@types/node": "24.9.1",
+		"@typescript/native-preview": "7.0.0-dev.20251027.1",
 		"dedent": "1.7.0",
 		"drizzle-kit": "0.31.5",
 		"lucide-static": "0.548.0",

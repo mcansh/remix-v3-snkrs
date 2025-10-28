@@ -1,55 +1,35 @@
 import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
-import { Cookie } from "@remix-run/headers"
-import { Button } from "@remix-run/library/button"
-import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
-import { z } from "zod/mini"
+import * as z from "zod/mini"
 
 import { Document } from "../components/document"
-import { RestfulForm } from "../components/restful-form"
+import { SneakerGrid } from "../components/sneaker-grid"
 import { schema } from "../db"
 import { env } from "../lib/env"
 import { render } from "../lib/html"
-import { createSneaker } from "../models/sneaker"
+import { requireAuth } from "../middleware/auth"
+import { createSneaker, getAllSneakers } from "../models/sneaker"
+import { getUserById } from "../models/user"
 import { routes } from "../routes"
+import { getSession, getUserIdFromSession } from "../utils/session"
 
 export const sneakerHandlers = {
-	async index({ request, params }) {
-		let cookie = new Cookie(request.headers.get("Cookie") ?? "")
-		let userIdOrName = params.user ? params.user : cookie.get("_session")
-		let sneakers = await env.db.query.sneakers.findMany({
-			where: eq(schema.sneakers.user_id, userIdOrName),
-		})
+	use: [requireAuth],
+	async index({ request }) {
+		let session = getSession(request)
+		let userId = getUserIdFromSession(session.sessionId)
+		let user = userId ? await getUserById(userId) : null
+		if (!user) return redirect(routes.auth.login.index.href())
+
+		let sneakersWithData = await getAllSneakers(user.id)
 
 		return render(
-			<Document>
-				<title>Sneakers</title>
-				<h1>Sneakers</h1>
+			<Document title="Your Sneakers">
+				<div>
+					<h1>Welcome, {user.username}!</h1>
+					<p>Your sneakers:</p>
 
-				<ul>
-					{sneakers.map((sneaker) => (
-						<li key={sneaker.id}>
-							<RestfulForm
-								action={routes.sneakers.destroy.href({ id: sneaker.id })}
-								method="delete"
-							>
-								<input type="hidden" name="id" value={sneaker.id} />
-								<Button type="submit">Destroy Sneaker {sneaker.id}</Button>
-							</RestfulForm>
-						</li>
-					))}
-				</ul>
-
-				<div class="mt-10">
-					<ul>
-						{sneakers.map((sneaker) => (
-							<li key={sneaker.id}>
-								<a href={routes.sneakers.show.href({ id: sneaker.id })}>
-									Show Sneaker {sneaker.id}
-								</a>
-							</li>
-						))}
-					</ul>
+					<SneakerGrid sneakers={sneakersWithData} />
 				</div>
 			</Document>,
 		)
@@ -69,40 +49,14 @@ export const sneakerHandlers = {
 			)
 		}
 
-		// findMany sneakers that belong to the user
-		let sneakers = await env.db.query.sneakers.findMany({
-			where: eq(schema.sneakers.user_id, user.id),
-		})
+		let sneakers = await getAllSneakers(user.id)
 
 		return render(
-			<Document>
-				<title>Sneakers</title>
-				<h1>Sneakers</h1>
+			<Document title={`${user.username}'s collection`}>
+				<div>
+					<h1>Welcome to {user.username}'s collection!</h1>
 
-				<ul>
-					{sneakers.map((sneaker) => (
-						<li key={sneaker.id}>
-							<RestfulForm
-								action={routes.sneakers.destroy.href({ id: sneaker.id })}
-								method="delete"
-							>
-								<input type="hidden" name="id" value={sneaker.id} />
-								<Button type="submit">Destroy Sneaker {sneaker.id}</Button>
-							</RestfulForm>
-						</li>
-					))}
-				</ul>
-
-				<div class="mt-10">
-					<ul>
-						{sneakers.map((sneaker) => (
-							<li key={sneaker.id}>
-								<a href={routes.sneakers.show.href({ id: sneaker.id })}>
-									Show Sneaker {sneaker.id}
-								</a>
-							</li>
-						))}
-					</ul>
+					<SneakerGrid sneakers={sneakers} />
 				</div>
 			</Document>,
 		)
@@ -114,15 +68,14 @@ export const sneakerHandlers = {
 			model: "Slip On",
 			colorway: "Black/White Checkerboard",
 			size: 10,
-			image: "/lol",
+			image: "shoes/erg1lxa8x29h1wtbog9a",
 			purchase_price: 60_00,
 			retail_price: 60_00,
 			purchase_date: new Date().toISOString(),
 		})
 
 		return render(
-			<Document>
-				<title>New Sneaker</title>
+			<Document title="New Sneaker">
 				<h1>New Sneaker</h1>
 
 				<form method="post" action={routes.sneakers.create.href()}>
@@ -131,37 +84,31 @@ export const sneakerHandlers = {
 							<input type="hidden" id={key} name={key} value={String(value)} />
 						</div>
 					))}
-					<Button type="submit">Create</Button>
+					<button class="bg-amber-300 px-4 py-2" type="submit">
+						Create
+					</button>
 				</form>
 			</Document>,
 		)
 	},
 
 	async create({ formData, request }) {
-		let cookie = new Cookie(request.headers.get("Cookie") ?? "")
-
-		let userId = cookie.get("_session")
-
-		if (!userId) return redirect(routes.auth.login.index)
-
-		try {
-			let sneakerId = await createSneaker(formData, userId)
-			return redirect(routes.sneakers.show.href({ id: sneakerId }))
-		} catch (error) {
-			console.error(error)
-			return redirect(routes.sneakers.new.href())
-		}
+		let session = getSession(request)
+		let userId = getUserIdFromSession(session.sessionId)
+		let user = userId ? await getUserById(userId) : null
+		if (!user) return redirect(routes.auth.login.index.href())
+		let sneakerId = await createSneaker(formData, user.id)
+		return redirect(routes.sneakers.show.href({ id: sneakerId }))
 	},
 
-	async destroy({ formData, request }) {
-		let decoded = decode(formData)
+	async destroy({ params, request }) {
+		let session = getSession(request)
+		let userId = getUserIdFromSession(session.sessionId)
+		let user = userId ? await getUserById(userId) : null
+		if (!user) return redirect(routes.auth.login.index.href())
+
 		let destroySchema = z.object({ id: z.cuid2() })
-		let result = destroySchema.parse(decoded)
-
-		let cookie = new Cookie(request.headers.get("Cookie") ?? "")
-		let userId = cookie.get("_session")
-
-		if (!userId) return redirect(routes.auth.login.index)
+		let result = destroySchema.parse(params)
 
 		let deleted = await env.db
 			.delete(schema.sneakers)
@@ -172,9 +119,24 @@ export const sneakerHandlers = {
 		return redirect(routes.sneakers.index.href())
 	},
 
-	edit({ params }) {
+	async edit({ params }) {
+		let sneaker = await env.db.query.sneakers.findFirst({
+			where: eq(schema.sneakers.id, params.id),
+		})
+
+		if (!sneaker) {
+			return render(
+				<Document>
+					<title>404 Not Found</title>
+					<h1>404 Not Found</h1>
+					<p>Sorry, the sneaker you are looking for does not exist.</p>
+				</Document>,
+				{ status: 404 },
+			)
+		}
+
 		return render(
-			<Document>
+			<Document title={`Edit Sneaker ${params.id}`}>
 				<title>Edit Sneaker</title>
 				<h1>Edit Sneaker {params.id}</h1>
 			</Document>,

@@ -1,5 +1,6 @@
 // https://github.com/jacob-ebey/vite-plugin-remix/blob/a5f372a4d48f9545e94d60cc401b865031ceecd7/packages/vite-plugin-remix/src/vite-plugin-remix.ts
 import fullstack from "@hiogawa/vite-plugin-fullstack"
+import js from "dedent"
 import type { Directive, ModuleDeclaration, Statement } from "estree"
 import MagicString from "magic-string"
 import type { PluginOption, Rollup } from "vite"
@@ -34,13 +35,6 @@ export function remix({
 						removeUseClient(ms, program)
 					}
 
-					console.log({
-						ms: ms.toString(),
-						program,
-						id,
-						clientReferences,
-					})
-
 					return {
 						code: ms.toString(),
 						map: ms.generateMap({ source: id }),
@@ -57,9 +51,7 @@ function transformUseClient(
 	id: string,
 	clientReferences: Set<string>,
 ) {
-	if (!hasHydrateImport(program.body)) {
-		addHydrateImport(ms)
-	}
+	if (!hasHydrateImport(program.body)) addHydrateImport(ms)
 
 	let hasExports = false
 	for (const exportedFunction of getExportedFunctions(program.body)) {
@@ -67,9 +59,8 @@ function transformUseClient(
 		removeExport(ms, exportedFunction)
 		reExportAsHydrated(ms, exportedFunction, id)
 	}
-	if (hasExports) {
-		clientReferences.add(id)
-	}
+
+	if (hasExports) clientReferences.add(id)
 }
 
 function removeUseClient(ms: MagicString, program: Rollup.ProgramNode) {
@@ -156,14 +147,15 @@ function reExportAsHydrated(
 	const functionName = exportedFunction.name
 	const hydratedName = `${functionName}Hydrated`
 
-	const hydratedExport = `
-import ___${functionName}Assets from "${id}?assets=client";
-const ___${functionName}AssetsDeduped = Array.from(new Set([___${functionName}Assets.entry, ...___${functionName}Assets.js.map(a => a.href)]));
-const ${hydratedName} = ___hydrated(
-  JSON.stringify(___${functionName}AssetsDeduped) + "#${functionName}",
-  ${functionName}
-);
-export { ${hydratedName} as ${functionName} };`
+	const hydratedExport = js`
+		import ___${functionName}Assets from "${id}?assets=client";
+		const ___${functionName}AssetsDeduped = Array.from(new Set([___${functionName}Assets.entry, ...___${functionName}Assets.js.map(a => a.href)]));
+		const ${hydratedName} = ___hydrated(
+			JSON.stringify(___${functionName}AssetsDeduped) + "#${functionName}",
+			${functionName}
+		);
+		export { ${hydratedName} as ${functionName} };
+	`
 
 	ms.append(hydratedExport)
 }

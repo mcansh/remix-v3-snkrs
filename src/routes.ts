@@ -11,5 +11,3 @@ export const routes = route({
 		user: { method: "GET", pattern: "/:user/sneakers" },
 	},
 })
-
-console.log({ routes: routes.sneakers.user })

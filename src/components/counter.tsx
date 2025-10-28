@@ -15,32 +15,9 @@ export function Counter(this: Remix.Handle) {
 		return (
 			<button
 				on={pressIncrement}
-				css={{
-					background: "hsl(340deg 100% 32%)",
-					border: "none",
-					borderRadius: "12px",
-					padding: "0",
-					cursor: "pointer",
-					outlineOffset: "4px",
-					marginTop: "12px",
-					userSelect: "none",
-
-					"&:active > span": {
-						transform: "translateY(-2px)",
-					},
-				}}
+				class="group mt-3 cursor-pointer rounded-xl bg-[hsl(340deg_100%_32%)] outline-offset-4 select-none"
 			>
-				<span
-					css={{
-						display: "block",
-						padding: "12px 42px",
-						borderRadius: "12px",
-						fontSize: "1.25rem",
-						background: "hsl(345deg 100% 47%)",
-						color: "white",
-						transform: "translateY(-6px)",
-					}}
-				>
+				<span class="block -translate-y-1.5 rounded-xl bg-[hsl(345deg_100%_47%)] px-11 py-3 text-xl text-white group-active:-translate-y-0.5">
 					Count: <span>{count}</span>
 				</span>
 			</button>

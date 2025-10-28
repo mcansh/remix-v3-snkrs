@@ -1,0 +1,96 @@
+import { generateSalt, hash, toBase64 } from "@brielov/crypto"
+import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
+import { decode } from "decode-formdata"
+import * as z from "zod/mini"
+
+import { Document } from "../components/document"
+import { RestfulForm } from "../components/restful-form"
+import { schema } from "../db"
+import { env } from "../lib/env"
+import { render } from "../lib/html"
+import { routes } from "../routes"
+import { getSession, login, setSessionCookie } from "../utils/session"
+
+export const registerHandlers = {
+	async action({ formData, request }) {
+		const salt = generateSalt()
+
+		let registerSchema = z.object({
+			email: z.email(),
+			username: z.string(),
+			password: z.string().check(z.minLength(8)),
+			confirm_password: z.string().check(z.minLength(8)),
+			given_name: z.string(),
+			family_name: z.string(),
+		})
+
+		let decoded = decode(formData)
+
+		let result = registerSchema.safeParse(decoded)
+
+		if (!result.success) {
+			console.error(result.error)
+			return redirect(routes.auth.register.index)
+		}
+
+		if (result.data.password !== result.data.confirm_password) {
+			console.error("Passwords do not match")
+			return redirect(routes.auth.register.index)
+		}
+
+		let passwordHash = await hash(result.data.password, salt)
+		let createdUsers = await env.db
+			.insert(schema.users)
+			.values({
+				email: result.data.email,
+				family_name: result.data.family_name,
+				given_name: result.data.given_name,
+				username: result.data.username,
+				password: toBase64(passwordHash),
+				password_salt: toBase64(salt),
+			})
+			.returning()
+
+		let createdUser = createdUsers.at(0)
+
+		if (!createdUser) {
+			console.error("Failed to create user")
+			return redirect(routes.auth.register.index)
+		}
+
+		let session = getSession(request)
+		login(session.sessionId, createdUser)
+
+		let headers = new Headers()
+		setSessionCookie(headers, session.sessionId)
+
+		return redirect(routes.home.index, { headers })
+	},
+	index() {
+		return render(
+			<Document>
+				<title>Hello, World!</title>
+				<h1>Hello, World!</h1>
+
+				<RestfulForm method="post" action={routes.auth.register.action.href()}>
+					<input type="hidden" name="email" value="logan@mcan.sh" />
+					<input type="hidden" name="username" value="logan" />
+					<input
+						type="hidden"
+						name="password"
+						value="mypasswordisbetterthanyours"
+					/>
+					<input
+						type="hidden"
+						name="confirm_password"
+						value="mypasswordisbetterthanyours"
+					/>
+					<input type="hidden" name="given_name" value="Logan" />
+					<input type="hidden" name="family_name" value="McAnsh" />
+
+					<button type="submit">Register</button>
+				</RestfulForm>
+			</Document>,
+		)
+	},
+} satisfies RouteHandlers<typeof routes.auth.register>

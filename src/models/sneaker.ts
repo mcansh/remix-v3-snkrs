@@ -1,9 +1,12 @@
 import { decode } from "decode-formdata"
+import { eq } from "drizzle-orm"
 import * as z from "zod"
 
 import { schema } from "../db"
 import { insertSneakerSchema } from "../db/schema"
+import { generateDensitySrcSet } from "../lib/asset"
 import { env } from "../lib/env"
+import { formatDate, formatMoney } from "../lib/format"
 
 export class CreateSneakerError extends Error {
 	sneaker: z.output<typeof insertSneakerSchema>
@@ -49,4 +52,30 @@ export async function createSneaker(
 	}
 
 	return sneaker.id
+}
+
+export async function getAllSneakers(userId: string) {
+	let sneakers = await env.db.query.sneakers.findMany({
+		where: eq(schema.sneakers.user_id, userId),
+	})
+
+	let sneakersWithData = sneakers.map((sneaker) => {
+		let result = generateDensitySrcSet({
+			publicId: sneaker.image,
+			sizes: [200, 400, 600],
+		})
+
+		return {
+			...sneaker,
+			purchase_price: formatMoney(sneaker.purchase_price),
+			purchase_date: sneaker.purchase_date
+				? formatDate(sneaker.purchase_date)
+				: null,
+			sold_date: sneaker.sold_date ? formatDate(sneaker.sold_date) : null,
+			image: result.default,
+			srcSet: result.srcSet,
+		}
+	})
+
+	return Object.freeze(sneakersWithData)
 }

@@ -1,4 +1,4 @@
-import type { Config } from "prettier"
+import type { PrettierConfig } from "@trivago/prettier-plugin-sort-imports"
 
 export default {
 	plugins: [
@@ -11,4 +11,5 @@ export default {
 
 	importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
 	importOrderSeparation: true,
-} satisfies Config
+	importOrderCaseInsensitive: true,
+} satisfies PrettierConfig

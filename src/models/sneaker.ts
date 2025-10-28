@@ -54,7 +54,10 @@ export async function createSneaker(
 	return sneaker.id
 }
 
-export async function getAllSneakers(userId: string) {
+export async function getAllSneakers(
+	userId: string,
+	imageSizes: [number, number, number] = [200, 400, 600],
+) {
 	let sneakers = await env.db.query.sneakers.findMany({
 		where: eq(schema.sneakers.user_id, userId),
 	})
@@ -62,7 +65,7 @@ export async function getAllSneakers(userId: string) {
 	let sneakersWithData = sneakers.map((sneaker) => {
 		let result = generateDensitySrcSet({
 			publicId: sneaker.image,
-			sizes: [200, 400, 600],
+			sizes: imageSizes,
 		})
 
 		return {

@@ -11,7 +11,7 @@ import { SneakerGrid } from "../components/sneaker-grid"
 import { schema } from "../db"
 import { env } from "../lib/env"
 import { render } from "../lib/html"
-import { requireAuth, USER_KEY } from "../middleware/auth"
+import { requireAuth } from "../middleware/auth"
 import { createSneaker, getAllSneakers } from "../models/sneaker"
 import { getUserById } from "../models/user"
 import { routes } from "../routes"
@@ -19,8 +19,7 @@ import { getSession, getUserIdFromSession } from "../utils/session"
 
 const sneakerIndexHandler: InferRouteHandler<typeof routes.sneakers.index> = {
 	use: [requireAuth],
-	async handler({ request, storage }) {
-		console.log({ USER_KEY: storage.has(USER_KEY) })
+	async handler({ request }) {
 		let session = getSession(request)
 		let userId = getUserIdFromSession(session.sessionId)
 		let user = userId ? await getUserById(userId) : null

@@ -19,8 +19,6 @@ export let loadAuth: Middleware = async ({ request, storage }) => {
 	let session = getSession(request)
 	let userId = getUserIdFromSession(session.sessionId)
 
-	console.log({ userId })
-
 	// Always set session ID for cart/guest functionality
 	storage.set(SESSION_ID_KEY, session.sessionId)
 
@@ -28,10 +26,6 @@ export let loadAuth: Middleware = async ({ request, storage }) => {
 	if (userId) {
 		let user = await getUserById(userId)
 		if (user) storage.set(USER_KEY, user)
-		console.log({
-			storageUser: storage.get(USER_KEY),
-			sameUser: storage.get(USER_KEY) === user,
-		})
 	}
 }
 
@@ -42,7 +36,6 @@ export let loadAuth: Middleware = async ({ request, storage }) => {
  */
 export let requireAuth: Middleware = async ({ request, storage }) => {
 	let session = getSession(request)
-	console.log({ session })
 
 	let userId = getUserIdFromSession(session.sessionId)
 	if (!userId) return redirect(routes.auth.login.index.href(), 302)

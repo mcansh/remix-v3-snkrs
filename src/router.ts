@@ -3,9 +3,9 @@ import { logger } from "@remix-run/fetch-router/logger-middleware"
 
 import { storeContext } from "./middleware/context"
 import { routes } from "./routes"
-import { authHandlers } from "./routes/auth"
-import { homeHandlers } from "./routes/home"
-import { sneakerHandlers } from "./routes/sneakers"
+import { authHandlers } from "./routes/auth/index.ts"
+import { homeHandlers } from "./routes/home.tsx"
+import { sneakerHandlers } from "./routes/sneakers.tsx"
 
 export const router = createRouter()
 

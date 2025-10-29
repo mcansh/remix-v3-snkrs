@@ -1,8 +1,8 @@
 import { type RouteHandlers } from "@remix-run/fetch-router"
 
-import { routes } from "../routes"
-import { loginHandlers } from "./auth.login"
-import { registerHandlers } from "./auth.register"
+import { routes } from "#src/routes.ts"
+import { loginHandlers } from "./login"
+import { registerHandlers } from "./register"
 
 export const authHandlers = {
 	use: [],

@@ -3,13 +3,13 @@ import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
 import { decode } from "decode-formdata"
 import * as z from "zod/mini"
 
-import { Document } from "../components/document"
-import { RestfulForm } from "../components/restful-form"
-import { schema } from "../db"
-import { env } from "../lib/env"
-import { render } from "../lib/html"
-import { routes } from "../routes"
-import { getSession, login, setSessionCookie } from "../utils/session"
+import { Document } from "#src/components/document.tsx"
+import { RestfulForm } from "#src/components/restful-form.tsx"
+import { schema } from "#src/db/index.ts"
+import { env } from "#src/lib/env.ts"
+import { render } from "#src/lib/html.tsx"
+import { routes } from "#src/routes.ts"
+import { getSession, login, setSessionCookie } from "#src/utils/session.ts"
 
 export const registerHandlers = {
 	async action({ formData, request }) {

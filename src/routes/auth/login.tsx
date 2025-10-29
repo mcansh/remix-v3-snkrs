@@ -2,24 +2,24 @@ import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
 import { decode } from "decode-formdata"
 import * as z from "zod/mini"
 
-import { Document } from "../components/document"
-import { RestfulForm } from "../components/restful-form"
-import { render } from "../lib/html"
-import { authenticateUser, getUserById } from "../models/user"
-import { routes } from "../routes"
+import { Document } from "#src/components/document.tsx"
+import { RestfulForm } from "#src/components/restful-form.tsx"
+import { render } from "#src/lib/html.tsx"
+import { authenticateUser, getUserById } from "#src/models/user.ts"
+import { routes } from "#src/routes.ts"
 import {
 	getSession,
 	getUserIdFromSession,
 	login,
 	setSessionCookie,
-} from "../utils/session"
+} from "#src/utils/session.ts"
 
 export const loginHandlers = {
 	async action({ formData, request }) {
 		let loginSchema = z.object({
 			email: z.email(),
 			password: z.string(),
-			returnTo: z.optional(z.string()),
+			return_to: z.optional(z.string()),
 		})
 
 		let decoded = decode(formData)
@@ -57,7 +57,7 @@ export const loginHandlers = {
 		let headers = new Headers()
 		setSessionCookie(headers, session.sessionId)
 
-		let returnTo = result.data.returnTo || routes.home.index
+		let returnTo = result.data.return_to || routes.home.index
 
 		return redirect(returnTo, { headers })
 	},

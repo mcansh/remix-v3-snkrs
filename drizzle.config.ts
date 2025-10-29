@@ -13,6 +13,7 @@ export default defineConfig({
 	out: "./drizzle",
 	schema: "./src/db/schema.ts",
 	dialect: "sqlite",
+	casing: "snake_case",
 	driver: "d1-http",
 	dbCredentials: {
 		accountId: env.CLOUDFLARE_ACCOUNT_ID,

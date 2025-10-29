@@ -3,7 +3,8 @@ import { eq } from "drizzle-orm"
 import * as z from "zod"
 
 import { schema } from "../db"
-import { insertSneakerSchema } from "../db/schema"
+import type { Sneaker } from "../db/schema"
+import { updateSneakerSchema, insertSneakerSchema } from "../db/schema"
 import { generateDensitySrcSet } from "../lib/asset"
 import { env } from "../lib/env"
 import { formatDate, formatMoney } from "../lib/format"
@@ -14,6 +15,41 @@ export class CreateSneakerError extends Error {
 		super(`Failed to create sneaker`)
 		this.name = "CreateSneakerError"
 		this.sneaker = sneaker
+	}
+}
+
+export async function updateSneaker(
+	id: string,
+	formData: FormData,
+): Promise<void> {
+	let decoded = decode(formData, {
+		files: ["image"],
+		booleans: ["sold"],
+		numbers: ["purchase_price", "retail_price", "size", "sold_price"],
+		dates: ["purchase_date", "sold_date"],
+	})
+
+	let parsed = updateSneakerSchema.parse(decoded)
+
+	let result = await env.db
+		.update(schema.sneakers)
+		.set({
+			brand: parsed.brand,
+			model: parsed.model,
+			colorway: parsed.colorway,
+			size: parsed.size,
+			image: parsed.image,
+			purchase_price: parsed.purchase_price,
+			retail_price: parsed.retail_price,
+			purchase_date: parsed.purchase_date,
+			sold: parsed.sold,
+			sold_date: parsed.sold_date,
+			sold_price: parsed.sold_price,
+		})
+		.where(eq(schema.sneakers.id, id))
+
+	if (result.error) {
+		throw new Error(`Failed to update sneaker with id ${id}`)
 	}
 }
 
@@ -54,31 +90,75 @@ export async function createSneaker(
 	return sneaker.id
 }
 
+type Serialize<T> = T extends Date
+	? string
+	: T extends object
+		? { [K in keyof T]: Serialize<T[K]> }
+		: T
+
+type SerializeExtras<T> = {
+	[K in keyof T]: K extends `${string}_date` | `${string}_price`
+		? string | null
+		: Serialize<T[K]>
+}
+
+export type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
+
 export async function getAllSneakers(
 	userId: string,
 	imageSizes: [number, number, number] = [200, 400, 600],
-) {
+): Promise<ReadonlyArray<SerializedSneaker>> {
 	let sneakers = await env.db.query.sneakers.findMany({
 		where: eq(schema.sneakers.user_id, userId),
 	})
 
 	let sneakersWithData = sneakers.map((sneaker) => {
-		let result = generateDensitySrcSet({
-			publicId: sneaker.image,
-			sizes: imageSizes,
-		})
-
-		return {
-			...sneaker,
-			purchase_price: formatMoney(sneaker.purchase_price),
-			purchase_date: sneaker.purchase_date
-				? formatDate(sneaker.purchase_date)
-				: null,
-			sold_date: sneaker.sold_date ? formatDate(sneaker.sold_date) : null,
-			image: result.default,
-			srcSet: result.srcSet,
-		}
+		return serializeSneaker(sneaker, imageSizes)
 	})
 
 	return Object.freeze(sneakersWithData)
+}
+
+function serializeSneaker(
+	sneaker: Sneaker,
+	imageSizes: [number, number, number] = [200, 400, 600],
+): SerializedSneaker {
+	let result = generateDensitySrcSet({
+		publicId: sneaker.image,
+		sizes: imageSizes,
+	})
+
+	return Object.freeze({
+		...sneaker,
+		purchase_price: formatMoney(sneaker.purchase_price),
+		retail_price: formatMoney(sneaker.retail_price),
+		sold_price: sneaker.sold_price ? formatMoney(sneaker.sold_price) : null,
+		purchase_date: sneaker.purchase_date
+			? formatDate(sneaker.purchase_date)
+			: null,
+		sold_date: sneaker.sold_date ? formatDate(sneaker.sold_date) : null,
+		image: result.default,
+		srcSet: result.srcSet,
+		created_at: sneaker.created_at.toISOString(),
+		updated_at: sneaker.updated_at.toISOString(),
+	})
+}
+
+export async function getSneakerById<T extends boolean = false>(
+	id: string,
+	serialize: T = false as T,
+): Promise<T extends true ? SerializedSneaker | null : Sneaker | null> {
+	let sneaker = await env.db.query.sneakers.findFirst({
+		where: eq(schema.sneakers.id, id),
+	})
+
+	if (!sneaker) return null
+
+	if (serialize) {
+		return serializeSneaker(sneaker) as T extends true
+			? SerializedSneaker
+			: never
+	}
+
+	return sneaker as T extends true ? never : Sneaker
 }

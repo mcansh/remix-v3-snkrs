@@ -1,26 +1,42 @@
 "use client"
 
-import type { getAllSneakers } from "../models/sneaker"
+import type { SerializedSneaker } from "../models/sneaker"
 
 type SneakerGridProps = {
-	sneakers: Awaited<ReturnType<typeof getAllSneakers>>
+	sneakers: ReadonlyArray<SerializedSneaker>
 }
 
 export function SneakerGrid({ sneakers }: SneakerGridProps) {
 	return (
-		<ul class="grid lg:grid-cols-4">
+		<ul class="container mx-auto grid lg:grid-cols-4">
 			{sneakers.map((sneaker) => {
 				return (
-					<li key={sneaker.id}>
+					<li key={sneaker.id} class="space-y-2">
 						<img
 							src={sneaker.image}
 							srcSet={sneaker.srcSet}
 							alt={`${sneaker.model} from ${sneaker.brand} in ${sneaker.colorway}`}
-							class=""
+							class="rounded"
 						/>
 
-						<div class="inline-flex rounded-full bg-black px-2 py-1 text-sm text-white">
-							{sneaker.brand}
+						<div class="flex">
+							<div class="inline-flex rounded-full bg-black px-2 py-1 text-xs text-white">
+								{sneaker.brand}
+							</div>
+
+							<a
+								href={`/sneakers/${sneaker.id}`}
+								class="inline-flex rounded-full bg-violet-400 px-2 py-1 text-xs text-white"
+							>
+								View
+							</a>
+
+							<a
+								href={`/sneakers/${sneaker.id}/edit`}
+								class="inline-flex rounded-full bg-orange-400 px-2 py-1 text-xs text-white"
+							>
+								Edit
+							</a>
 						</div>
 
 						<p>{sneaker.model}</p>

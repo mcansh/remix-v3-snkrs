@@ -2,7 +2,7 @@ import { Cookie, SetCookie } from "@remix-run/headers"
 
 import type { User } from "../db/schema.ts"
 
-export interface SessionData {
+export type SessionData = {
 	userId?: string
 	sessionId: string
 }

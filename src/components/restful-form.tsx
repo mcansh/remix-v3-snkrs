@@ -1,5 +1,3 @@
-"use client"
-
 import type { Remix } from "@remix-run/dom"
 
 export interface RestfulFormProps extends Remix.Props<"form"> {

@@ -17,3 +17,7 @@ const frame = createFrame(document, {
 await frame.ready()
 
 console.log("[entry.browser] root frame ready.")
+
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

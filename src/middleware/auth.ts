@@ -34,14 +34,22 @@ export let loadAuth: Middleware = async ({ request, storage }) => {
  * Redirects to login if not authenticated.
  * Attaches user and sessionId to context.storage.
  */
-export let requireAuth: Middleware = async ({ request, storage }) => {
+export let requireAuth: Middleware = async ({ request, storage, url }) => {
 	let session = getSession(request)
 
 	let userId = getUserIdFromSession(session.sessionId)
-	if (!userId) return redirect(routes.auth.login.index.href(), 302)
+	if (!userId) {
+		let redirectUrl = routes.auth.login.index.href()
+		redirectUrl += `?returnTo=${encodeURIComponent(url.href)}`
+		return redirect(redirectUrl)
+	}
 
 	let user = await getUserById(userId)
-	if (!user) return redirect(routes.auth.login.index.href(), 302)
+	if (!user) {
+		let redirectUrl = routes.auth.login.index.href()
+		redirectUrl += `?returnTo=${encodeURIComponent(url.href)}`
+		return redirect(redirectUrl)
+	}
 
 	storage.set(USER_KEY, user)
 	storage.set(SESSION_ID_KEY, session.sessionId)

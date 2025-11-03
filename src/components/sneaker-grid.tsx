@@ -1,6 +1,6 @@
 "use client"
 
-import type { SerializedSneaker } from "../models/sneaker"
+import type { SerializedSneaker } from "#src/models/sneaker.ts"
 
 type SneakerGridProps = {
 	sneakers: ReadonlyArray<SerializedSneaker>

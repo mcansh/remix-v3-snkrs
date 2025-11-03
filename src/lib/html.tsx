@@ -1,9 +1,9 @@
 import type { Remix } from "@remix-run/dom"
 import { renderToStream } from "@remix-run/dom/server"
-import { html } from "@remix-run/fetch-router"
+import { html } from "@remix-run/fetch-router/response-helpers"
 
-import { Document } from "../components/document.tsx"
-import { router } from "../router.ts"
+import { Document } from "#src/components/document.tsx"
+import { router } from "#src/router.ts"
 
 export function render(node: Remix.RemixNode, init?: ResponseInit) {
 	let body = renderToStream(node, {

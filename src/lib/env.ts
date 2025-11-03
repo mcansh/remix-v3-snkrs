@@ -2,7 +2,7 @@ import { env } from "cloudflare:workers"
 import { drizzle } from "drizzle-orm/d1"
 import * as z from "zod/mini"
 
-import * as schema from "../db/schema"
+import * as schema from "#src/db/schema.ts"
 
 const envSchema = z.object({
 	CLOUDINARY_CLOUD_NAME: z.string(),

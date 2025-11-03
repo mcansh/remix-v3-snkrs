@@ -1,13 +1,11 @@
-import {
-	redirect,
-	type InferRouteHandler,
-	type RouteHandlers,
-} from "@remix-run/fetch-router"
+import type { BuildRouteHandler, RouteHandlers } from "@remix-run/fetch-router"
+import { redirect } from "@remix-run/fetch-router/response-helpers"
 import { and, eq } from "drizzle-orm"
 import * as z from "zod/mini"
 
 import { RestfulForm } from "#src/components/restful-form.tsx"
 import { SneakerGrid } from "#src/components/sneaker-grid.tsx"
+import { schema } from "#src/db/index.ts"
 import type { Sneaker } from "#src/db/schema.ts"
 import { env } from "#src/lib/env.ts"
 import { renderDocument } from "#src/lib/html.tsx"
@@ -20,10 +18,12 @@ import {
 } from "#src/models/sneaker.ts"
 import { routes } from "#src/routes.ts"
 import { getCurrentUser } from "#src/utils/context.ts"
-import { schema } from "../db"
 
-const sneakerIndexHandler: InferRouteHandler<typeof routes.sneakers.index> = {
-	use: [requireAuth],
+const sneakerIndexHandler: BuildRouteHandler<
+	"GET",
+	typeof routes.sneakers.index
+> = {
+	middleware: [requireAuth],
 	async handler() {
 		let user = getCurrentUser()
 
@@ -43,8 +43,11 @@ const sneakerIndexHandler: InferRouteHandler<typeof routes.sneakers.index> = {
 	},
 }
 
-const sneakerUserHandler: InferRouteHandler<typeof routes.sneakers.user> = {
-	use: [],
+const sneakerUserHandler: BuildRouteHandler<
+	"GET",
+	typeof routes.sneakers.user
+> = {
+	middleware: [],
 	async handler({ params }) {
 		let user = await env.db.query.users.findFirst({
 			where: eq(schema.users.username, params.user),
@@ -70,38 +73,42 @@ const sneakerUserHandler: InferRouteHandler<typeof routes.sneakers.user> = {
 	},
 }
 
-const sneakerNewHandler: InferRouteHandler<typeof routes.sneakers.new> = {
-	use: [requireAuth],
-	handler() {
-		let data = Object.freeze({
-			brand: "Vans",
-			model: "Slip On",
-			colorway: "Black/White Checkerboard",
-			size: 10,
-			image: "shoes/erg1lxa8x29h1wtbog9a",
-			purchase_price: 60_00,
-			retail_price: 60_00,
-			purchase_date: new Date(),
-			created_at: new Date(),
-			id: "",
-			user_id: "",
-			sold: false,
-			sold_date: null,
-			sold_price: null,
-			updated_at: new Date(),
-		} satisfies Sneaker)
+const sneakerNewHandler: BuildRouteHandler<"GET", typeof routes.sneakers.new> =
+	{
+		middleware: [requireAuth],
+		handler() {
+			let data = Object.freeze({
+				brand: "Vans",
+				model: "Slip On",
+				colorway: "Black/White Checkerboard",
+				size: 10,
+				image: "shoes/erg1lxa8x29h1wtbog9a",
+				purchase_price: 60_00,
+				retail_price: 60_00,
+				purchase_date: new Date(),
+				created_at: new Date(),
+				id: "",
+				user_id: "",
+				sold: false,
+				sold_date: null,
+				sold_price: null,
+				updated_at: new Date(),
+			} satisfies Sneaker)
 
-		return renderDocument(
-			<>
-				<title>Add a new sneaker to your collection</title>
-				<SneakerForm sneaker={data} isEditing={false} />
-			</>,
-		)
-	},
-}
+			return renderDocument(
+				<>
+					<title>Add a new sneaker to your collection</title>
+					<SneakerForm sneaker={data} isEditing={false} />
+				</>,
+			)
+		},
+	}
 
-const sneakerCreateHandler: InferRouteHandler<typeof routes.sneakers.create> = {
-	use: [requireAuth],
+const sneakerCreateHandler: BuildRouteHandler<
+	"POST",
+	typeof routes.sneakers.create
+> = {
+	middleware: [requireAuth],
 	async handler({ formData }) {
 		let user = getCurrentUser()
 		let sneakerId = await createSneaker(formData, user.id)
@@ -109,32 +116,37 @@ const sneakerCreateHandler: InferRouteHandler<typeof routes.sneakers.create> = {
 	},
 }
 
-const sneakerDestroyHandler: InferRouteHandler<typeof routes.sneakers.destroy> =
-	{
-		use: [requireAuth],
-		async handler({ params }) {
-			let user = getCurrentUser()
+const sneakerDestroyHandler: BuildRouteHandler<
+	"DELETE",
+	typeof routes.sneakers.destroy
+> = {
+	middleware: [requireAuth],
+	async handler({ params }) {
+		let user = getCurrentUser()
 
-			let destroySchema = z.object({ id: z.cuid2() })
-			let result = destroySchema.parse(params)
+		let destroySchema = z.object({ id: z.cuid2() })
+		let result = destroySchema.parse(params)
 
-			let deleted = await env.db
-				.delete(schema.sneakers)
-				.where(
-					and(
-						eq(schema.sneakers.id, result.id),
-						eq(schema.sneakers.user_id, user.id),
-					),
-				)
+		let deleted = await env.db
+			.delete(schema.sneakers)
+			.where(
+				and(
+					eq(schema.sneakers.id, result.id),
+					eq(schema.sneakers.user_id, user.id),
+				),
+			)
 
-			console.log({ deleted })
+		console.log({ deleted })
 
-			return redirect(routes.sneakers.index.href())
-		},
-	}
+		return redirect(routes.sneakers.index.href())
+	},
+}
 
-const sneakerEditHandler: InferRouteHandler<typeof routes.sneakers.edit> = {
-	use: [requireAuth],
+const sneakerEditHandler: BuildRouteHandler<
+	"GET",
+	typeof routes.sneakers.edit
+> = {
+	middleware: [requireAuth],
 	async handler({ params }) {
 		let sneaker = await getSneakerById(params.id)
 
@@ -159,8 +171,11 @@ const sneakerEditHandler: InferRouteHandler<typeof routes.sneakers.edit> = {
 	},
 }
 
-const sneakerShowHandler: InferRouteHandler<typeof routes.sneakers.show> = {
-	use: [],
+const sneakerShowHandler: BuildRouteHandler<
+	"GET",
+	typeof routes.sneakers.show
+> = {
+	middleware: [],
 	async handler({ params }) {
 		let sneaker = await env.db.query.sneakers.findFirst({
 			where: eq(schema.sneakers.id, params.id),
@@ -190,8 +205,11 @@ const sneakerShowHandler: InferRouteHandler<typeof routes.sneakers.show> = {
 	},
 }
 
-const sneakerUpdateHandler: InferRouteHandler<typeof routes.sneakers.update> = {
-	use: [requireAuth],
+const sneakerUpdateHandler: BuildRouteHandler<
+	"PUT",
+	typeof routes.sneakers.update
+> = {
+	middleware: [requireAuth],
 	async handler({ formData, params }) {
 		await updateSneaker(params.id, formData)
 

@@ -1,10 +1,11 @@
 import type { Middleware } from "@remix-run/fetch-router"
-import { createStorageKey, redirect } from "@remix-run/fetch-router"
+import { createStorageKey } from "@remix-run/fetch-router"
+import { redirect } from "@remix-run/fetch-router/response-helpers"
 
-import type { User } from "../db/schema.ts"
-import { getUserById } from "../models/user.ts"
-import { routes } from "../routes.ts"
-import { getSession, getUserIdFromSession } from "../utils/session.ts"
+import type { User } from "#src/db/schema.ts"
+import { getUserById } from "#src/models/user.ts"
+import { routes } from "#src/routes.ts"
+import { getSession, getUserIdFromSession } from "#src/utils/session.ts"
 
 // Storage keys for attaching data to request context
 export const USER_KEY = createStorageKey<User>()

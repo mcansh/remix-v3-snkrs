@@ -2,12 +2,12 @@ import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
 import * as z from "zod"
 
-import { schema } from "../db"
-import type { Sneaker } from "../db/schema"
-import { updateSneakerSchema, insertSneakerSchema } from "../db/schema"
-import { generateDensitySrcSet } from "../lib/asset"
-import { env } from "../lib/env"
-import { formatDate, formatMoney } from "../lib/format"
+import { schema } from "#src/db/index.ts"
+import type { Sneaker } from "#src/db/schema.ts"
+import { insertSneakerSchema, updateSneakerSchema } from "#src/db/schema.ts"
+import { generateDensitySrcSet } from "#src/lib/asset.ts"
+import { env } from "#src/lib/env.ts"
+import { formatDate, formatMoney } from "#src/lib/format.ts"
 
 export class CreateSneakerError extends Error {
 	sneaker: z.output<typeof insertSneakerSchema>

@@ -1,9 +1,9 @@
 import type { Remix } from "@remix-run/dom"
 import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite"
 
-import appStylesHref from "../app.css?url"
-import clientAssets from "../entry.browser.ts?assets=client"
-import serverAssets from "../entry.server.tsx?assets=ssr"
+import appStylesHref from "#src/app.css?url"
+import clientAssets from "#src/entry.browser.ts?assets=client"
+import serverAssets from "#src/entry.server.tsx?assets=ssr"
 
 export function Document({ children }: { children: Remix.RemixNode }) {
 	let assets = clientAssets.merge(serverAssets)

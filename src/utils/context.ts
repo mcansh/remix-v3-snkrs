@@ -1,8 +1,8 @@
 import type { RequestContext } from "@remix-run/fetch-router"
 import { AsyncLocalStorage } from "node:async_hooks"
 
-import type { User } from "../db/schema.ts"
-import { USER_KEY } from "../middleware/auth.ts"
+import type { User } from "#src/db/schema.ts"
+import { USER_KEY } from "#src/middleware/auth.ts"
 
 export const requestContextStorage = new AsyncLocalStorage<RequestContext>()
 

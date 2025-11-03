@@ -1,6 +1,6 @@
 import { Cookie, SetCookie } from "@remix-run/headers"
 
-import type { User } from "../db/schema.ts"
+import type { User } from "#src/db/schema.ts"
 
 export type SessionData = {
 	userId?: string

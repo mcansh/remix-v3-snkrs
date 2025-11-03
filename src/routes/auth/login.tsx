@@ -1,4 +1,5 @@
-import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
+import type { RouteHandlers } from "@remix-run/fetch-router"
+import { redirect } from "@remix-run/fetch-router/response-helpers"
 import { decode } from "decode-formdata"
 import * as z from "zod/mini"
 
@@ -28,7 +29,7 @@ export const loginHandlers = {
 
 		if (!result.success) {
 			console.error(result.error)
-			return redirect(routes.auth.login.index)
+			return redirect(routes.auth.login.index.href())
 		}
 
 		let user = await authenticateUser(result.data.email, result.data.password)
@@ -57,7 +58,7 @@ export const loginHandlers = {
 		let headers = new Headers()
 		setSessionCookie(headers, session.sessionId)
 
-		let returnTo = result.data.return_to || routes.home.index
+		let returnTo = result.data.return_to || routes.home.index.href()
 
 		return redirect(returnTo, { headers })
 	},

@@ -5,7 +5,7 @@ import { loginHandlers } from "./login"
 import { registerHandlers } from "./register"
 
 export const authHandlers = {
-	use: [],
+	middleware: [],
 	handlers: {
 		login: loginHandlers,
 		register: registerHandlers,

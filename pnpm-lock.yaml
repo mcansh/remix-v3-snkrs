@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@hiogawa/vite-plugin-fullstack':
+    hash: 84e44c2777ed30cda680851c80b053d2e875024b0dc20c4c5b49db5e3e273237
+    path: patches/@hiogawa__vite-plugin-fullstack.patch
+
 importers:
 
   .:
@@ -31,13 +36,22 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: 0.8.0
-        version: 0.8.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.14.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
+        version: 0.8.0(@remix-run/form-data-parser@0.12.0)(@remix-run/headers@0.14.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
+      '@remix-run/form-data-parser':
+        specifier: 0.12.0
+        version: 0.12.0
       '@remix-run/headers':
         specifier: 0.14.0
         version: 0.14.0
+      '@remix-run/interaction':
+        specifier: 0.1.0
+        version: 0.1.0
       '@remix-run/library':
         specifier: 0.0.0-experimental-remix-jam.6
         version: 0.0.0-experimental-remix-jam.6
+      '@remix-run/route-pattern':
+        specifier: 0.14.0
+        version: 0.14.0
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -62,7 +76,7 @@ importers:
         version: 1.13.18(vite@7.1.12(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2))(workerd@1.20251011.0)(wrangler@4.45.3)
       '@hiogawa/vite-plugin-fullstack':
         specifier: 0.0.5
-        version: 0.0.5(vite@7.1.12(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2))
+        version: 0.0.5(patch_hash=84e44c2777ed30cda680851c80b053d2e875024b0dc20c4c5b49db5e3e273237)(vite@7.1.12(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2))
       '@mcansh/vite-plugin-svg-sprite':
         specifier: 0.7.1
         version: 0.7.1(vite@7.1.12(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2))
@@ -867,11 +881,8 @@ packages:
       '@remix-run/html-template': 0.2.0
       '@remix-run/route-pattern': 0.14.0
 
-  '@remix-run/form-data-parser@0.11.0':
-    resolution: {integrity: sha512-vD1xko5NntvKKzCOM6hAmCfUOPguIWJJ3WqcBFMqqUYlk3Z4j9t4CpvL0taq9gaB8kMtYN78lD4r8Nb8xXI4zw==}
-
-  '@remix-run/headers@0.12.0':
-    resolution: {integrity: sha512-eqVSL5UOIyqVx0NTqgtNKMKVokE9jPchkZHl/N13KKPQYw/leS8VCoX5zRhkB1UvcLyfj113LX0OvEcuNbc5Hg==}
+  '@remix-run/form-data-parser@0.12.0':
+    resolution: {integrity: sha512-PSeHTVp1nDAA1yr8HUiU0dNkQ3jD4TlW6Crw0oV406YC0JskkJ9TyHC8BYKQzi8URFX12fHJD70W3RtvofKqvw==}
 
   '@remix-run/headers@0.14.0':
     resolution: {integrity: sha512-IibY6iTkBhzHXacQkJDENlzJPe3G5RDJgzV2utftnJl/sg2qKnxtepypQmfXA6d+BI5BkzrtAd+mx7QSVY1NRQ==}
@@ -879,11 +890,14 @@ packages:
   '@remix-run/html-template@0.2.0':
     resolution: {integrity: sha512-CwmFgbUroD2082lK6ALHCryqOxrn3FtMf7uf554fN8Zq5H9aDafPYWpEZ01GvpaKuPVlWwyojhqcs1nOOgLwpA==}
 
+  '@remix-run/interaction@0.1.0':
+    resolution: {integrity: sha512-5AoVEKPad9+ss/HqjaDEKNjG1uFp9FFdHaaCtxLz5Yw0+xdiJF+ur7r6D1TAUFIVNZToD1WyHurVRD3sjUZBbw==}
+
   '@remix-run/library@0.0.0-experimental-remix-jam.6':
     resolution: {integrity: sha512-lGIjVGvfIAMU/r99qaz33PzkqLGHAMTu7vestAh7T+4zqObDH5R9FAqSqsgDcl5+e4BVwDMuNQViX6hQuUX6Uw==}
 
-  '@remix-run/multipart-parser@0.11.0':
-    resolution: {integrity: sha512-AE/H+ok0fWOZb84sJ8vREOJiSwYoEoGL0rpHZSAiPmCkBKbnsmHCbiUtg5+wELem4Q0HAEY6vjVK83u9cIlAhw==}
+  '@remix-run/multipart-parser@0.12.0':
+    resolution: {integrity: sha512-u/o4lKmIy/KuZGuQYMGhmr+BN7VKAt3G0ny8a1SBVlBXIBAtTOmDiI2WMZtyAv0VPbaIpT3OBTrRrKIfdDAE6w==}
 
   '@remix-run/node-fetch-server@0.8.1':
     resolution: {integrity: sha512-J1dev372wtJqmqn9U/qbpbZxbJSQrogNN2+Qv1lKlpATpe/WQ9aCZfl/xSb9d2Rgh1IyLSvNxZAXPZxruO6Xig==}
@@ -2296,7 +2310,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.4':
     optional: true
 
-  '@hiogawa/vite-plugin-fullstack@0.0.5(vite@7.1.12(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2))':
+  '@hiogawa/vite-plugin-fullstack@0.0.5(patch_hash=84e44c2777ed30cda680851c80b053d2e875024b0dc20c4c5b49db5e3e273237)(vite@7.1.12(@types/node@24.10.0)(jiti@2.6.1)(lightningcss@1.30.2))':
     dependencies:
       magic-string: 0.30.21
       srvx: 0.8.16
@@ -2465,22 +2479,22 @@ snapshots:
 
   '@remix-run/events@0.0.0-experimental-remix-jam.5': {}
 
-  '@remix-run/fetch-router@0.8.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.14.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)':
+  '@remix-run/fetch-router@0.8.0(@remix-run/form-data-parser@0.12.0)(@remix-run/headers@0.14.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)':
     dependencies:
-      '@remix-run/form-data-parser': 0.11.0
+      '@remix-run/form-data-parser': 0.12.0
       '@remix-run/headers': 0.14.0
       '@remix-run/html-template': 0.2.0
       '@remix-run/route-pattern': 0.14.0
 
-  '@remix-run/form-data-parser@0.11.0':
+  '@remix-run/form-data-parser@0.12.0':
     dependencies:
-      '@remix-run/multipart-parser': 0.11.0
-
-  '@remix-run/headers@0.12.0': {}
+      '@remix-run/multipart-parser': 0.12.0
 
   '@remix-run/headers@0.14.0': {}
 
   '@remix-run/html-template@0.2.0': {}
+
+  '@remix-run/interaction@0.1.0': {}
 
   '@remix-run/library@0.0.0-experimental-remix-jam.6':
     dependencies:
@@ -2489,9 +2503,9 @@ snapshots:
       '@remix-run/style': 0.0.0-experimental-remix-jam.5
       '@remix-run/theme': 0.0.0-experimental-remix-jam.5
 
-  '@remix-run/multipart-parser@0.11.0':
+  '@remix-run/multipart-parser@0.12.0':
     dependencies:
-      '@remix-run/headers': 0.12.0
+      '@remix-run/headers': 0.14.0
 
   '@remix-run/node-fetch-server@0.8.1': {}
 

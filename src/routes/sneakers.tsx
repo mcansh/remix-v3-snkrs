@@ -1,7 +1,7 @@
+import * as z from "zod/mini"
 import type { BuildRouteHandler, RouteHandlers } from "@remix-run/fetch-router"
 import { redirect } from "@remix-run/fetch-router/response-helpers"
 import { and, eq } from "drizzle-orm"
-import * as z from "zod/mini"
 
 import { RestfulForm } from "#src/components/restful-form.tsx"
 import { SneakerGrid } from "#src/components/sneaker-grid.tsx"

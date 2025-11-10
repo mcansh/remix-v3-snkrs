@@ -1,5 +1,5 @@
-import { defineConfig } from "drizzle-kit"
 import * as z from "zod/mini"
+import { defineConfig } from "drizzle-kit"
 
 let cloudflare = z.object({
 	CLOUDFLARE_ACCOUNT_ID: z.string(),

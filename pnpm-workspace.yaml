@@ -2,4 +2,4 @@ onlyBuiltDependencies:
   - sharp
 
 patchedDependencies:
-  '@hiogawa/vite-plugin-fullstack': patches/@hiogawa__vite-plugin-fullstack.patch
+  "@hiogawa/vite-plugin-fullstack": patches/@hiogawa__vite-plugin-fullstack.patch

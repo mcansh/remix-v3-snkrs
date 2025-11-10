@@ -1,6 +1,6 @@
+import * as z from "zod/mini"
 import { env } from "cloudflare:workers"
 import { drizzle } from "drizzle-orm/d1"
-import * as z from "zod/mini"
 
 import * as schema from "#src/db/schema.ts"
 

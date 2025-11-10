@@ -1,6 +1,6 @@
+import * as z from "zod"
 import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
-import * as z from "zod"
 
 import { schema } from "#src/db/index.ts"
 import type { Sneaker } from "#src/db/schema.ts"

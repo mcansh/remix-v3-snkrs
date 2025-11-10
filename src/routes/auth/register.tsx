@@ -1,8 +1,8 @@
+import * as z from "zod/mini"
 import { generateSalt, hash, toBase64 } from "@brielov/crypto"
 import type { RouteHandlers } from "@remix-run/fetch-router"
 import { redirect } from "@remix-run/fetch-router/response-helpers"
 import { decode } from "decode-formdata"
-import * as z from "zod/mini"
 
 import { Document } from "#src/components/document.tsx"
 import { RestfulForm } from "#src/components/restful-form.tsx"

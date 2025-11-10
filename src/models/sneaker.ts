@@ -119,7 +119,7 @@ export async function getAllSneakers(
 	return Object.freeze(sneakersWithData)
 }
 
-function serializeSneaker(
+export function serializeSneaker(
 	sneaker: Sneaker,
 	imageSizes: [number, number, number] = [200, 400, 600],
 ): SerializedSneaker {

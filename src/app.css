@@ -1,1 +1,45 @@
 @import "tailwindcss";
+
+@utility container {
+	margin-inline: auto;
+}
+
+@utility text-center {
+	text-wrap: balance;
+}
+
+@utility text-trim-both {
+	text-box-trim: trim-both;
+}
+
+@utility text-trim-start {
+	text-box-trim: trim-start;
+}
+
+@utility text-trim-end {
+	text-box-trim: trim-end;
+}
+
+@utility text-edge-auto {
+	text-box-edge: auto;
+}
+
+@utility text-edge-text {
+	text-box-edge: text;
+}
+
+@utility text-edge-text-text {
+	text-box-edge: text text;
+}
+
+@utility text-edge-text-alphabetic {
+	text-box-edge: text alphabetic;
+}
+
+@utility text-edge-cap-alphabetic {
+	text-box-edge: cap alphabetic;
+}
+
+@utility text-edge-ex-text {
+	text-box-edge: ex text;
+}

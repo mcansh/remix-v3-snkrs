@@ -2,14 +2,18 @@ import type {
 	TransformerOption,
 	TransformerVideoOption,
 } from "@mcansh/cld-apis-types"
-import { buildImageUrl } from "@mcansh/cloudinary-build-url"
+import { buildImageUrl, extractPublicId } from "@mcansh/cloudinary-build-url"
 
 import { env } from "./env"
 
 export function generateAssetUrl(
-	publicId: string,
+	publicIdOrUrl: string,
 	transformations?: TransformerOption | TransformerVideoOption,
 ) {
+	let publicId = /^https?:\/\/[^/]+\/publicIdOrUrl/.test(publicIdOrUrl)
+		? extractPublicId(publicIdOrUrl)
+		: publicIdOrUrl
+
 	return buildImageUrl(publicId, {
 		cloud: { cloudName: env.CLOUDINARY_CLOUD_NAME, secure: true },
 		transformations: {
@@ -21,7 +25,7 @@ export function generateAssetUrl(
 }
 
 export function generateDensitySrcSet({
-	publicId,
+	publicId: publicIdOrUrl,
 	sizes,
 	transformations,
 }: {
@@ -31,6 +35,11 @@ export function generateDensitySrcSet({
 }) {
 	transformations ??= {}
 	transformations.resize ??= {}
+
+	let publicId = /^https?:\/\/[^/]+\/publicIdOrUrl/.test(publicIdOrUrl)
+		? extractPublicId(publicIdOrUrl)
+		: publicIdOrUrl
+
 	let srcSet = sizes
 		.toSorted((a, b) => a - b)
 		.map((size) => {

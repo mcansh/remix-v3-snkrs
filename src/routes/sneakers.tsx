@@ -229,7 +229,11 @@ function SneakerForm<T extends boolean>({
 		: routes.sneakers.create.href()
 
 	return (
-		<RestfulForm method={isEditing ? "put" : "post"} action={action}>
+		<RestfulForm
+			method={isEditing ? "put" : "post"}
+			action={action}
+			encType="multipart/form-data"
+		>
 			<fieldset>
 				<legend>{isEditing ? "Edit Sneaker" : "New Sneaker"}</legend>
 

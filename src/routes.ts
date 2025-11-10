@@ -10,4 +10,8 @@ export const routes = route({
 		...resources("/sneakers"),
 		user: { method: "GET", pattern: "/:user/sneakers" },
 	},
+	brands: resources("/brands", {
+		param: "brand",
+		only: ["index", "show"],
+	}),
 })

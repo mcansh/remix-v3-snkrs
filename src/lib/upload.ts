@@ -1,5 +1,5 @@
 import * as z from "zod"
-import type { FileUpload } from "@remix-run/fetch-router/form-data-middleware"
+import type { FileUpload } from "@remix-run/form-data-middleware"
 
 import { env } from "./env"
 

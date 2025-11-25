@@ -1,6 +1,6 @@
 import type { Remix } from "@remix-run/dom"
 import { renderToStream } from "@remix-run/dom/server"
-import { html } from "@remix-run/fetch-router/response-helpers"
+import { createHtmlResponse } from "@remix-run/response/html"
 
 import { Document } from "#src/components/document.tsx"
 import { router } from "#src/router.ts"
@@ -16,7 +16,7 @@ export function render(node: Remix.RemixNode, init?: ResponseInit) {
 		},
 	})
 
-	return html(body, init)
+	return createHtmlResponse(body, init)
 }
 
 export function renderDocument(children: Remix.RemixNode, init?: ResponseInit) {

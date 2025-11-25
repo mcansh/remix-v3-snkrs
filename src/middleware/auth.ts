@@ -1,6 +1,6 @@
 import type { Middleware } from "@remix-run/fetch-router"
 import { createStorageKey } from "@remix-run/fetch-router"
-import { redirect } from "@remix-run/fetch-router/response-helpers"
+import { createRedirectResponse } from "@remix-run/response/redirect"
 
 import type { User } from "#src/db/schema.ts"
 import { getUserById } from "#src/models/user.ts"
@@ -42,14 +42,14 @@ export let requireAuth: Middleware = async ({ request, storage, url }) => {
 	if (!userId) {
 		let redirectUrl = routes.auth.login.index.href()
 		redirectUrl += `?returnTo=${encodeURIComponent(url.href)}`
-		return redirect(redirectUrl)
+		return createRedirectResponse(redirectUrl)
 	}
 
 	let user = await getUserById(userId)
 	if (!user) {
 		let redirectUrl = routes.auth.login.index.href()
 		redirectUrl += `?returnTo=${encodeURIComponent(url.href)}`
-		return redirect(redirectUrl)
+		return createRedirectResponse(redirectUrl)
 	}
 
 	storage.set(USER_KEY, user)

@@ -1,7 +1,7 @@
 import * as z from "zod/mini"
 import { generateSalt, hash, toBase64 } from "@brielov/crypto"
 import type { RouteHandlers } from "@remix-run/fetch-router"
-import { redirect } from "@remix-run/fetch-router/response-helpers"
+import { createRedirectResponse } from "@remix-run/response/redirect"
 import { decode } from "decode-formdata"
 
 import { Document } from "#src/components/document.tsx"
@@ -31,12 +31,12 @@ export const registerHandlers = {
 
 		if (!result.success) {
 			console.error(result.error)
-			return redirect(routes.auth.register.index.href())
+			return createRedirectResponse(routes.auth.register.index.href())
 		}
 
 		if (result.data.password !== result.data.confirm_password) {
 			console.error("Passwords do not match")
-			return redirect(routes.auth.register.index.href())
+			return createRedirectResponse(routes.auth.register.index.href())
 		}
 
 		let passwordHash = await hash(result.data.password, salt)
@@ -56,7 +56,7 @@ export const registerHandlers = {
 
 		if (!createdUser) {
 			console.error("Failed to create user")
-			return redirect(routes.auth.register.index.href())
+			return createRedirectResponse(routes.auth.register.index.href())
 		}
 
 		let session = getSession(request)
@@ -65,7 +65,7 @@ export const registerHandlers = {
 		let headers = new Headers()
 		setSessionCookie(headers, session.sessionId)
 
-		return redirect(routes.home.index.href(), { headers })
+		return createRedirectResponse(routes.home.index.href(), { headers })
 	},
 	index() {
 		return render(

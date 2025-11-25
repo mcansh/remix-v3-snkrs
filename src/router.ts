@@ -1,7 +1,7 @@
 import { createRouter, type Middleware } from "@remix-run/fetch-router"
-import { formData } from "@remix-run/fetch-router/form-data-middleware"
-import { logger } from "@remix-run/fetch-router/logger-middleware"
-import { methodOverride } from "@remix-run/fetch-router/method-override-middleware"
+import { formData } from "@remix-run/form-data-middleware"
+import { logger } from "@remix-run/logger-middleware"
+import { methodOverride } from "@remix-run/method-override-middleware"
 
 import { uploadHandler } from "./lib/upload.ts"
 import { storeContext } from "./middleware/context"

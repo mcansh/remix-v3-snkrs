@@ -1,6 +1,6 @@
 import * as z from "zod/mini"
 import type { BuildRouteHandler, RouteHandlers } from "@remix-run/fetch-router"
-import { redirect } from "@remix-run/fetch-router/response-helpers"
+import { createRedirectResponse } from "@remix-run/response/redirect"
 import { and, eq } from "drizzle-orm"
 
 import { RestfulForm } from "#src/components/restful-form.tsx"
@@ -112,7 +112,7 @@ const sneakerCreateHandler: BuildRouteHandler<
 	async handler({ formData }) {
 		let user = getCurrentUser()
 		let sneakerId = await createSneaker(formData, user.id)
-		return redirect(routes.sneakers.show.href({ id: sneakerId }))
+		return createRedirectResponse(routes.sneakers.show.href({ id: sneakerId }))
 	},
 }
 
@@ -138,7 +138,7 @@ const sneakerDestroyHandler: BuildRouteHandler<
 
 		console.log({ deleted })
 
-		return redirect(routes.sneakers.index.href())
+		return createRedirectResponse(routes.sneakers.index.href())
 	},
 }
 
@@ -213,7 +213,7 @@ const sneakerUpdateHandler: BuildRouteHandler<
 	async handler({ formData, params }) {
 		await updateSneaker(params.id, formData)
 
-		return redirect(routes.sneakers.show.href({ id: params.id }))
+		return createRedirectResponse(routes.sneakers.show.href({ id: params.id }))
 	},
 }
 

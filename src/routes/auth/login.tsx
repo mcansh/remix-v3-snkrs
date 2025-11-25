@@ -1,6 +1,6 @@
 import * as z from "zod/mini"
 import type { RouteHandlers } from "@remix-run/fetch-router"
-import { redirect } from "@remix-run/fetch-router/response-helpers"
+import { createRedirectResponse } from "@remix-run/response/redirect"
 import { decode } from "decode-formdata"
 
 import { Document } from "#src/components/document.tsx"
@@ -29,7 +29,7 @@ export const loginHandlers = {
 
 		if (!result.success) {
 			console.error(result.error)
-			return redirect(routes.auth.login.index.href())
+			return createRedirectResponse(routes.auth.login.index.href())
 		}
 
 		let user = await authenticateUser(result.data.email, result.data.password)
@@ -60,14 +60,14 @@ export const loginHandlers = {
 
 		let returnTo = result.data.return_to || routes.home.index.href()
 
-		return redirect(returnTo, { headers })
+		return createRedirectResponse(returnTo, { headers })
 	},
 
 	async index({ request, url }) {
 		let session = getSession(request)
 		let userId = getUserIdFromSession(session.sessionId)
 		let user = userId ? await getUserById(userId) : null
-		if (user) return redirect(routes.sneakers.index.href())
+		if (user) return createRedirectResponse(routes.sneakers.index.href())
 
 		let returnTo = url.searchParams.get("returnTo")
 		return render(

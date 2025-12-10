@@ -102,8 +102,6 @@ type SerializeExtras<T> = {
 		: Serialize<T[K]>
 }
 
-export type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
-
 export async function getAllSneakers(
 	userId: string,
 	imageSizes: [number, number, number] = [200, 400, 600],
@@ -144,21 +142,31 @@ export function serializeSneaker(
 	})
 }
 
+type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
+
+type SerializedSneakerOrSneaker<T> = T extends true
+	? SerializedSneaker
+	: Sneaker
+
 export async function getSneakerById<T extends boolean = false>(
 	id: string,
-	serialize: T = false as T,
-): Promise<T extends true ? SerializedSneaker | null : Sneaker | null> {
+	serialize?: T,
+	options: { srcSetSizes?: [number, number, number] } = {},
+): Promise<SerializedSneakerOrSneaker<T> | null> {
 	let sneaker = await env.db.query.sneakers.findFirst({
 		where: eq(schema.sneakers.id, id),
 	})
 
 	if (!sneaker) return null
 
-	if (serialize) {
-		return serializeSneaker(sneaker) as T extends true
-			? SerializedSneaker
-			: never
+	if (serialize === true) {
+		return serializeSneaker(
+			sneaker,
+			options.srcSetSizes,
+		) as SerializedSneakerOrSneaker<T>
 	}
 
-	return sneaker as T extends true ? never : Sneaker
+	return sneaker as SerializedSneakerOrSneaker<T>
 }
+
+let sn = await getSneakerById("123")

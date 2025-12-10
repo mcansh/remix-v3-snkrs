@@ -1,7 +1,7 @@
-import * as z from "zod/mini"
 import type { BuildAction, Controller } from "@remix-run/fetch-router"
 import { createRedirectResponse } from "@remix-run/response/redirect"
 import { and, eq } from "drizzle-orm"
+import * as z from "zod/mini"
 
 import { RestfulForm } from "#src/components/restful-form.tsx"
 import { SneakerGrid } from "#src/components/sneaker-grid.tsx"
@@ -11,10 +11,10 @@ import { env } from "#src/lib/env.ts"
 import { renderDocument } from "#src/lib/html.tsx"
 import { requireAuth } from "#src/middleware/auth.ts"
 import {
-	createSneaker,
-	getAllSneakers,
-	getSneakerById,
-	updateSneaker,
+    createSneaker,
+    getAllSneakers,
+    getSneakerById,
+    updateSneaker
 } from "#src/models/sneaker.ts"
 import { routes } from "#src/routes.ts"
 import { getCurrentUser } from "#src/utils/context.ts"
@@ -164,9 +164,7 @@ const sneakerEditHandler: BuildAction<"GET", typeof routes.sneakers.edit> = {
 const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 	middleware: [],
 	async action({ params }) {
-		let sneaker = await env.db.query.sneakers.findFirst({
-			where: eq(schema.sneakers.id, params.id),
-		})
+	let sneaker = await getSneakerById(params.id, true, [400, 800, 1200])
 
 		if (!sneaker) {
 			return renderDocument(
@@ -183,6 +181,36 @@ const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 				<title>Show Sneaker</title>
 				<div class="mt-4">
 					<h1>Show Sneaker {params.id}</h1>
+
+					<div class="grid gap-4 md:grid-cols-3">
+						<div class="col-span-2">
+							<img
+								src={sneaker.image}
+								alt={sneaker.model}
+								class="w-full aspect-square"
+								srcSet={sneaker.srcSet}
+							/>
+							<h2>Brand</h2>
+							<p>{sneaker.brand}</p>
+						</div>
+						<div>
+							<h2>Model</h2>
+							<p>{sneaker.model}</p>
+
+							<h2>Colorway</h2>
+							<p>{sneaker.colorway}</p>
+
+							<h2>Purchase Date</h2>
+							<p>{sneaker.purchase_date}</p>
+
+							<h2>Purchase Price</h2>
+							<p>{sneaker.purchase_price}</p>
+
+							<h2>Size</h2>
+							<p>{sneaker.size}</p>
+						</div>
+					</div>
+
 					<div class="mt-10">
 						<pre>{JSON.stringify(sneaker, null, 2)}</pre>
 					</div>

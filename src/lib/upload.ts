@@ -3,9 +3,7 @@ import type { FileUpload } from "@remix-run/form-data-middleware"
 
 import { env } from "./env"
 
-let cloudinaryUploadResponseSchema = z.object({
-	secure_url: z.url(),
-})
+let cloudinaryUploadResponseSchema = z.object({ secure_url: z.url() })
 
 export async function uploadHandler(file: FileUpload): Promise<string> {
 	// Generate unique key for this file
@@ -21,10 +19,7 @@ export async function uploadHandler(file: FileUpload): Promise<string> {
 
 	let response = await fetch(
 		`https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/auto/upload`,
-		{
-			method: "POST",
-			body: formData,
-		},
+		{ method: "POST", body: formData },
 	)
 
 	let data = await response.json()

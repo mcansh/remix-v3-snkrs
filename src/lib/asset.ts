@@ -9,7 +9,7 @@ import { env } from "./env"
 export function generateAssetUrl(
 	publicIdOrUrl: string,
 	transformations?: TransformerOption | TransformerVideoOption,
-) {
+): string {
 	let publicId = /^https?:\/\/[^/]+\/publicIdOrUrl/.test(publicIdOrUrl)
 		? extractPublicId(publicIdOrUrl)
 		: publicIdOrUrl
@@ -32,7 +32,10 @@ export function generateDensitySrcSet({
 	publicId: string
 	sizes: [number, number, number]
 	transformations?: TransformerOption | TransformerVideoOption
-}) {
+}): {
+	default: string
+	srcSet: string
+} {
 	transformations ??= {}
 	transformations.resize ??= {}
 

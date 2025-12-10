@@ -5,7 +5,7 @@ import { createHtmlResponse } from "@remix-run/response/html"
 import { Document } from "#src/components/document.tsx"
 import { router } from "#src/router.ts"
 
-export function render(node: Remix.RemixNode, init?: ResponseInit) {
+export function render(node: Remix.RemixNode, init?: ResponseInit): Response {
 	let body = renderToStream(node, {
 		async resolveFrame(src) {
 			const response = await router.fetch(new URL(src, "http://localhost"))
@@ -19,6 +19,9 @@ export function render(node: Remix.RemixNode, init?: ResponseInit) {
 	return createHtmlResponse(body, init)
 }
 
-export function renderDocument(children: Remix.RemixNode, init?: ResponseInit) {
+export function renderDocument(
+	children: Remix.RemixNode,
+	init?: ResponseInit,
+): Response {
 	return render(<Document>{children}</Document>, init)
 }

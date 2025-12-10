@@ -168,5 +168,3 @@ export async function getSneakerById<T extends boolean = false>(
 
 	return sneaker as SerializedSneakerOrSneaker<T>
 }
-
-let sn = await getSneakerById("123")

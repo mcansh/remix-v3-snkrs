@@ -1,6 +1,6 @@
 import type {
-	TransformerOption,
-	TransformerVideoOption,
+    TransformerOption,
+    TransformerVideoOption,
 } from "@mcansh/cld-apis-types"
 import { buildImageUrl, extractPublicId } from "@mcansh/cloudinary-build-url"
 
@@ -10,7 +10,7 @@ export function generateAssetUrl(
 	publicIdOrUrl: string,
 	transformations?: TransformerOption | TransformerVideoOption,
 ): string {
-	let publicId = /^https?:\/\/[^/]+\/publicIdOrUrl/.test(publicIdOrUrl)
+	let publicId = URL.canParse(publicIdOrUrl)
 		? extractPublicId(publicIdOrUrl)
 		: publicIdOrUrl
 

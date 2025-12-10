@@ -9,11 +9,11 @@ import { RestfulForm } from "#src/components/restful-form.tsx"
 import { schema } from "#src/db/index.ts"
 import { env } from "#src/lib/env.ts"
 import { render } from "#src/lib/html.tsx"
+import { getUserByEmail } from "#src/models/user.ts"
 import { routes } from "#src/routes.ts"
-import { getSession, login, setSessionCookie } from "#src/utils/session.ts"
 
 export const registerHandlers = {
-	async action({ formData, request }) {
+	async action({ formData, session }) {
 		const salt = generateSalt()
 
 		let registerSchema = z.object({
@@ -32,6 +32,32 @@ export const registerHandlers = {
 		if (!result.success) {
 			console.error(result.error)
 			return createRedirectResponse(routes.auth.register.index.href())
+		}
+
+		// Check if user already exists
+		if (await getUserByEmail(result.data.email)) {
+			return render(
+				<Document>
+					<div class="card" style="max-width: 500px; margin: 2rem auto;">
+						<div class="alert alert-error">
+							An account with this email already exists.
+						</div>
+						<p>
+							<a href={routes.auth.register.index.href()} class="btn">
+								Back to Register
+							</a>
+							<a
+								href={routes.auth.login.index.href()}
+								class="btn btn-secondary"
+								style="margin-left: 0.5rem;"
+							>
+								Login
+							</a>
+						</p>
+					</div>
+				</Document>,
+				{ status: 400 },
+			)
 		}
 
 		if (result.data.password !== result.data.confirm_password) {
@@ -59,13 +85,11 @@ export const registerHandlers = {
 			return createRedirectResponse(routes.auth.register.index.href())
 		}
 
-		let session = getSession(request)
-		login(session.sessionId, createdUser)
+		session.set("userId", createdUser.id)
 
-		let headers = new Headers()
-		setSessionCookie(headers, session.sessionId)
-
-		return createRedirectResponse(routes.home.index.href(), { headers })
+		return createRedirectResponse(
+			routes.sneakers.user.href({ user: createdUser.username }),
+		)
 	},
 	index() {
 		return render(

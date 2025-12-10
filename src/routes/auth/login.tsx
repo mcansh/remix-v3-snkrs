@@ -6,19 +6,13 @@ import { decode } from "decode-formdata"
 import { Document } from "#src/components/document.tsx"
 import { RestfulForm } from "#src/components/restful-form.tsx"
 import { render } from "#src/lib/html.tsx"
-import { authenticateUser, getUserById } from "#src/models/user.ts"
+import { authenticateUser } from "#src/models/user.ts"
 import { routes } from "#src/routes.ts"
-import {
-	getSession,
-	getUserIdFromSession,
-	login,
-	setSessionCookie,
-} from "#src/utils/session.ts"
 
 export const loginHandlers = {
 	middleware: [],
 	actions: {
-		async action({ formData, request }) {
+		async action({ formData, session }) {
 			let loginSchema = z.object({
 				email: z.email(),
 				password: z.string(),
@@ -35,45 +29,50 @@ export const loginHandlers = {
 			}
 
 			let user = await authenticateUser(result.data.email, result.data.password)
+			let returnTo = result.data.return_to || routes.home.index.href()
 
 			if (!user) {
-				return render(
-					<Document>
-						<div class="card" style="max-width: 500px; margin: 2rem auto;">
-							<div class="alert alert-error">
-								Invalid email or password. Please try again.
-							</div>
-							<p>
-								<a href={routes.auth.login.index.href()} class="btn">
-									Back to Login
-								</a>
-							</p>
-						</div>
-					</Document>,
-					{ status: 401 },
+				session.flash("error", "Invalid email or password. Please try again.")
+				return createRedirectResponse(
+					routes.auth.login.index.href(undefined, { returnTo }),
 				)
 			}
 
-			let session = getSession(request)
-			login(session.sessionId, user)
+			session.set("userId", user.id)
 
-			let headers = new Headers()
-			setSessionCookie(headers, session.sessionId)
+			// if (!user) {
+			// 	return render(
+			// 		<Document>
+			// 			<div class="card" style="max-width: 500px; margin: 2rem auto;">
+			// 				<div class="alert alert-error">
+			// 					Invalid email or password. Please try again.
+			// 				</div>
+			// 				<p>
+			// 					<a href={routes.auth.login.index.href()} class="btn">
+			// 						Back to Login
+			// 					</a>
+			// 				</p>
+			// 			</div>
+			// 		</Document>,
+			// 		{ status: 401 },
+			// 	)
+			// }
 
-			let returnTo = result.data.return_to || routes.home.index.href()
-
-			return createRedirectResponse(returnTo, { headers })
+			return createRedirectResponse(returnTo)
 		},
 
-		async index({ request, url }) {
-			let session = getSession(request)
-			let userId = getUserIdFromSession(session.sessionId)
-			let user = userId ? await getUserById(userId) : null
-			if (user) return createRedirectResponse(routes.sneakers.index.href())
-
+		async index({ url, session }) {
 			let returnTo = url.searchParams.get("returnTo")
+			let error = session.get("error")
+
 			return render(
 				<Document>
+					{typeof error === "string" ? (
+						<div class="alert alert-error" style="margin-bottom: 1.5rem;">
+							{error}
+						</div>
+					) : null}
+
 					<RestfulForm
 						method="post"
 						action={routes.auth.login.action.href()}

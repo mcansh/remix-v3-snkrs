@@ -28,6 +28,12 @@ importers:
       '@paralleldrive/cuid2':
         specifier: 3.1.0
         version: 3.1.0
+      '@remix-run/async-context-middleware':
+        specifier: 0.1.0
+        version: 0.1.0(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))
+      '@remix-run/cookie':
+        specifier: 0.5.0
+        version: 0.5.0(@remix-run/headers@0.18.0)
       '@remix-run/dom':
         specifier: 0.0.0-experimental-remix-jam.6
         version: 0.0.0-experimental-remix-jam.6
@@ -36,10 +42,10 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: 0.13.0
-        version: 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0)
+        version: 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1)
       '@remix-run/form-data-middleware':
         specifier: 0.1.1
-        version: 0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0))(@remix-run/form-data-parser@0.14.0)
+        version: 0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))(@remix-run/form-data-parser@0.14.0)
       '@remix-run/form-data-parser':
         specifier: 0.14.0
         version: 0.14.0
@@ -54,16 +60,22 @@ importers:
         version: 0.0.0-experimental-remix-jam.6
       '@remix-run/logger-middleware':
         specifier: 0.1.0
-        version: 0.1.0(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0))
+        version: 0.1.0(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))
       '@remix-run/method-override-middleware':
         specifier: 0.1.1
-        version: 0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0))
+        version: 0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))
       '@remix-run/response':
         specifier: 0.2.0
         version: 0.2.0(@remix-run/headers@0.18.0)(@remix-run/html-template@0.3.0)(@remix-run/mime@0.1.0)
       '@remix-run/route-pattern':
         specifier: 0.15.3
         version: 0.15.3
+      '@remix-run/session':
+        specifier: 0.4.1
+        version: 0.4.1
+      '@remix-run/session-middleware':
+        specifier: 0.1.1
+        version: 0.1.1(@remix-run/cookie@0.5.0(@remix-run/headers@0.18.0))(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))(@remix-run/session@0.4.1)
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -882,6 +894,16 @@ packages:
   '@poppinss/exception@1.2.2':
     resolution: {integrity: sha512-m7bpKCD4QMlFCjA/nKTs23fuvoVFoA83brRKmObCUNmi/9tVu8Ve3w4YQAnJu4q3Tjf5fr685HYIC/IA2zHRSg==}
 
+  '@remix-run/async-context-middleware@0.1.0':
+    resolution: {integrity: sha512-P3GkszIEuQ+5Xe3To3g0kwr09bZ4fJGu3z57QavrkDxndvyo4uuVD+UsDhyWMJ3zKsXu4cX00fRbHwFT58c1iw==}
+    peerDependencies:
+      '@remix-run/fetch-router': ^0.9.0
+
+  '@remix-run/cookie@0.5.0':
+    resolution: {integrity: sha512-ugCBUUgDWlhtK6RCiqGqK4kSRUMTYx/6DFOLk2q995oXPNOU45JR894Q8Uy3pHNcOIAROLyvUtnseylaTzi/1Q==}
+    peerDependencies:
+      '@remix-run/headers': ^0.17.1
+
   '@remix-run/dom@0.0.0-experimental-remix-jam.5':
     resolution: {integrity: sha512-Qd4bY7tLP/Ap0n8QWUU3WIW4vY+ksvw77j39kx7fTicwyD81UeAkNiQpDC8FKbLLPbdeZn+XE6Q5tdgrtVeLrA==}
 
@@ -951,8 +973,15 @@ packages:
   '@remix-run/route-pattern@0.15.3':
     resolution: {integrity: sha512-7s4Oy9q6Oz9Vfwg0iZscpmYVASNG9fLqbCa+YY0+SWKksDpvCRiW46xp3S3zEvT7zEP7G55FKA+JdrqqK2AOXw==}
 
-  '@remix-run/session@0.4.0':
-    resolution: {integrity: sha512-xDOPFllrjaEvIekzRfqO8VG2DsFfVasSjB49ElH4nR31YsqEGDCwCmK4GWSv/GsS1Bo+0JRHmIBTNdvNORLp7A==}
+  '@remix-run/session-middleware@0.1.1':
+    resolution: {integrity: sha512-W+OD5md/UUgZbnJ2NdtD7io3exBAXcAXfM5UnSILQ6d7+kT9G/ehW/kTqqeR/mgAoNzytBlY34F8y93QIU5CXw==}
+    peerDependencies:
+      '@remix-run/cookie': ^0.5.0
+      '@remix-run/fetch-router': ^0.13.0
+      '@remix-run/session': ^0.4.1
+
+  '@remix-run/session@0.4.1':
+    resolution: {integrity: sha512-Bm6aKYgutb/raHZ3laloz8g/Qu7f3CeK3o4gUVDMxtEiAdWCzJamwHoTpGOc5+g1Kuy7z85v4M6nGrF06MFDSg==}
 
   '@remix-run/style@0.0.0-experimental-remix-jam.5':
     resolution: {integrity: sha512-XXCOWiY6lGqeJrGQ47JP5fFFuZXbBsFjBbTu46FNxsox1cny8ZPyZ7C674kX92UimGpOU+zv/lPOoU+ZWGim+w==}
@@ -1827,11 +1856,6 @@ packages:
       prettier-plugin-svelte:
         optional: true
 
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-
   prettier@3.7.4:
     resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
     engines: {node: '>=14'}
@@ -2535,6 +2559,14 @@ snapshots:
 
   '@poppinss/exception@1.2.2': {}
 
+  '@remix-run/async-context-middleware@0.1.0(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))':
+    dependencies:
+      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1)
+
+  '@remix-run/cookie@0.5.0(@remix-run/headers@0.18.0)':
+    dependencies:
+      '@remix-run/headers': 0.18.0
+
   '@remix-run/dom@0.0.0-experimental-remix-jam.5':
     dependencies:
       '@remix-run/events': 0.0.0-experimental-remix-jam.5
@@ -2547,15 +2579,15 @@ snapshots:
 
   '@remix-run/events@0.0.0-experimental-remix-jam.5': {}
 
-  '@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0)':
+  '@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1)':
     dependencies:
       '@remix-run/headers': 0.18.0
       '@remix-run/route-pattern': 0.15.3
-      '@remix-run/session': 0.4.0
+      '@remix-run/session': 0.4.1
 
-  '@remix-run/form-data-middleware@0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0))(@remix-run/form-data-parser@0.14.0)':
+  '@remix-run/form-data-middleware@0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))(@remix-run/form-data-parser@0.14.0)':
     dependencies:
-      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0)
+      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1)
       '@remix-run/form-data-parser': 0.14.0
 
   '@remix-run/form-data-parser@0.14.0':
@@ -2577,13 +2609,13 @@ snapshots:
       '@remix-run/style': 0.0.0-experimental-remix-jam.5
       '@remix-run/theme': 0.0.0-experimental-remix-jam.5
 
-  '@remix-run/logger-middleware@0.1.0(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0))':
+  '@remix-run/logger-middleware@0.1.0(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))':
     dependencies:
-      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0)
+      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1)
 
-  '@remix-run/method-override-middleware@0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0))':
+  '@remix-run/method-override-middleware@0.1.1(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))':
     dependencies:
-      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.0)
+      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1)
 
   '@remix-run/mime@0.1.0': {}
 
@@ -2601,7 +2633,13 @@ snapshots:
 
   '@remix-run/route-pattern@0.15.3': {}
 
-  '@remix-run/session@0.4.0': {}
+  '@remix-run/session-middleware@0.1.1(@remix-run/cookie@0.5.0(@remix-run/headers@0.18.0))(@remix-run/fetch-router@0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1))(@remix-run/session@0.4.1)':
+    dependencies:
+      '@remix-run/cookie': 0.5.0(@remix-run/headers@0.18.0)
+      '@remix-run/fetch-router': 0.13.0(@remix-run/headers@0.18.0)(@remix-run/route-pattern@0.15.3)(@remix-run/session@0.4.1)
+      '@remix-run/session': 0.4.1
+
+  '@remix-run/session@0.4.1': {}
 
   '@remix-run/style@0.0.0-experimental-remix-jam.5': {}
 
@@ -3275,7 +3313,7 @@ snapshots:
 
   prettier-plugin-sort-imports@1.8.8(typescript@5.9.3):
     dependencies:
-      prettier: 3.6.2
+      prettier: 3.7.4
       typescript: 5.9.3
     optional: true
 
@@ -3286,9 +3324,6 @@ snapshots:
       '@trivago/prettier-plugin-sort-imports': 6.0.0(prettier@3.7.4)
       prettier-plugin-organize-imports: 4.3.0(prettier@3.7.4)(typescript@5.9.3)
       prettier-plugin-sort-imports: 1.8.8(typescript@5.9.3)
-
-  prettier@3.6.2:
-    optional: true
 
   prettier@3.7.4: {}
 

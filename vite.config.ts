@@ -23,4 +23,8 @@ export default defineConfig({
 		tailwindcss(),
 		svgSprite(),
 	],
+	optimizeDeps: {
+		force: true,
+		noDiscovery: true,
+	},
 })

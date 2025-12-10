@@ -1,39 +1,33 @@
-import type { RequestContext } from "@remix-run/fetch-router"
-import { AsyncLocalStorage } from "node:async_hooks"
+import { getContext } from "@remix-run/async-context-middleware"
+import { createStorageKey } from "@remix-run/fetch-router"
 
 import type { User } from "#src/db/schema.ts"
-import { USER_KEY } from "#src/middleware/auth.ts"
 
-export const requestContextStorage = new AsyncLocalStorage<RequestContext>()
-
-/**
- * Get the current RequestContext from AsyncLocalStorage.
- * This can be called from anywhere in your application during a request.
- */
-export function getContext(): RequestContext {
-	let context = requestContextStorage.getStore()
-
-	if (!context) {
-		throw new Error(
-			"No request context found. Make sure the storeContext middleware is installed.",
-		)
-	}
-
-	return context
-}
+// Storage key for attaching user data to request context
+let USER_KEY = createStorageKey<User>()
 
 /**
- * Get the storage from the current RequestContext.
- * This is a convenience helper for the most common use case.
- */
-export function getStorage() {
-	return getContext().storage
-}
-
-/**
- * Get the current authenticated user from storage.
- * Throws if no user is authenticated.
+ * Get the current authenticated user from app storage.
  */
 export function getCurrentUser(): User {
-	return getStorage().get(USER_KEY)
+	return getContext().storage.get(USER_KEY)
+}
+
+/**
+ * Get the current authenticated user from app storage, or null if not authenticated.
+ * Safe to use when running behind loadAuth middleware (not requireAuth).
+ */
+export function getCurrentUserSafely(): User | null {
+	try {
+		return getCurrentUser()
+	} catch {
+		return null
+	}
+}
+
+/**
+ * Set the current authenticated user in app storage.
+ */
+export function setCurrentUser(user: User): void {
+	getContext().storage.set(USER_KEY, user)
 }

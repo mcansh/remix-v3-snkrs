@@ -20,7 +20,7 @@ import { routes } from "#src/routes.ts"
 import { getCurrentUser } from "#src/utils/context.ts"
 
 const sneakerIndexHandler: BuildAction<"GET", typeof routes.sneakers.index> = {
-	middleware: [requireAuth],
+	middleware: [requireAuth()],
 	async action() {
 		let user = getCurrentUser()
 
@@ -68,7 +68,7 @@ const sneakerUserHandler: BuildAction<"GET", typeof routes.sneakers.user> = {
 }
 
 const sneakerNewHandler: BuildAction<"GET", typeof routes.sneakers.new> = {
-	middleware: [requireAuth],
+	middleware: [requireAuth()],
 	action() {
 		let data = Object.freeze({
 			brand: "Vans",
@@ -99,7 +99,7 @@ const sneakerNewHandler: BuildAction<"GET", typeof routes.sneakers.new> = {
 
 const sneakerCreateHandler: BuildAction<"POST", typeof routes.sneakers.create> =
 	{
-		middleware: [requireAuth],
+		middleware: [requireAuth()],
 		async action({ formData }) {
 			let user = getCurrentUser()
 			let sneakerId = await createSneaker(formData, user.id)
@@ -113,7 +113,7 @@ const sneakerDestroyHandler: BuildAction<
 	"DELETE",
 	typeof routes.sneakers.destroy
 > = {
-	middleware: [requireAuth],
+	middleware: [requireAuth()],
 	async action({ params }) {
 		let user = getCurrentUser()
 
@@ -136,7 +136,7 @@ const sneakerDestroyHandler: BuildAction<
 }
 
 const sneakerEditHandler: BuildAction<"GET", typeof routes.sneakers.edit> = {
-	middleware: [requireAuth],
+	middleware: [requireAuth()],
 	async action({ params }) {
 		let sneaker = await getSneakerById(params.id)
 
@@ -194,7 +194,7 @@ const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 
 const sneakerUpdateHandler: BuildAction<"PUT", typeof routes.sneakers.update> =
 	{
-		middleware: [requireAuth],
+		middleware: [requireAuth()],
 		async action({ formData, params }) {
 			await updateSneaker(params.id, formData)
 

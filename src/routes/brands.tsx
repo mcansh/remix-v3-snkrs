@@ -1,4 +1,4 @@
-import type { RouteHandlers } from "@remix-run/fetch-router"
+import type { Controller } from "@remix-run/fetch-router"
 import { eq } from "drizzle-orm"
 
 import { SneakerGrid } from "#src/components/sneaker-grid.tsx"
@@ -10,7 +10,7 @@ import { schema } from "../db"
 
 export const brandHandlers = {
 	middleware: [],
-	handlers: {
+	actions: {
 		async index() {
 			// TODO: relation between brands and sneakers
 			let sneakers = await env.db.query.sneakers.findMany()
@@ -53,4 +53,4 @@ export const brandHandlers = {
 			)
 		},
 	},
-} satisfies RouteHandlers<typeof routes.brands>
+} satisfies Controller<typeof routes.brands>

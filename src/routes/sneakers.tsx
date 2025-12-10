@@ -1,5 +1,5 @@
 import * as z from "zod/mini"
-import type { BuildRouteHandler, RouteHandlers } from "@remix-run/fetch-router"
+import type { BuildAction, Controller } from "@remix-run/fetch-router"
 import { createRedirectResponse } from "@remix-run/response/redirect"
 import { and, eq } from "drizzle-orm"
 
@@ -19,12 +19,9 @@ import {
 import { routes } from "#src/routes.ts"
 import { getCurrentUser } from "#src/utils/context.ts"
 
-const sneakerIndexHandler: BuildRouteHandler<
-	"GET",
-	typeof routes.sneakers.index
-> = {
+const sneakerIndexHandler: BuildAction<"GET", typeof routes.sneakers.index> = {
 	middleware: [requireAuth],
-	async handler() {
+	async action() {
 		let user = getCurrentUser()
 
 		let sneakersWithData = await getAllSneakers(user.id)
@@ -43,12 +40,9 @@ const sneakerIndexHandler: BuildRouteHandler<
 	},
 }
 
-const sneakerUserHandler: BuildRouteHandler<
-	"GET",
-	typeof routes.sneakers.user
-> = {
+const sneakerUserHandler: BuildAction<"GET", typeof routes.sneakers.user> = {
 	middleware: [],
-	async handler({ params }) {
+	async action({ params }) {
 		let user = await env.db.query.users.findFirst({
 			where: eq(schema.users.username, params.user),
 		})
@@ -73,55 +67,54 @@ const sneakerUserHandler: BuildRouteHandler<
 	},
 }
 
-const sneakerNewHandler: BuildRouteHandler<"GET", typeof routes.sneakers.new> =
+const sneakerNewHandler: BuildAction<"GET", typeof routes.sneakers.new> = {
+	middleware: [requireAuth],
+	action() {
+		let data = Object.freeze({
+			brand: "Vans",
+			model: "Slip On",
+			colorway: "Black/White Checkerboard",
+			size: 10,
+			image: "shoes/erg1lxa8x29h1wtbog9a",
+			purchase_price: 60_00,
+			retail_price: 60_00,
+			purchase_date: new Date(),
+			created_at: new Date(),
+			id: "",
+			user_id: "",
+			sold: false,
+			sold_date: null,
+			sold_price: null,
+			updated_at: new Date(),
+		} satisfies Sneaker)
+
+		return renderDocument(
+			<>
+				<title>Add a new sneaker to your collection</title>
+				<SneakerForm sneaker={data} isEditing={false} />
+			</>,
+		)
+	},
+}
+
+const sneakerCreateHandler: BuildAction<"POST", typeof routes.sneakers.create> =
 	{
 		middleware: [requireAuth],
-		handler() {
-			let data = Object.freeze({
-				brand: "Vans",
-				model: "Slip On",
-				colorway: "Black/White Checkerboard",
-				size: 10,
-				image: "shoes/erg1lxa8x29h1wtbog9a",
-				purchase_price: 60_00,
-				retail_price: 60_00,
-				purchase_date: new Date(),
-				created_at: new Date(),
-				id: "",
-				user_id: "",
-				sold: false,
-				sold_date: null,
-				sold_price: null,
-				updated_at: new Date(),
-			} satisfies Sneaker)
-
-			return renderDocument(
-				<>
-					<title>Add a new sneaker to your collection</title>
-					<SneakerForm sneaker={data} isEditing={false} />
-				</>,
+		async action({ formData }) {
+			let user = getCurrentUser()
+			let sneakerId = await createSneaker(formData, user.id)
+			return createRedirectResponse(
+				routes.sneakers.show.href({ id: sneakerId }),
 			)
 		},
 	}
 
-const sneakerCreateHandler: BuildRouteHandler<
-	"POST",
-	typeof routes.sneakers.create
-> = {
-	middleware: [requireAuth],
-	async handler({ formData }) {
-		let user = getCurrentUser()
-		let sneakerId = await createSneaker(formData, user.id)
-		return createRedirectResponse(routes.sneakers.show.href({ id: sneakerId }))
-	},
-}
-
-const sneakerDestroyHandler: BuildRouteHandler<
+const sneakerDestroyHandler: BuildAction<
 	"DELETE",
 	typeof routes.sneakers.destroy
 > = {
 	middleware: [requireAuth],
-	async handler({ params }) {
+	async action({ params }) {
 		let user = getCurrentUser()
 
 		let destroySchema = z.object({ id: z.cuid2() })
@@ -142,12 +135,9 @@ const sneakerDestroyHandler: BuildRouteHandler<
 	},
 }
 
-const sneakerEditHandler: BuildRouteHandler<
-	"GET",
-	typeof routes.sneakers.edit
-> = {
+const sneakerEditHandler: BuildAction<"GET", typeof routes.sneakers.edit> = {
 	middleware: [requireAuth],
-	async handler({ params }) {
+	async action({ params }) {
 		let sneaker = await getSneakerById(params.id)
 
 		if (!sneaker) {
@@ -171,12 +161,9 @@ const sneakerEditHandler: BuildRouteHandler<
 	},
 }
 
-const sneakerShowHandler: BuildRouteHandler<
-	"GET",
-	typeof routes.sneakers.show
-> = {
+const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 	middleware: [],
-	async handler({ params }) {
+	async action({ params }) {
 		let sneaker = await env.db.query.sneakers.findFirst({
 			where: eq(schema.sneakers.id, params.id),
 		})
@@ -205,17 +192,17 @@ const sneakerShowHandler: BuildRouteHandler<
 	},
 }
 
-const sneakerUpdateHandler: BuildRouteHandler<
-	"PUT",
-	typeof routes.sneakers.update
-> = {
-	middleware: [requireAuth],
-	async handler({ formData, params }) {
-		await updateSneaker(params.id, formData)
+const sneakerUpdateHandler: BuildAction<"PUT", typeof routes.sneakers.update> =
+	{
+		middleware: [requireAuth],
+		async action({ formData, params }) {
+			await updateSneaker(params.id, formData)
 
-		return createRedirectResponse(routes.sneakers.show.href({ id: params.id }))
-	},
-}
+			return createRedirectResponse(
+				routes.sneakers.show.href({ id: params.id }),
+			)
+		},
+	}
 
 function SneakerForm<T extends boolean>({
 	sneaker,
@@ -327,4 +314,4 @@ export const sneakerHandlers = {
 	update: sneakerUpdateHandler,
 
 	destroy: sneakerDestroyHandler,
-} satisfies RouteHandlers<typeof routes.sneakers>
+} satisfies Controller<typeof routes.sneakers>

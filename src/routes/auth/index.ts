@@ -1,4 +1,4 @@
-import { type RouteHandlers } from "@remix-run/fetch-router"
+import type { Controller } from "@remix-run/fetch-router"
 
 import { routes } from "#src/routes.ts"
 import { loginHandlers } from "./login"
@@ -6,8 +6,8 @@ import { registerHandlers } from "./register"
 
 export const authHandlers = {
 	middleware: [],
-	handlers: {
+	actions: {
 		login: loginHandlers,
 		register: registerHandlers,
 	},
-} satisfies RouteHandlers<typeof routes.auth>
+} satisfies Controller<typeof routes.auth>

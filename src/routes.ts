@@ -1,10 +1,10 @@
-import { formAction, resources, route } from "@remix-run/fetch-router"
+import { form, resources, route } from "@remix-run/fetch-router"
 
 export const routes = route({
 	home: { index: "/" },
 	auth: {
-		login: formAction("/login"),
-		register: formAction("/register"),
+		login: form("/login"),
+		register: form("/register"),
 	},
 	sneakers: {
 		...resources("/sneakers"),

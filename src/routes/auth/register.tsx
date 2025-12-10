@@ -1,6 +1,6 @@
 import * as z from "zod/mini"
 import { generateSalt, hash, toBase64 } from "@brielov/crypto"
-import type { RouteHandlers } from "@remix-run/fetch-router"
+import type { Controller } from "@remix-run/fetch-router"
 import { createRedirectResponse } from "@remix-run/response/redirect"
 import { decode } from "decode-formdata"
 
@@ -94,4 +94,4 @@ export const registerHandlers = {
 			</Document>,
 		)
 	},
-} satisfies RouteHandlers<typeof routes.auth.register>
+} satisfies Controller<typeof routes.auth.register>

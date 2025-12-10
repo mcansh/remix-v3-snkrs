@@ -1,4 +1,4 @@
-import type { RouteHandlers } from "@remix-run/fetch-router"
+import type { Controller } from "@remix-run/fetch-router"
 
 import { Counter } from "#src/components/counter.tsx"
 import { renderDocument } from "#src/lib/html.tsx"
@@ -14,4 +14,4 @@ export const homeHandlers = {
 			</>,
 		)
 	},
-} satisfies RouteHandlers<typeof routes.home>
+} satisfies Controller<typeof routes.home>

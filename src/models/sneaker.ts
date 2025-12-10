@@ -1,4 +1,4 @@
-import * as z from "zod"
+import * as z from "zod/mini"
 import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
 

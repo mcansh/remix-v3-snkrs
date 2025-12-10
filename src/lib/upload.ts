@@ -1,4 +1,4 @@
-import * as z from "zod"
+import * as z from "zod/mini"
 import type { FileUpload } from "@remix-run/form-data-middleware"
 
 import { env } from "./env"

@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `password_salt` text(255) NOT NULL;

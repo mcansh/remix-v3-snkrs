@@ -1,23 +1,16 @@
-import * as z from "zod/mini"
 import { defineConfig } from "drizzle-kit"
+import { z } from "zod/mini"
 
-let cloudflare = z.object({
-	CLOUDFLARE_ACCOUNT_ID: z.string(),
-	CLOUDFLARE_DATABASE_ID: z.string(),
-	CLOUDFLARE_D1_TOKEN: z.string(),
+let envSchema = z.object({
+	DATABASE_URL: z.url({ pattern: /^postgresql:\/\// }),
 })
 
-let env = cloudflare.parse(process.env)
+let env = envSchema.parse(process.env)
 
 export default defineConfig({
 	out: "./drizzle",
-	schema: "./src/db/schema.ts",
-	dialect: "sqlite",
+	schema: "./app/db/schema.ts",
+	dialect: "postgresql",
 	casing: "snake_case",
-	driver: "d1-http",
-	dbCredentials: {
-		accountId: env.CLOUDFLARE_ACCOUNT_ID,
-		databaseId: env.CLOUDFLARE_DATABASE_ID,
-		token: env.CLOUDFLARE_D1_TOKEN,
-	},
+	dbCredentials: { url: env.DATABASE_URL },
 })

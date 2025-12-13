@@ -1,14 +1,11 @@
 {
-	"extends": "@tsconfig/vite-react/tsconfig.json",
+	"extends": "@total-typescript/tsconfig/tsc/dom/app",
 	"compilerOptions": {
+		"outDir": "./dist",
+		"jsx": "react-jsx",
 		"jsxImportSource": "@remix-run/dom",
 		"strict": true,
-		"allowImportingTsExtensions": true,
-		"types": [
-			"vite/client",
-			"@hiogawa/vite-plugin-fullstack/types",
-			"@mcansh/vite-plugin-svg-sprite/client"
-		],
+		"rootDir": ".",
 		"lib": ["ESNext", "DOM", "DOM.Iterable"]
 	}
 }

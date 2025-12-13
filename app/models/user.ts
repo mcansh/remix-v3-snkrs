@@ -5,10 +5,6 @@ import { db, schema } from "#app/db/index.js"
 import type { User } from "#app/db/schema.js"
 
 export async function getUserById(id: string): Promise<User | null> {
-	// let user = await db.query.users.findFirst({
-	// 	where: eq(schema.users.id, id),
-	// })
-
 	let users = await db
 		.select()
 		.from(schema.users)
@@ -21,10 +17,6 @@ export async function getUserById(id: string): Promise<User | null> {
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-	// let user = await db.query.users.findFirst({
-	// 	where: eq(schema.users.email, email),
-	// })
-
 	let users = await db
 		.select()
 		.from(schema.users)

@@ -42,10 +42,6 @@ const sneakerIndexHandler: BuildAction<"GET", typeof routes.sneakers.index> = {
 const sneakerUserHandler: BuildAction<"GET", typeof routes.sneakers.user> = {
 	middleware: [],
 	async action({ params }) {
-		// let user = await db.query.users.findFirst({
-		// 	where: eq(schema.users.username, params.user),
-		// })
-
 		let result = await db
 			.select()
 			.from(schema.users)

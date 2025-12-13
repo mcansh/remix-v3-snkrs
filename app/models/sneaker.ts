@@ -108,10 +108,6 @@ export async function getAllSneakers(
 	userId: string,
 	imageSizes: [number, number, number] = [200, 400, 600],
 ): Promise<ReadonlyArray<SerializedSneaker>> {
-	// let sneakers = await db.query.sneakers.findMany({
-	// 	where: eq(schema.sneakers.user_id, userId),
-	// })
-
 	let sneakers = await db
 		.select()
 		.from(schema.sneakers)
@@ -160,9 +156,6 @@ export async function getSneakerById<T extends boolean = false>(
 	serialize?: T,
 	options: { srcSetSizes?: [number, number, number] } = {},
 ): Promise<SerializedSneakerOrSneaker<T> | null> {
-	// let sneaker = await db.query.sneakers.findFirst({
-	// 	where: eq(schema.sneakers.id, id),
-	// })
 	let sneakers = await db
 		.select()
 		.from(schema.sneakers)

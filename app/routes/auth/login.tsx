@@ -1,7 +1,7 @@
-import * as z from "zod/mini"
 import type { Controller } from "@remix-run/fetch-router"
 import { createRedirectResponse } from "@remix-run/response/redirect"
 import { decode } from "decode-formdata"
+import * as z from "zod/mini"
 
 import { Document } from "#app/components/document.js"
 import { RestfulForm } from "#app/components/restful-form.js"
@@ -29,7 +29,7 @@ export const loginHandlers = {
 			}
 
 			let user = await authenticateUser(result.data.email, result.data.password)
-			let returnTo = result.data.return_to || routes.home.index.href()
+			let returnTo = result.data.return_to || routes.home.href()
 
 			if (!user) {
 				session.flash("error", "Invalid email or password. Please try again.")

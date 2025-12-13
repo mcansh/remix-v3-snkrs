@@ -1,4 +1,3 @@
-import { generateSalt, hash } from "@brielov/crypto"
 import { redirect, type RouteHandlers } from "@remix-run/fetch-router"
 import { Button } from "@remix-run/library/button"
 import { decode } from "decode-formdata"
@@ -9,6 +8,7 @@ import { RestfulForm } from "../components/restful-form"
 import { schema } from "../db"
 import { env } from "../lib/env"
 import { render } from "../lib/html"
+import { findOrCreateBrand } from "../models/brand"
 import { routes } from "../routes"
 
 export const sneakerHandlers = {
@@ -20,40 +20,13 @@ export const sneakerHandlers = {
 			dates: ["purchase_date", "sold_date"],
 		})
 
-		await env.db.delete(schema.users)
+		let brand = await findOrCreateBrand({ name: "Vans", slug: "vans" })
 
-		const salt = generateSalt()
+		let user = await env.db.query.users.findFirst({
+			where: eq(schema.users.family_name, "McAnsh"),
+		})
 
-		let passwordHash = await hash("password", salt)
-		let password = new TextDecoder().decode(passwordHash)
-
-		let createdUsers = await env.db
-			.insert(schema.users)
-			.values({
-				email: "logan@mcan.sh",
-				family_name: "McAnsh",
-				given_name: "Logan",
-				username: "logan",
-				password: password,
-			})
-			.returning()
-
-		let createdUser = createdUsers.at(0)
-
-		if (!createdUser) {
-			throw new Error("Failed to create user")
-		}
-
-		let createdBrands = await env.db
-			.insert(schema.brands)
-			.values({ name: "Vans", slug: "vans" })
-			.returning()
-
-		let brand = createdBrands.at(0)
-
-		if (!brand) {
-			throw new Error("Failed to create brand")
-		}
+		if (!user) throw new Error("User not found")
 
 		let created = await env.db
 			.insert(schema.sneakers)
@@ -65,7 +38,7 @@ export const sneakerHandlers = {
 				purchase_date: new Date(),
 				purchase_price: 60_00,
 				size: 10,
-				user_id: createdUser.id,
+				user_id: user.id,
 				retail_price: 60_00,
 			})
 			.returning()

@@ -76,6 +76,7 @@ export const users = sqliteTable("users", {
 	given_name: text({ length: 255 }).notNull(),
 	family_name: text({ length: 255 }).notNull(),
 	password: text({ length: 255 }).notNull(),
+	password_salt: text({ length: 255 }).notNull(),
 	username: text({ length: 255 }).notNull(),
 
 	created_at: int({ mode: "timestamp" })
@@ -130,3 +131,6 @@ export let updateUserSchema = createUpdateSchema(users)
 
 export let insertSneakerSchema = createInsertSchema(sneakers)
 export let updateSneakerSchema = createUpdateSchema(sneakers)
+
+export let insertBrandSchema = createInsertSchema(brands)
+export let updateBrandSchema = createUpdateSchema(brands)

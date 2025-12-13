@@ -1,3 +1,3 @@
-import "@hiogawa/vite-plugin-fullstack/types";
-export {};
+import "@hiogawa/vite-plugin-fullstack/types"
+export {}
 //# sourceMappingURL=types.d.ts.map

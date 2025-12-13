@@ -20,6 +20,9 @@ importers:
       '@remix-run/fetch-router':
         specifier: 0.6.0
         version: 0.6.0
+      '@remix-run/headers':
+        specifier: ^0.13.0
+        version: 0.13.0
       '@remix-run/library':
         specifier: 0.0.0-experimental-remix-jam.6
         version: 0.0.0-experimental-remix-jam.6
@@ -38,16 +41,19 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: 1.13.12
-        version: 1.13.12(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))(workerd@1.20251008.0)(wrangler@4.42.2)
+        version: 1.13.12(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))(workerd@1.20251008.0)(wrangler@4.42.2)
       '@jacob-ebey/vite-plugin-remix':
         specifier: file:.yalc/@jacob-ebey/vite-plugin-remix
-        version: file:.yalc/@jacob-ebey/vite-plugin-remix(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))
+        version: file:.yalc/@jacob-ebey/vite-plugin-remix(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))
       '@tailwindcss/vite':
         specifier: ^4.1.14
-        version: 4.1.14(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))
+        version: 4.1.14(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))
       '@tsconfig/vite-react':
         specifier: 7.0.1
         version: 7.0.1
+      '@types/node':
+        specifier: ^24.8.1
+        version: 24.8.1
       drizzle-kit:
         specifier: ^0.31.5
         version: 0.31.5
@@ -68,10 +74,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: 7.1.9
-        version: 7.1.9(jiti@2.6.1)(lightningcss@1.30.1)
+        version: 7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1)
       vite-plugin-devtools-json:
         specifier: 1.0.0
-        version: 1.0.0(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))
+        version: 1.0.0(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))
       wrangler:
         specifier: 4.42.2
         version: 4.42.2
@@ -751,6 +757,9 @@ packages:
   '@remix-run/headers@0.12.0':
     resolution: {integrity: sha512-eqVSL5UOIyqVx0NTqgtNKMKVokE9jPchkZHl/N13KKPQYw/leS8VCoX5zRhkB1UvcLyfj113LX0OvEcuNbc5Hg==}
 
+  '@remix-run/headers@0.13.0':
+    resolution: {integrity: sha512-OHHFHozdXSjcyrYws8h0FfcgQ/i24iMsSExE1xqJFAyOAE3yvb5YoDVTf7Jz/4XuVVYnoc93ODCJc9jt6ZvsBw==}
+
   '@remix-run/library@0.0.0-experimental-remix-jam.6':
     resolution: {integrity: sha512-lGIjVGvfIAMU/r99qaz33PzkqLGHAMTu7vestAh7T+4zqObDH5R9FAqSqsgDcl5+e4BVwDMuNQViX6hQuUX6Uw==}
 
@@ -981,6 +990,9 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/node@24.8.1':
+    resolution: {integrity: sha512-alv65KGRadQVfVcG69MuB4IzdYVpRwMG/mq8KWOaoOdyY617P5ivaDiMCGOFDWD2sAn5Q0mR3mRtUOgm99hL9Q==}
 
   acorn-walk@8.3.2:
     resolution: {integrity: sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A==}
@@ -1471,6 +1483,9 @@ packages:
   ufo@1.6.1:
     resolution: {integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA==}
 
+  undici-types@7.14.0:
+    resolution: {integrity: sha512-QQiYxHuyZ9gQUIrmPo3IA+hUl4KYk8uSA7cHrcKd/l3p1OTpZcM0Tbp9x7FAtXdAYhlasd60ncPpgu6ihG6TOA==}
+
   undici@7.14.0:
     resolution: {integrity: sha512-Vqs8HTzjpQXZeXdpsfChQTlafcMQaaIwnGwLam1wudSSjlJeQ3bw1j+TLPePgrCnCpUXx7Ba5Pdpf5OBih62NQ==}
     engines: {node: '>=20.18.1'}
@@ -1582,7 +1597,7 @@ snapshots:
     optionalDependencies:
       workerd: 1.20251008.0
 
-  '@cloudflare/vite-plugin@1.13.12(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))(workerd@1.20251008.0)(wrangler@4.42.2)':
+  '@cloudflare/vite-plugin@1.13.12(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))(workerd@1.20251008.0)(wrangler@4.42.2)':
     dependencies:
       '@cloudflare/unenv-preset': 2.7.7(unenv@2.0.0-rc.21)(workerd@1.20251008.0)
       '@remix-run/node-fetch-server': 0.8.1
@@ -1591,7 +1606,7 @@ snapshots:
       picocolors: 1.1.1
       tinyglobby: 0.2.15
       unenv: 2.0.0-rc.21
-      vite: 7.1.9(jiti@2.6.1)(lightningcss@1.30.1)
+      vite: 7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1)
       wrangler: 4.42.2
       ws: 8.18.0
     transitivePeerDependencies:
@@ -1854,12 +1869,12 @@ snapshots:
   '@esbuild/win32-x64@0.25.4':
     optional: true
 
-  '@hiogawa/vite-plugin-fullstack@0.0.2(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))':
+  '@hiogawa/vite-plugin-fullstack@0.0.2(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))':
     dependencies:
       magic-string: 0.30.19
       srvx: 0.8.16
       strip-literal: 3.1.0
-      vite: 7.1.9(jiti@2.6.1)(lightningcss@1.30.1)
+      vite: 7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1)
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:
@@ -1940,11 +1955,11 @@ snapshots:
     dependencies:
       minipass: 7.1.2
 
-  '@jacob-ebey/vite-plugin-remix@file:.yalc/@jacob-ebey/vite-plugin-remix(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))':
+  '@jacob-ebey/vite-plugin-remix@file:.yalc/@jacob-ebey/vite-plugin-remix(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))':
     dependencies:
-      '@hiogawa/vite-plugin-fullstack': 0.0.2(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))
+      '@hiogawa/vite-plugin-fullstack': 0.0.2(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))
       magic-string: 0.30.19
-      vite: 7.1.9(jiti@2.6.1)(lightningcss@1.30.1)
+      vite: 7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1)
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -2006,6 +2021,8 @@ snapshots:
       '@remix-run/multipart-parser': 0.11.0
 
   '@remix-run/headers@0.12.0': {}
+
+  '@remix-run/headers@0.13.0': {}
 
   '@remix-run/library@0.0.0-experimental-remix-jam.6':
     dependencies:
@@ -2162,16 +2179,20 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.1.14
       '@tailwindcss/oxide-win32-x64-msvc': 4.1.14
 
-  '@tailwindcss/vite@4.1.14(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1))':
+  '@tailwindcss/vite@4.1.14(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1))':
     dependencies:
       '@tailwindcss/node': 4.1.14
       '@tailwindcss/oxide': 4.1.14
       tailwindcss: 4.1.14
-      vite: 7.1.9(jiti@2.6.1)(lightningcss@1.30.1)
+      vite: 7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1)
 
   '@tsconfig/vite-react@7.0.1': {}
 
   '@types/estree@1.0.8': {}
+
+  '@types/node@24.8.1':
+    dependencies:
+      undici-types: 7.14.0
 
   acorn-walk@8.3.2: {}
 
@@ -2565,6 +2586,8 @@ snapshots:
 
   ufo@1.6.1: {}
 
+  undici-types@7.14.0: {}
+
   undici@7.14.0: {}
 
   unenv@2.0.0-rc.21:
@@ -2577,12 +2600,12 @@ snapshots:
 
   uuid@11.1.0: {}
 
-  vite-plugin-devtools-json@1.0.0(vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1)):
+  vite-plugin-devtools-json@1.0.0(vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1)):
     dependencies:
       uuid: 11.1.0
-      vite: 7.1.9(jiti@2.6.1)(lightningcss@1.30.1)
+      vite: 7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1)
 
-  vite@7.1.9(jiti@2.6.1)(lightningcss@1.30.1):
+  vite@7.1.9(@types/node@24.8.1)(jiti@2.6.1)(lightningcss@1.30.1):
     dependencies:
       esbuild: 0.25.11
       fdir: 6.5.0(picomatch@4.0.3)
@@ -2591,6 +2614,7 @@ snapshots:
       rollup: 4.52.4
       tinyglobby: 0.2.15
     optionalDependencies:
+      '@types/node': 24.8.1
       fsevents: 2.3.3
       jiti: 2.6.1
       lightningcss: 1.30.1

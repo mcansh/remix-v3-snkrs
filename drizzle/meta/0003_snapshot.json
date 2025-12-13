@@ -1,8 +1,8 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "e4df1ee7-49dc-429a-ac52-47a348981089",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "7d3e6102-0928-47ea-b372-75904b19ab76",
+	"prevId": "4a723b9e-77d2-4db6-8a6f-3479c76cf1d0",
 	"tables": {
 		"brands": {
 			"name": "brands",
@@ -43,7 +43,18 @@
 					"autoincrement": false
 				}
 			},
-			"indexes": {},
+			"indexes": {
+				"brands_name_unique": {
+					"name": "brands_name_unique",
+					"columns": ["name"],
+					"isUnique": true
+				},
+				"brands_slug_unique": {
+					"name": "brands_slug_unique",
+					"columns": ["slug"],
+					"isUnique": true
+				}
+			},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
@@ -69,7 +80,7 @@
 				},
 				"user_id": {
 					"name": "user_id",
-					"type": "integer",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true,
 					"autoincrement": false
@@ -202,14 +213,14 @@
 				},
 				"brand_id": {
 					"name": "brand_id",
-					"type": "integer",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true,
 					"autoincrement": false
 				},
 				"user_id": {
 					"name": "user_id",
-					"type": "integer",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true,
 					"autoincrement": false
@@ -278,6 +289,13 @@
 					"notNull": true,
 					"autoincrement": false
 				},
+				"password_salt": {
+					"name": "password_salt",
+					"type": "text(255)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
 				"username": {
 					"name": "username",
 					"type": "text(255)",
@@ -300,7 +318,13 @@
 					"autoincrement": false
 				}
 			},
-			"indexes": {},
+			"indexes": {
+				"users_email_unique": {
+					"name": "users_email_unique",
+					"columns": ["email"],
+					"isUnique": true
+				}
+			},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},

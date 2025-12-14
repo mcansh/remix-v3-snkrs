@@ -7,6 +7,7 @@
 	"scripts": {
 		"build": "pnpm run \"/^build:.*/\"",
 		"build:css": "tailwindcss --input ./app/app.css --output ./public/assets/app.css --minify",
+		"build:browser": "esbuild app/assets/*.tsx --outbase=app/assets --outdir=public/assets --bundle --minify --splitting --format=esm --entry-names='[dir]/[name]' --chunk-names='chunks/[name]-[hash]' --sourcemap",
 		"dev": "pnpm run \"/^dev:.*/\"",
 		"dev:browser": "esbuild app/assets/*.tsx --outbase=app/assets --outdir=public/assets --bundle --minify --splitting --format=esm --entry-names='[dir]/[name]' --chunk-names='chunks/[name]-[hash]' --sourcemap --watch",
 		"dev:css": "node --run build:css -- --watch",

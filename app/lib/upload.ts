@@ -1,5 +1,5 @@
-import * as z from "zod/mini"
 import type { FileUpload } from "@remix-run/form-data-middleware"
+import * as z from "zod/mini"
 
 import { env } from "./env.js"
 
@@ -25,7 +25,7 @@ export async function uploadHandler(file: FileUpload): Promise<string> {
 	let data = await response.json()
 	let parsed = cloudinaryUploadResponseSchema.safeParse(data)
 	if (!parsed.success) {
-		console.error(z.treeifyError(parsed.error))
+		console.dir(z.treeifyError(parsed.error), { depth: null })
 		throw new Error("Invalid response from Cloudinary")
 	}
 

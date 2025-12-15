@@ -1,9 +1,8 @@
-import type { Middleware, Route } from "@remix-run/fetch-router"
-import { createRedirectResponse as redirect } from "@remix-run/response/redirect"
-
 import { getUserById } from "#app/models/user.js"
 import { routes } from "#app/routes.js"
 import { setCurrentUser } from "#app/utils/context.js"
+import type { Middleware, Route } from "@remix-run/fetch-router"
+import { createRedirectResponse as redirect } from "@remix-run/response/redirect"
 
 /**
  * Middleware that optionally loads the current user if authenticated.
@@ -44,10 +43,7 @@ export function requireAuth(options?: RequireAuthOptions): Middleware {
 
 		if (!user) {
 			// Capture the current URL to redirect back to after login
-			return redirect(
-				redirectRoute.href(undefined, { returnTo: url.pathname + url.search }),
-				302,
-			)
+			return redirect(redirectRoute.href(undefined, { returnTo: url.pathname + url.search }), 302)
 		}
 
 		setCurrentUser(user)

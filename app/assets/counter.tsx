@@ -1,7 +1,6 @@
+import { routes } from "#app/routes.js"
 import { hydrated, type Remix } from "@remix-run/dom"
 import { press } from "@remix-run/events/press"
-
-import { routes } from "#app/routes.js"
 
 export const Counter = hydrated(
 	routes.assets.href({ path: "counter.js#Counter" }),

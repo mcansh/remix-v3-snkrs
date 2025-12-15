@@ -1,7 +1,4 @@
-import type {
-	TransformerOption,
-	TransformerVideoOption,
-} from "@mcansh/cld-apis-types"
+import type { TransformerOption, TransformerVideoOption } from "@mcansh/cld-apis-types"
 import { buildImageUrl, extractPublicId } from "@mcansh/cloudinary-build-url"
 
 import { env } from "./env.js"
@@ -10,9 +7,7 @@ export function generateAssetUrl(
 	publicIdOrUrl: string,
 	transformations?: TransformerOption | TransformerVideoOption,
 ): string {
-	let publicId = URL.canParse(publicIdOrUrl)
-		? extractPublicId(publicIdOrUrl)
-		: publicIdOrUrl
+	let publicId = URL.canParse(publicIdOrUrl) ? extractPublicId(publicIdOrUrl) : publicIdOrUrl
 
 	return buildImageUrl(publicId, {
 		cloud: { cloudName: env.CLOUDINARY_CLOUD_NAME, secure: true },

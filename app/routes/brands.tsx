@@ -1,11 +1,10 @@
-import type { Controller } from "@remix-run/fetch-router"
-import { eq } from "drizzle-orm"
-
-import { SneakerGrid } from "#app/components/sneaker-grid.js"
+import { SneakerGrid } from "#app/components/sneaker.js"
 import { db, schema } from "#app/db/index.js"
 import { renderDocument } from "#app/lib/html.js"
 import { serializeSneaker } from "#app/models/sneaker.js"
 import { routes } from "#app/routes.js"
+import type { Controller } from "@remix-run/fetch-router"
+import { eq } from "drizzle-orm"
 
 export const brandHandlers = {
 	middleware: [],

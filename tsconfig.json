@@ -6,6 +6,6 @@
 		"jsxImportSource": "@remix-run/dom",
 		"strict": true,
 		"rootDir": ".",
-		"lib": ["ESNext", "DOM", "DOM.Iterable"]
-	}
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+	},
 }

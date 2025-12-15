@@ -1,12 +1,6 @@
-import * as z from "zod/mini"
-import type { BuildAction, Controller } from "@remix-run/fetch-router"
-import { createRedirectResponse } from "@remix-run/response/redirect"
-import { and, eq } from "drizzle-orm"
-
-import { RestfulForm } from "#app/components/restful-form.js"
-import { SneakerGrid } from "#app/components/sneaker-grid.js"
+import { SneakerForm } from "#app/assets/sneaker-form.js"
+import { EmptyState, SneakerGrid } from "#app/components/sneaker.js"
 import { db, schema } from "#app/db/index.js"
-import type { Sneaker } from "#app/db/schema.js"
 import { renderDocument } from "#app/lib/html.js"
 import { requireAuth } from "#app/middleware/auth.js"
 import {
@@ -17,6 +11,10 @@ import {
 } from "#app/models/sneaker.js"
 import { routes } from "#app/routes.js"
 import { getCurrentUser } from "#app/utils/context.js"
+import type { BuildAction, Controller } from "@remix-run/fetch-router"
+import { createRedirectResponse } from "@remix-run/response/redirect"
+import { and, eq } from "drizzle-orm"
+import * as z from "zod/mini"
 
 const sneakerIndexHandler: BuildAction<"GET", typeof routes.sneakers.index> = {
 	middleware: [requireAuth()],
@@ -32,7 +30,11 @@ const sneakerIndexHandler: BuildAction<"GET", typeof routes.sneakers.index> = {
 				<p>Your sneakers:</p>
 
 				<div class="mt-4">
-					<SneakerGrid sneakers={sneakersWithData} />
+					{sneakersWithData.length > 0 ? (
+						<SneakerGrid sneakers={sneakersWithData} />
+					) : (
+						<EmptyState fullName={user.given_name + " " + user.family_name} />
+					)}
 				</div>
 			</div>,
 		)
@@ -63,7 +65,13 @@ const sneakerUserHandler: BuildAction<"GET", typeof routes.sneakers.user> = {
 				<title>{user.username}'s collection</title>
 				<h1>Welcome to {user.username}'s collection!</h1>
 
-				<SneakerGrid sneakers={sneakers} />
+				<div class="mt-4">
+					{sneakers.length > 0 ? (
+						<SneakerGrid sneakers={sneakers} />
+					) : (
+						<EmptyState fullName={user.given_name + " " + user.family_name} />
+					)}
+				</div>
 			</div>,
 		)
 	},
@@ -72,49 +80,28 @@ const sneakerUserHandler: BuildAction<"GET", typeof routes.sneakers.user> = {
 const sneakerNewHandler: BuildAction<"GET", typeof routes.sneakers.new> = {
 	middleware: [requireAuth()],
 	action() {
-		let data = Object.freeze({
-			brand: "Vans",
-			model: "Slip On",
-			colorway: "Black/White Checkerboard",
-			size: 10,
-			image: "shoes/erg1lxa8x29h1wtbog9a",
-			purchase_price: 60_00,
-			retail_price: 60_00,
-			purchase_date: new Date(),
-			created_at: new Date(),
-			id: "",
-			user_id: "",
-			sold: false,
-			sold_date: null,
-			sold_price: null,
-			updated_at: new Date(),
-		} satisfies Sneaker)
-
 		return renderDocument(
 			<>
 				<title>Add a new sneaker to your collection</title>
-				<SneakerForm sneaker={data} isEditing={false} />
+				<main className="container mx-auto h-full p-4 pb-6">
+					<h2 className="py-4 text-lg">Add a sneaker to your collection</h2>
+					<SneakerForm />
+				</main>
 			</>,
 		)
 	},
 }
 
-const sneakerCreateHandler: BuildAction<"POST", typeof routes.sneakers.create> =
-	{
-		middleware: [requireAuth()],
-		async action({ formData }) {
-			let user = getCurrentUser()
-			let sneakerId = await createSneaker(formData, user.id)
-			return createRedirectResponse(
-				routes.sneakers.show.href({ id: sneakerId }),
-			)
-		},
-	}
+const sneakerCreateHandler: BuildAction<"POST", typeof routes.sneakers.create> = {
+	middleware: [requireAuth()],
+	async action({ formData }) {
+		let user = getCurrentUser()
+		let sneakerId = await createSneaker(formData, user.id)
+		return createRedirectResponse(routes.sneakers.show.href({ id: sneakerId }))
+	},
+}
 
-const sneakerDestroyHandler: BuildAction<
-	"DELETE",
-	typeof routes.sneakers.destroy
-> = {
+const sneakerDestroyHandler: BuildAction<"DELETE", typeof routes.sneakers.destroy> = {
 	middleware: [requireAuth()],
 	async action({ params }) {
 		let user = getCurrentUser()
@@ -124,12 +111,7 @@ const sneakerDestroyHandler: BuildAction<
 
 		let deleted = await db
 			.delete(schema.sneakers)
-			.where(
-				and(
-					eq(schema.sneakers.id, result.id),
-					eq(schema.sneakers.user_id, user.id),
-				),
-			)
+			.where(and(eq(schema.sneakers.id, result.id), eq(schema.sneakers.user_id, user.id)))
 
 		console.log({ deleted })
 
@@ -157,7 +139,7 @@ const sneakerEditHandler: BuildAction<"GET", typeof routes.sneakers.edit> = {
 			<>
 				<title>Edit Sneaker</title>
 
-				<SneakerForm sneaker={sneaker} isEditing={true} />
+				<SneakerForm sneaker={sneaker} />
 			</>,
 		)
 	},
@@ -224,114 +206,13 @@ const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 	},
 }
 
-const sneakerUpdateHandler: BuildAction<"PUT", typeof routes.sneakers.update> =
-	{
-		middleware: [requireAuth()],
-		async action({ formData, params }) {
-			await updateSneaker(params.id, formData)
+const sneakerUpdateHandler: BuildAction<"PUT", typeof routes.sneakers.update> = {
+	middleware: [requireAuth()],
+	async action({ formData, params }) {
+		await updateSneaker(params.id, formData)
 
-			return createRedirectResponse(
-				routes.sneakers.show.href({ id: params.id }),
-			)
-		},
-	}
-
-function SneakerForm<T extends boolean>({
-	sneaker,
-	isEditing,
-}: {
-	sneaker: T extends true ? Sneaker : never
-	isEditing: T
-}) {
-	let action = isEditing
-		? routes.sneakers.update.href({ id: sneaker.id })
-		: routes.sneakers.create.href()
-
-	return (
-		<RestfulForm
-			method={isEditing ? "put" : "post"}
-			action={action}
-			encType="multipart/form-data"
-		>
-			<fieldset>
-				<legend>{isEditing ? "Edit Sneaker" : "New Sneaker"}</legend>
-
-				<div>
-					<label for="brand">Brand:</label>
-					<input type="text" id="brand" name="brand" value={sneaker?.brand} />
-				</div>
-
-				<div>
-					<label for="model">Model:</label>
-					<input type="text" id="model" name="model" value={sneaker?.model} />
-				</div>
-
-				<div>
-					<label for="colorway">Colorway:</label>
-					<input
-						type="text"
-						id="colorway"
-						name="colorway"
-						value={sneaker?.colorway}
-					/>
-				</div>
-
-				<div>
-					<label for="size">Size:</label>
-					<input
-						type="text"
-						inputMode="numeric"
-						id="size"
-						name="size"
-						value={sneaker?.size}
-					/>
-				</div>
-
-				<div>
-					<label for="image">Image:</label>
-					<input
-						type="file"
-						id="image"
-						name="image"
-						accept="image/*"
-						value={sneaker?.image}
-					/>
-				</div>
-
-				<div>
-					<label for="purchase_price">Purchase Price (in cents):</label>
-					<input
-						type="number"
-						id="purchase_price"
-						name="purchase_price"
-						value={sneaker?.purchase_price ?? ""}
-					/>
-				</div>
-
-				<div>
-					<label for="retail_price">Retail Price (in cents):</label>
-					<input
-						type="number"
-						id="retail_price"
-						name="retail_price"
-						value={sneaker?.retail_price ?? ""}
-					/>
-				</div>
-
-				<div>
-					<label for="purchase_date">Purchase Date:</label>
-					<input
-						type="date"
-						id="purchase_date"
-						name="purchase_date"
-						value={sneaker?.purchase_date?.toISOString().split("T")[0] ?? ""}
-					/>
-				</div>
-
-				<button type="submit">{isEditing ? "Update" : "Create"} Sneaker</button>
-			</fieldset>
-		</RestfulForm>
-	)
+		return createRedirectResponse(routes.sneakers.show.href({ id: params.id }))
+	},
 }
 
 export const sneakerHandlers = {

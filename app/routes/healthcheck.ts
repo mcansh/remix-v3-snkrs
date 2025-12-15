@@ -1,13 +1,11 @@
-import type { BuildAction } from "@remix-run/fetch-router"
-
 import { db, schema } from "#app/db/index.js"
 import type { routes } from "#app/routes.js"
+import type { BuildAction } from "@remix-run/fetch-router"
 
 export const healthcheckHandlers = {
 	middleware: [],
 	async action({ request }) {
-		const host =
-			request.headers.get("X-Forwarded-Host") ?? request.headers.get("host")
+		const host = request.headers.get("X-Forwarded-Host") ?? request.headers.get("host")
 
 		try {
 			await Promise.all([

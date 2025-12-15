@@ -28,9 +28,7 @@ export function RestfulForm({
 
 	return (
 		<form method="POST" {...props}>
-			{method !== "POST" ? (
-				<input type="hidden" name={methodOverrideField} value={method} />
-			) : null}
+			{method !== "POST" ? <input type="hidden" name={methodOverrideField} value={method} /> : null}
 			{props.children}
 		</form>
 	)

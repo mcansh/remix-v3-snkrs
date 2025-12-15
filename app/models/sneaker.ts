@@ -1,12 +1,11 @@
-import * as z from "zod/mini"
-import { decode } from "decode-formdata"
-import { eq } from "drizzle-orm"
-
 import { db, schema } from "#app/db/index.js"
 import type { Sneaker } from "#app/db/schema.js"
 import { insertSneakerSchema, updateSneakerSchema } from "#app/db/schema.js"
 import { generateDensitySrcSet } from "#app/lib/asset.js"
 import { formatDate, formatMoney } from "#app/lib/format.js"
+import { decode } from "decode-formdata"
+import { eq } from "drizzle-orm"
+import * as z from "zod/mini"
 
 export class CreateSneakerError extends Error {
 	sneaker: z.output<typeof insertSneakerSchema>
@@ -17,10 +16,7 @@ export class CreateSneakerError extends Error {
 	}
 }
 
-export async function updateSneaker(
-	id: string,
-	formData: FormData,
-): Promise<void> {
+export async function updateSneaker(id: string, formData: FormData): Promise<void> {
 	let decoded = decode(formData, {
 		files: ["image"],
 		booleans: ["sold"],
@@ -55,10 +51,7 @@ export async function updateSneaker(
 	}
 }
 
-export async function createSneaker(
-	formData: FormData,
-	userId: string,
-): Promise<string> {
+export async function createSneaker(formData: FormData, userId: string): Promise<string> {
 	let decoded = decode(formData, {
 		files: ["image"],
 		booleans: ["sold"],
@@ -66,7 +59,12 @@ export async function createSneaker(
 		dates: ["purchase_date", "sold_date"],
 	})
 
-	let parsed = insertSneakerSchema.parse(decoded)
+	let parsed = insertSneakerSchema.safeParse(decoded)
+
+	if (!parsed.success) {
+		console.error(parsed.error)
+		throw new Error(JSON.stringify(z.treeifyError(parsed.error)))
+	}
 
 	let result = await db
 		.insert(schema.sneakers)
@@ -99,19 +97,14 @@ type Serialize<T> = T extends Date
 		: T
 
 type SerializeExtras<T> = {
-	[K in keyof T]: K extends `${string}_date` | `${string}_price`
-		? string | null
-		: Serialize<T[K]>
+	[K in keyof T]: K extends `${string}_date` | `${string}_price` ? string | null : Serialize<T[K]>
 }
 
 export async function getAllSneakers(
 	userId: string,
 	imageSizes: [number, number, number] = [200, 400, 600],
 ): Promise<ReadonlyArray<SerializedSneaker>> {
-	let sneakers = await db
-		.select()
-		.from(schema.sneakers)
-		.where(eq(schema.sneakers.user_id, userId))
+	let sneakers = await db.select().from(schema.sneakers).where(eq(schema.sneakers.user_id, userId))
 
 	let sneakersWithData = sneakers.map((sneaker) => {
 		return serializeSneaker(sneaker, imageSizes)
@@ -134,9 +127,7 @@ export function serializeSneaker(
 		purchase_price: formatMoney(sneaker.purchase_price),
 		retail_price: formatMoney(sneaker.retail_price),
 		sold_price: sneaker.sold_price ? formatMoney(sneaker.sold_price) : null,
-		purchase_date: sneaker.purchase_date
-			? formatDate(sneaker.purchase_date)
-			: null,
+		purchase_date: sneaker.purchase_date ? formatDate(sneaker.purchase_date) : null,
 		sold_date: sneaker.sold_date ? formatDate(sneaker.sold_date) : null,
 		image: result.default,
 		srcSet: result.srcSet,
@@ -147,29 +138,20 @@ export function serializeSneaker(
 
 export type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
 
-type SerializedSneakerOrSneaker<T> = T extends true
-	? SerializedSneaker
-	: Sneaker
+type SerializedSneakerOrSneaker<T> = T extends true ? SerializedSneaker : Sneaker
 
 export async function getSneakerById<T extends boolean = false>(
 	id: string,
 	serialize?: T,
 	options: { srcSetSizes?: [number, number, number] } = {},
 ): Promise<SerializedSneakerOrSneaker<T> | null> {
-	let sneakers = await db
-		.select()
-		.from(schema.sneakers)
-		.where(eq(schema.sneakers.id, id))
-		.limit(1)
+	let sneakers = await db.select().from(schema.sneakers).where(eq(schema.sneakers.id, id)).limit(1)
 	let sneaker = sneakers.at(0)
 
 	if (!sneaker) return null
 
 	if (serialize === true) {
-		return serializeSneaker(
-			sneaker,
-			options.srcSetSizes,
-		) as SerializedSneakerOrSneaker<T>
+		return serializeSneaker(sneaker, options.srcSetSizes) as SerializedSneakerOrSneaker<T>
 	}
 
 	return sneaker as SerializedSneakerOrSneaker<T>

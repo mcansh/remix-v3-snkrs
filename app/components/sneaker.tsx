@@ -1,4 +1,5 @@
 import type { SerializedSneaker } from "#app/models/sneaker.js"
+
 import { routes } from "#app/routes.js"
 
 export function EmptyState({ fullName }: { fullName: string }) {

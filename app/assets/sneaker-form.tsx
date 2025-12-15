@@ -1,5 +1,6 @@
-import { RestfulForm } from "#app/components/restful-form.js"
 import type { Sneaker } from "#app/db/schema.js"
+
+import { RestfulForm } from "#app/components/restful-form.js"
 import { routes } from "#app/routes.js"
 import { hydrated, type Remix } from "@remix-run/dom"
 import { dom } from "@remix-run/events"

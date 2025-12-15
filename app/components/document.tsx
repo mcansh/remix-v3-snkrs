@@ -1,5 +1,6 @@
-import { routes } from "#app/routes.js"
 import type { Remix } from "@remix-run/dom"
+
+import { routes } from "#app/routes.js"
 
 export function Document({ children }: { children: Remix.RemixNode }) {
 	return (

@@ -5,7 +5,6 @@
 	"experimentalSortImports": {
 		"newlinesBetween": true,
 		"order": "asc",
-		"ignoreCase": true,
-		"groups": [["builtin"], ["external"]]
+		"ignoreCase": true
 	}
 }

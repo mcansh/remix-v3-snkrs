@@ -1,3 +1,5 @@
+import type { BuildAction, Controller } from "@remix-run/fetch-router"
+
 import { SneakerForm } from "#app/assets/sneaker-form.js"
 import { EmptyState, SneakerGrid } from "#app/components/sneaker.js"
 import { db, schema } from "#app/db/index.js"
@@ -11,7 +13,6 @@ import {
 } from "#app/models/sneaker.js"
 import { routes } from "#app/routes.js"
 import { getCurrentUser } from "#app/utils/context.js"
-import type { BuildAction, Controller } from "@remix-run/fetch-router"
 import { createRedirectResponse } from "@remix-run/response/redirect"
 import { and, eq } from "drizzle-orm"
 import * as z from "zod/mini"

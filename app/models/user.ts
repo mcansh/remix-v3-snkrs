@@ -1,5 +1,6 @@
-import { db, schema } from "#app/db/index.js"
 import type { User } from "#app/db/schema.js"
+
+import { db, schema } from "#app/db/index.js"
 import { fromBase64, verify } from "@brielov/crypto"
 import { eq } from "drizzle-orm"
 

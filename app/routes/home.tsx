@@ -1,7 +1,8 @@
+import type { BuildAction } from "@remix-run/fetch-router"
+
 import { Counter } from "#app/assets/counter.js"
 import { renderDocument } from "#app/lib/html.js"
 import { routes } from "#app/routes.js"
-import type { BuildAction } from "@remix-run/fetch-router"
 
 export const homeHandlers = {
 	middleware: [],

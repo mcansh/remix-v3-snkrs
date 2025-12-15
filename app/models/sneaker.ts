@@ -1,5 +1,6 @@
-import { db, schema } from "#app/db/index.js"
 import type { Sneaker } from "#app/db/schema.js"
+
+import { db, schema } from "#app/db/index.js"
 import { insertSneakerSchema, updateSneakerSchema } from "#app/db/schema.js"
 import { generateDensitySrcSet } from "#app/lib/asset.js"
 import { formatDate, formatMoney } from "#app/lib/format.js"

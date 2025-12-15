@@ -1,9 +1,8 @@
-import * as http from "node:http"
-
 import { env } from "#app/lib/env.js"
 import { router } from "#app/router.js"
 import { createSecureHeaders, mergeHeaders, NONE, SELF } from "@mcansh/http-helmet"
 import { createRequestListener } from "@remix-run/node-fetch-server"
+import * as http from "node:http"
 
 let securityHeaders = createSecureHeaders({
 	"Content-Security-Policy": {

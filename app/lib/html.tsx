@@ -1,6 +1,7 @@
+import type { Remix } from "@remix-run/dom"
+
 import { Document } from "#app/components/document.js"
 import { router } from "#app/router.js"
-import type { Remix } from "@remix-run/dom"
 import { renderToStream } from "@remix-run/dom/server"
 import { createHtmlResponse } from "@remix-run/response/html"
 

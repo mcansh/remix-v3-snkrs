@@ -1,6 +1,7 @@
-import { db, schema } from "#app/db/index.js"
 import type { routes } from "#app/routes.js"
 import type { BuildAction } from "@remix-run/fetch-router"
+
+import { db, schema } from "#app/db/index.js"
 
 export const healthcheckHandlers = {
 	middleware: [],

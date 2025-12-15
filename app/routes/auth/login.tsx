@@ -1,9 +1,10 @@
+import type { Controller } from "@remix-run/fetch-router"
+
 import { Document } from "#app/components/document.js"
 import { RestfulForm } from "#app/components/restful-form.js"
 import { render } from "#app/lib/html.js"
 import { authenticateUser } from "#app/models/user.js"
 import { routes } from "#app/routes.js"
-import type { Controller } from "@remix-run/fetch-router"
 import { createRedirectResponse } from "@remix-run/response/redirect"
 import { decode } from "decode-formdata"
 import * as z from "zod/mini"

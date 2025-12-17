@@ -1,11 +1,21 @@
 import type { Remix } from "@remix-run/dom"
 
+type FormMethod =
+	| "GET"
+	| "POST"
+	| "PUT"
+	| "PATCH"
+	| "DELETE"
+	| "OPTIONS"
+	| "HEAD"
+
 export interface RestfulFormProps extends Remix.Props<"form"> {
 	/**
 	 * The name of the hidden <input> field that contains the method override value.
 	 * Default is `_method`.
 	 */
 	methodOverrideField?: string
+	method?: FormMethod | Lowercase<FormMethod>
 }
 
 /**
@@ -20,7 +30,7 @@ export function RestfulForm({
 	methodOverrideField = "_method",
 	...props
 }: RestfulFormProps) {
-	method = method.toUpperCase()
+	method = method.toUpperCase() as FormMethod
 
 	if (method === "GET") {
 		return <form method="GET" {...props} />
@@ -28,7 +38,9 @@ export function RestfulForm({
 
 	return (
 		<form method="POST" {...props}>
-			{method !== "POST" ? <input type="hidden" name={methodOverrideField} value={method} /> : null}
+			{method !== "POST" ? (
+				<input type="hidden" name={methodOverrideField} value={method} />
+			) : null}
 			{props.children}
 		</form>
 	)

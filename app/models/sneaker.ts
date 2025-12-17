@@ -1,12 +1,12 @@
-import type { Sneaker } from "#app/db/schema.js"
-
-import { db, schema } from "#app/db/index.js"
-import { insertSneakerSchema, updateSneakerSchema } from "#app/db/schema.js"
-import { generateDensitySrcSet } from "#app/lib/asset.js"
-import { formatDate, formatMoney } from "#app/lib/format.js"
 import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
 import * as z from "zod/mini"
+
+import { db, schema } from "#app/db/index.js"
+import type { Sneaker } from "#app/db/schema.js"
+import { insertSneakerSchema, updateSneakerSchema } from "#app/db/schema.js"
+import { generateDensitySrcSet } from "#app/lib/asset.js"
+import { formatDate, formatMoney } from "#app/lib/format.js"
 
 export class CreateSneakerError extends Error {
 	sneaker: z.output<typeof insertSneakerSchema>
@@ -17,7 +17,10 @@ export class CreateSneakerError extends Error {
 	}
 }
 
-export async function updateSneaker(id: string, formData: FormData): Promise<void> {
+export async function updateSneaker(
+	id: string,
+	formData: FormData,
+): Promise<void> {
 	let decoded = decode(formData, {
 		files: ["image"],
 		booleans: ["sold"],
@@ -35,12 +38,8 @@ export async function updateSneaker(id: string, formData: FormData): Promise<voi
 			colorway: parsed.colorway,
 			size: parsed.size,
 			image: parsed.image,
-			purchase_price: parsed.purchase_price,
-			retail_price: parsed.retail_price,
-			purchase_date: parsed.purchase_date,
-			sold: parsed.sold,
-			sold_date: parsed.sold_date,
-			sold_price: parsed.sold_price,
+			price: parsed.price,
+			date: parsed.date,
 		})
 		.where(eq(schema.sneakers.id, id))
 		.returning()
@@ -52,7 +51,10 @@ export async function updateSneaker(id: string, formData: FormData): Promise<voi
 	}
 }
 
-export async function createSneaker(formData: FormData, userId: string): Promise<string> {
+export async function createSneaker(
+	formData: FormData,
+	userId: string,
+): Promise<string> {
 	let decoded = decode(formData, {
 		files: ["image"],
 		booleans: ["sold"],
@@ -70,22 +72,21 @@ export async function createSneaker(formData: FormData, userId: string): Promise
 	let result = await db
 		.insert(schema.sneakers)
 		.values({
-			brand: parsed.brand,
-			model: parsed.model,
-			colorway: parsed.colorway,
-			size: parsed.size,
-			image: parsed.image,
-			purchase_price: parsed.purchase_price,
-			retail_price: parsed.retail_price,
+			brand: parsed.data.brand,
+			model: parsed.data.model,
+			colorway: parsed.data.colorway,
+			size: parsed.data.size,
+			image: parsed.data.image,
+			price: parsed.data.price,
+			date: parsed.data.date,
 			user_id: userId,
-			purchase_date: parsed.purchase_date,
 		})
 		.returning({ id: schema.sneakers.id })
 
 	let sneaker = result.at(0)
 
 	if (!sneaker) {
-		throw new CreateSneakerError(parsed)
+		throw new CreateSneakerError(parsed.data)
 	}
 
 	return sneaker.id
@@ -98,20 +99,25 @@ type Serialize<T> = T extends Date
 		: T
 
 type SerializeExtras<T> = {
-	[K in keyof T]: K extends `${string}_date` | `${string}_price` ? string | null : Serialize<T[K]>
+	[K in keyof T]: K extends "date" | "created_at" | "updated_at" | "price"
+		? string | null
+		: Serialize<T[K]>
 }
 
 export async function getAllSneakers(
 	userId: string,
 	imageSizes: [number, number, number] = [200, 400, 600],
-): Promise<ReadonlyArray<SerializedSneaker>> {
-	let sneakers = await db.select().from(schema.sneakers).where(eq(schema.sneakers.user_id, userId))
+): Promise<Array<SerializedSneaker>> {
+	let sneakers = await db
+		.select()
+		.from(schema.sneakers)
+		.where(eq(schema.sneakers.user_id, userId))
 
 	let sneakersWithData = sneakers.map((sneaker) => {
 		return serializeSneaker(sneaker, imageSizes)
 	})
 
-	return Object.freeze(sneakersWithData)
+	return sneakersWithData
 }
 
 export function serializeSneaker(
@@ -123,36 +129,42 @@ export function serializeSneaker(
 		sizes: imageSizes,
 	})
 
-	return Object.freeze({
+	return {
 		...sneaker,
-		purchase_price: formatMoney(sneaker.purchase_price),
-		retail_price: formatMoney(sneaker.retail_price),
-		sold_price: sneaker.sold_price ? formatMoney(sneaker.sold_price) : null,
-		purchase_date: sneaker.purchase_date ? formatDate(sneaker.purchase_date) : null,
-		sold_date: sneaker.sold_date ? formatDate(sneaker.sold_date) : null,
+		price: formatMoney(sneaker.price),
+		date: sneaker.date ? formatDate(sneaker.date) : null,
 		image: result.default,
-		srcSet: result.srcSet,
+		src_set: result.src_set,
 		created_at: sneaker.created_at.toISOString(),
 		updated_at: sneaker.updated_at.toISOString(),
-	})
+	}
 }
 
-export type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
+export type SerializedSneaker = SerializeExtras<Sneaker> & { src_set: string }
 
-type SerializedSneakerOrSneaker<T> = T extends true ? SerializedSneaker : Sneaker
+type SerializedSneakerOrSneaker<T> = T extends true
+	? SerializedSneaker
+	: Sneaker
 
 export async function getSneakerById<T extends boolean = false>(
 	id: string,
 	serialize?: T,
 	options: { srcSetSizes?: [number, number, number] } = {},
 ): Promise<SerializedSneakerOrSneaker<T> | null> {
-	let sneakers = await db.select().from(schema.sneakers).where(eq(schema.sneakers.id, id)).limit(1)
+	let sneakers = await db
+		.select()
+		.from(schema.sneakers)
+		.where(eq(schema.sneakers.id, id))
+		.limit(1)
 	let sneaker = sneakers.at(0)
 
 	if (!sneaker) return null
 
 	if (serialize === true) {
-		return serializeSneaker(sneaker, options.srcSetSizes) as SerializedSneakerOrSneaker<T>
+		return serializeSneaker(
+			sneaker,
+			options.srcSetSizes,
+		) as SerializedSneakerOrSneaker<T>
 	}
 
 	return sneaker as SerializedSneakerOrSneaker<T>

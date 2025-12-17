@@ -1,4 +1,5 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"typescript.experimental.useTsgo": true
+	"typescript.experimental.useTsgo": true,
+	"editor.defaultFormatter": "oxc.oxc-vscode"
 }

@@ -9,15 +9,11 @@ export const routes = route({
 	auth: {
 		login: form("/login"),
 		register: form("/register"),
+		logout: form("/logout"),
 	},
 
 	sneakers: {
 		...resources("/sneakers"),
-		user: { method: "GET", pattern: "/:user/sneakers" },
+		user: { method: "GET", pattern: "/:user" },
 	},
-
-	brands: resources("/brands", {
-		param: "brand",
-		only: ["index", "show"],
-	}),
 })

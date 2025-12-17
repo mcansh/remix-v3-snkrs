@@ -1,7 +1,11 @@
 import type { BuildAction, Controller } from "@remix-run/fetch-router"
+import { createRedirectResponse } from "@remix-run/response/redirect"
+import { and, eq } from "drizzle-orm"
+import * as z from "zod/mini"
 
 import { SneakerForm } from "#app/assets/sneaker-form.js"
-import { EmptyState, SneakerGrid } from "#app/components/sneaker.js"
+import { SneakerGrid } from "#app/assets/sneaker-grid.js"
+import { EmptyState } from "#app/components/sneaker.js"
 import { db, schema } from "#app/db/index.js"
 import { renderDocument } from "#app/lib/html.js"
 import { requireAuth } from "#app/middleware/auth.js"
@@ -9,48 +13,88 @@ import {
 	createSneaker,
 	getAllSneakers,
 	getSneakerById,
+	serializeSneaker,
 	updateSneaker,
 } from "#app/models/sneaker.js"
 import { routes } from "#app/routes.js"
 import { getCurrentUser } from "#app/utils/context.js"
-import { createRedirectResponse } from "@remix-run/response/redirect"
-import { and, eq } from "drizzle-orm"
-import * as z from "zod/mini"
+import { Button } from "#app/components/ui/button.js"
+import { CollectionStats } from "#app/components/collection-stats.js"
+import type { Sneaker } from "#app/db/schema.js"
+import { getUserByUsername } from "#app/models/user.js"
+import { formatMoney } from "#app/lib/format.js"
+
+function sneakerUserAndIndexHandler({
+	sneakers,
+}: {
+	sneakers: Array<Sneaker>
+}) {
+	let serialized = sneakers.map((sneaker) => {
+		return serializeSneaker(sneaker)
+	})
+
+	const totalValue = sneakers.reduce((sum, sneaker) => sum + sneaker.price, 0)
+	const formattedTotalValue = formatMoney(totalValue)
+	const totalPairs = sneakers.length
+	const brands = new Set(sneakers.map((s) => s.brand)).size
+
+	return renderDocument(
+		<div className="min-h-screen bg-background">
+			<header className="border-b border-border">
+				<div className="container mx-auto px-4 py-6">
+					<div className="flex items-center justify-between">
+						<div>
+							<h1 className="text-4xl font-bold tracking-tight font-(family-name:--font-display)">
+								SNEAKER VAULT
+							</h1>
+							<p className="text-muted-foreground mt-1">
+								Your personal collection tracker
+							</p>
+						</div>
+						<Button
+							// onClick={() => setIsDialogOpen(true)}
+							size="lg"
+							className="gap-2"
+						>
+							<img src="/images/plus.svg" alt="Add" class="size-5" />
+							Add Sneaker
+						</Button>
+					</div>
+				</div>
+			</header>
+
+			<main className="container mx-auto px-4 py-8">
+				<CollectionStats
+					brandCount={brands}
+					totalPairs={totalPairs}
+					totalValue={formattedTotalValue}
+				/>
+				<SneakerGrid sneakers={serialized} />
+			</main>
+
+			{/* <AddSneakerDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onAdd={handleAddSneaker} /> */}
+		</div>,
+	)
+}
 
 const sneakerIndexHandler: BuildAction<"GET", typeof routes.sneakers.index> = {
 	middleware: [requireAuth()],
 	async action() {
-		let user = getCurrentUser()
+		let currentUser = getCurrentUser()
 
-		let sneakersWithData = await getAllSneakers(user.id)
+		let sneakers = await db
+			.select()
+			.from(schema.sneakers)
+			.where(eq(schema.sneakers.user_id, currentUser.id))
 
-		return renderDocument(
-			<div>
-				<title>Your Sneakers</title>
-				<h1>Welcome, {user.username}!</h1>
-				<p>Your sneakers:</p>
-
-				<div class="mt-4">
-					{sneakersWithData.length > 0 ? (
-						<SneakerGrid sneakers={sneakersWithData} />
-					) : (
-						<EmptyState fullName={user.given_name + " " + user.family_name} />
-					)}
-				</div>
-			</div>,
-		)
+		return sneakerUserAndIndexHandler({ sneakers })
 	},
 }
 
 const sneakerUserHandler: BuildAction<"GET", typeof routes.sneakers.user> = {
 	middleware: [],
 	async action({ params }) {
-		let result = await db
-			.select()
-			.from(schema.users)
-			.where(eq(schema.users.username, params.user))
-			.limit(1)
-		let user = result.at(0)
+		let user = await getUserByUsername(params.user)
 
 		if (!user) {
 			return renderDocument(<h1>User not found</h1>, {
@@ -59,22 +103,12 @@ const sneakerUserHandler: BuildAction<"GET", typeof routes.sneakers.user> = {
 			})
 		}
 
-		let sneakers = await getAllSneakers(user.id)
+		let sneakers = await db
+			.select()
+			.from(schema.sneakers)
+			.where(eq(schema.sneakers.user_id, user.id))
 
-		return renderDocument(
-			<div>
-				<title>{user.username}'s collection</title>
-				<h1>Welcome to {user.username}'s collection!</h1>
-
-				<div class="mt-4">
-					{sneakers.length > 0 ? (
-						<SneakerGrid sneakers={sneakers} />
-					) : (
-						<EmptyState fullName={user.given_name + " " + user.family_name} />
-					)}
-				</div>
-			</div>,
-		)
+		return sneakerUserAndIndexHandler({ sneakers })
 	},
 }
 
@@ -84,8 +118,8 @@ const sneakerNewHandler: BuildAction<"GET", typeof routes.sneakers.new> = {
 		return renderDocument(
 			<>
 				<title>Add a new sneaker to your collection</title>
-				<main className="container mx-auto h-full p-4 pb-6">
-					<h2 className="py-4 text-lg">Add a sneaker to your collection</h2>
+				<main class="container mx-auto h-full p-4 pb-6">
+					<h2 class="py-4 text-lg">Add a sneaker to your collection</h2>
 					<SneakerForm />
 				</main>
 			</>,
@@ -93,16 +127,22 @@ const sneakerNewHandler: BuildAction<"GET", typeof routes.sneakers.new> = {
 	},
 }
 
-const sneakerCreateHandler: BuildAction<"POST", typeof routes.sneakers.create> = {
-	middleware: [requireAuth()],
-	async action({ formData }) {
-		let user = getCurrentUser()
-		let sneakerId = await createSneaker(formData, user.id)
-		return createRedirectResponse(routes.sneakers.show.href({ id: sneakerId }))
-	},
-}
+const sneakerCreateHandler: BuildAction<"POST", typeof routes.sneakers.create> =
+	{
+		middleware: [requireAuth()],
+		async action({ formData }) {
+			let user = getCurrentUser()
+			let sneakerId = await createSneaker(formData, user.id)
+			return createRedirectResponse(
+				routes.sneakers.show.href({ id: sneakerId }),
+			)
+		},
+	}
 
-const sneakerDestroyHandler: BuildAction<"DELETE", typeof routes.sneakers.destroy> = {
+const sneakerDestroyHandler: BuildAction<
+	"DELETE",
+	typeof routes.sneakers.destroy
+> = {
 	middleware: [requireAuth()],
 	async action({ params }) {
 		let user = getCurrentUser()
@@ -112,7 +152,12 @@ const sneakerDestroyHandler: BuildAction<"DELETE", typeof routes.sneakers.destro
 
 		let deleted = await db
 			.delete(schema.sneakers)
-			.where(and(eq(schema.sneakers.id, result.id), eq(schema.sneakers.user_id, user.id)))
+			.where(
+				and(
+					eq(schema.sneakers.id, result.id),
+					eq(schema.sneakers.user_id, user.id),
+				),
+			)
 
 		console.log({ deleted })
 
@@ -123,7 +168,7 @@ const sneakerDestroyHandler: BuildAction<"DELETE", typeof routes.sneakers.destro
 const sneakerEditHandler: BuildAction<"GET", typeof routes.sneakers.edit> = {
 	middleware: [requireAuth()],
 	async action({ params }) {
-		let sneaker = await getSneakerById(params.id)
+		let sneaker = await getSneakerById(params.id, true)
 
 		if (!sneaker) {
 			return renderDocument(
@@ -175,7 +220,7 @@ const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 								src={sneaker.image}
 								alt={sneaker.model}
 								class="aspect-square w-full"
-								srcSet={sneaker.srcSet}
+								srcSet={sneaker.src_set}
 							/>
 							<h2>Brand</h2>
 							<p>{sneaker.brand}</p>
@@ -188,10 +233,10 @@ const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 							<p>{sneaker.colorway}</p>
 
 							<h2>Purchase Date</h2>
-							<p>{sneaker.purchase_date}</p>
+							<p>{sneaker.date}</p>
 
 							<h2>Purchase Price</h2>
-							<p>{sneaker.purchase_price}</p>
+							<p>{sneaker.price}</p>
 
 							<h2>Size</h2>
 							<p>{sneaker.size}</p>
@@ -207,14 +252,17 @@ const sneakerShowHandler: BuildAction<"GET", typeof routes.sneakers.show> = {
 	},
 }
 
-const sneakerUpdateHandler: BuildAction<"PUT", typeof routes.sneakers.update> = {
-	middleware: [requireAuth()],
-	async action({ formData, params }) {
-		await updateSneaker(params.id, formData)
+const sneakerUpdateHandler: BuildAction<"PUT", typeof routes.sneakers.update> =
+	{
+		middleware: [requireAuth()],
+		async action({ formData, params }) {
+			await updateSneaker(params.id, formData)
 
-		return createRedirectResponse(routes.sneakers.show.href({ id: params.id }))
-	},
-}
+			return createRedirectResponse(
+				routes.sneakers.show.href({ id: params.id }),
+			)
+		},
+	}
 
 export const sneakerHandlers = {
 	new: sneakerNewHandler,

@@ -1,56 +1,82 @@
 import type { SerializedSneaker } from "#app/models/sneaker.js"
+import { Card } from "./ui/card.js"
 
-import { routes } from "#app/routes.js"
-
-export function EmptyState({ fullName }: { fullName: string }) {
+export function EmptyState() {
 	return (
-		<div className="px-6">
-			<h1 className="text-2xl font-medium">{fullName} has no sneakers in their collection</h1>
+		<div class="flex flex-col items-center justify-center py-16 text-center">
+			<div class="text-6xl mb-4">
+				<span role="img" aria-label="Sneaker">
+					👟
+				</span>
+			</div>
+			<h3 class="text-xl font-semibold mb-2">No sneakers yet</h3>
+			<p class="text-muted-foreground">
+				Start building your collection by adding your first pair
+			</p>
 		</div>
 	)
 }
 
-export function SneakerGrid({ sneakers }: { sneakers: ReadonlyArray<SerializedSneaker> }) {
-	return (
-		<ul class="grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4">
-			{sneakers.map((sneaker) => (
-				<SneakerCard key={sneaker.id} {...sneaker} />
-			))}
-		</ul>
-	)
+type SneakerCardProps = {
+	sneaker: SerializedSneaker
 }
 
-export function SneakerCard({
-	id,
-	model,
-	colorway,
-	brand,
-	image,
-	srcSet,
-	purchase_price,
-}: SerializedSneaker) {
+export function SneakerCard({ sneaker }: SneakerCardProps) {
 	return (
-		<li>
-			<div className="group relative">
-				<div className="aspect-1 overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75">
-					<img
-						src={image}
-						sizes="(min-width: 1024px) 25vw, 50vw"
-						srcSet={srcSet}
-						alt=""
-						height={1200}
-						width={1200}
-					/>
-				</div>
-				<h3 className="mt-4 text-sm text-gray-700">
-					<a href={routes.sneakers.show.href({ id })} data-component="SneakerCard">
-						<span className="absolute inset-0" />
-						{brand} {model}
-					</a>
-				</h3>
-				<p className="mt-1 text-sm text-gray-500">{colorway}</p>
-				<p className="mt-1 text-sm font-medium text-gray-900">{purchase_price}</p>
+		<Card class="overflow-hidden bg-card border-border group hover:border-primary/50 transition-colors">
+			<div class="aspect-square bg-secondary/50 overflow-hidden">
+				<img
+					src={sneaker.image || "/placeholder.svg"}
+					alt={`${sneaker.brand} ${sneaker.model}`}
+					class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+				/>
 			</div>
-		</li>
+			<div class="p-4">
+				<div class="flex items-start justify-between mb-2">
+					<div class="flex-1">
+						<div class="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+							{sneaker.brand}
+						</div>
+						<h3 class="font-semibold text-lg leading-tight mb-1">
+							{sneaker.model}
+						</h3>
+						<div class="text-sm text-muted-foreground">{sneaker.colorway}</div>
+					</div>
+					{/* <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                class="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Trash2 class="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remove sneaker?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to remove {sneaker.model} from your collection?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onDelete(sneaker.id)}>Remove</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog> */}
+				</div>
+				<div class="flex items-center justify-between mt-4 pt-4 border-t border-border">
+					<div>
+						<div class="text-xs text-muted-foreground">Size</div>
+						<div class="font-semibold">{sneaker.size}</div>
+					</div>
+					<div class="text-right">
+						<div class="text-xs text-muted-foreground">Price</div>
+						<div class="font-semibold text-primary">{sneaker.price}</div>
+					</div>
+				</div>
+			</div>
+		</Card>
 	)
 }

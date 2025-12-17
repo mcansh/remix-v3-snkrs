@@ -1,10 +1,7 @@
 {
 	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"printWidth": 80,
+	"ignorePatterns": ["pnpm-lock.yaml", "drizzle"],
 	"semi": false,
-	"useTabs": true,
-	"experimentalSortImports": {
-		"newlinesBetween": true,
-		"order": "asc",
-		"ignoreCase": true
-	}
+	"useTabs": true
 }

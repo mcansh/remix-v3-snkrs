@@ -1,7 +1,7 @@
-import { env } from "#app/lib/env.js"
 import { defineRelations } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/node-postgres"
 
+import { env } from "#app/lib/env.js"
 import * as schema from "./schema.js"
 
 export * as schema from "./schema.js"

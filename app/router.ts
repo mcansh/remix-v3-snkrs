@@ -10,7 +10,6 @@ import { staticFiles } from "@remix-run/static-middleware"
 import { uploadHandler } from "./lib/upload.js"
 import { routes } from "./routes.js"
 import { authHandlers } from "./routes/auth/index.js"
-import { brandHandlers } from "./routes/brands.js"
 import { healthcheckHandlers } from "./routes/healthcheck.js"
 import { homeHandlers } from "./routes/home.js"
 import { sneakerHandlers } from "./routes/sneakers.js"
@@ -33,7 +32,6 @@ let middleware = [
 export const router = createRouter({ middleware })
 
 router.map(routes.home, homeHandlers)
-router.map(routes.sneakers, sneakerHandlers)
-router.map(routes.brands, brandHandlers)
 router.map(routes.auth, authHandlers)
+router.map(routes.sneakers, sneakerHandlers)
 router.map(routes.healthcheck, healthcheckHandlers)

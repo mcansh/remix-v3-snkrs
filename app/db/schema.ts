@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2"
-import { sql } from "drizzle-orm"
+import { sql, type SQL } from "drizzle-orm"
 import * as t from "drizzle-orm/pg-core"
 import { pgTable } from "drizzle-orm/pg-core"
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod"
@@ -16,21 +16,17 @@ const createdAtModifiedAt = {
 // TODO: maybe make a user_sneakers table so we can reuse a lot of the core sneaker info
 export const sneakers = pgTable("sneakers", {
 	id: t
-		.varchar("id")
+		.text()
 		.primaryKey()
 		.$defaultFn(() => createId()),
-	brand: t.varchar().notNull(),
-	colorway: t.varchar({ length: 255 }).notNull(),
-	model: t.varchar({ length: 255 }).notNull(),
-	image: t.varchar({ length: 255 }).notNull(),
-	purchase_date: t.timestamp({ withTimezone: true }),
-	size: t.integer().notNull(),
-	purchase_price: t.integer().notNull(),
-	retail_price: t.integer().notNull(),
-	sold: t.boolean().notNull().default(false),
-	// only include soldDate and soldPrice if sold is true
-	sold_date: t.timestamp({ withTimezone: true }),
-	sold_price: t.integer(),
+	brand: t.text().notNull(),
+	colorway: t.text().notNull(),
+	model: t.text().notNull(),
+	image: t.text().notNull(),
+	date: t.timestamp({ withTimezone: true }).defaultNow(),
+	size: t.numeric({ precision: 4, scale: 2 }).notNull(),
+
+	price: t.integer().notNull(),
 
 	...createdAtModifiedAt,
 
@@ -42,15 +38,21 @@ export const sneakers = pgTable("sneakers", {
 
 export const users = pgTable("users", {
 	id: t
-		.varchar("id")
+		.text()
 		.primaryKey()
 		.$defaultFn(() => createId()),
-	email: t.varchar({ length: 255 }).notNull().unique(),
-	given_name: t.varchar({ length: 255 }).notNull(),
-	family_name: t.varchar({ length: 255 }).notNull(),
-	password: t.varchar({ length: 255 }).notNull(),
-	username: t.varchar({ length: 255 }).notNull(),
-	password_salt: t.varchar({ length: 255 }).notNull(),
+	email: t.text().notNull().unique(),
+	given_name: t.text().notNull(),
+	family_name: t.text().notNull(),
+	password: t.text().notNull(),
+	username: t.text().unique().notNull(),
+	password_salt: t.text().notNull(),
+
+	// full_name: t
+	// 	.varchar({ length: 255 })
+	// 	.generatedAlwaysAs(
+	// 		(): SQL => sql`${users.given_name} ${users.family_name}`,
+	// 	),
 
 	...createdAtModifiedAt,
 })

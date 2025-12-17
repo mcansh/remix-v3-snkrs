@@ -1,7 +1,7 @@
-import type { User } from "#app/db/schema.js"
-
 import { getContext } from "@remix-run/async-context-middleware"
 import { createStorageKey } from "@remix-run/fetch-router"
+
+import type { User } from "#app/db/schema.js"
 
 // Storage key for attaching user data to request context
 let USER_KEY = createStorageKey<User>()

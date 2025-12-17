@@ -98,6 +98,8 @@ export const registerHandlers = {
 		let formErrors = session.get("register-form-errors")
 		ensureRegisterFormErrors(formErrors)
 
+		let formAction = routes.auth.register.action.href()
+
 		return render(
 			<Document>
 				<div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -124,8 +126,8 @@ export const registerHandlers = {
 							<CardContent>
 								<RestfulForm
 									class="space-y-4"
-									action={routes.auth.register.action.href()}
-									method="post"
+									action={formAction}
+									method="POST"
 								>
 									<div class="space-y-2">
 										<Label htmlFor="given_name">First Name</Label>
@@ -200,25 +202,6 @@ export const registerHandlers = {
 										/>
 									</div>
 
-									{/* <div class="flex items-start space-x-2">
-            <Checkbox
-              id="terms"
-              checked={agreedToTerms}
-              onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-              class="mt-0.5"
-            />
-            <label htmlFor="terms" class="text-sm text-muted-foreground leading-relaxed">
-              I agree to the{" "}
-              <button type="button" class="text-primary hover:underline">
-                terms and conditions
-              </button>{" "}
-              and{" "}
-              <button type="button" class="text-primary hover:underline">
-                privacy policy
-              </button>
-            </label>
-          </div> */}
-
 									<Button
 										type="submit"
 										class="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
@@ -232,11 +215,14 @@ export const registerHandlers = {
 						</Card>
 
 						<p className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <a href={routes.auth.login.index.href()} className="text-primary hover:underline font-medium">
-            Log in
-          </a>
-        </p>
+							Already have an account?{" "}
+							<a
+								href={routes.auth.login.index.href()}
+								className="text-primary hover:underline font-medium"
+							>
+								Log in
+							</a>
+						</p>
 					</div>
 				</div>
 			</Document>,

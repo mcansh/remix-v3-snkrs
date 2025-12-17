@@ -39,12 +39,6 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 
 	let user = users.at(0)
 
-	console.log(
-		user
-			? `found user with id ${user.id}`
-			: `no user found with email ${email}`,
-	)
-
 	return user ? user : null
 }
 

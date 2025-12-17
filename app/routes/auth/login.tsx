@@ -19,12 +19,16 @@ import { Label } from "#app/components/ui/label.js"
 import { Input } from "#app/components/ui/input.js"
 import { Button } from "#app/components/ui/button.js"
 import { safeRedirect } from "#app/lib/redirect.js"
+import { loadAuth } from "#app/middleware/auth.js"
 
 export const loginHandlers = {
-	middleware: [],
+	middleware: [loadAuth()],
 	actions: {
 		async action({ formData, session, url }) {
 			let returnTo = safeRedirect(url.searchParams.get("returnTo"))
+			let loginUrlWithRedirect = routes.auth.login.index.href(undefined, {
+				returnTo,
+			})
 
 			let loginSchema = z.object({
 				email: z.email(),
@@ -37,22 +41,14 @@ export const loginHandlers = {
 
 			if (!result.success) {
 				console.error(result.error)
-				return createRedirectResponse(
-					routes.auth.login.index.href(undefined, {
-						returnTo,
-					}),
-				)
+				return createRedirectResponse(loginUrlWithRedirect)
 			}
 
 			let user = await authenticateUser(result.data.email, result.data.password)
 
 			if (!user) {
 				session.flash("error", "Invalid email or password. Please try again.")
-				return createRedirectResponse(
-					routes.auth.login.index.href(undefined, {
-						returnTo,
-					}),
-				)
+				return createRedirectResponse(loginUrlWithRedirect)
 			}
 
 			session.set("userId", user.id)
@@ -61,11 +57,10 @@ export const loginHandlers = {
 		},
 
 		async index({ url, session }) {
-			let returnTo = url.searchParams.get("returnTo")
 			let error = session.get("error")
 
-			let urlWithReturnTo = routes.auth.login.action.href(undefined, {
-				returnTo,
+			let formAction = routes.auth.login.action.href(undefined, {
+				returnTo: url.searchParams.get("returnTo"),
 			})
 
 			return render(
@@ -92,8 +87,8 @@ export const loginHandlers = {
 								<CardContent>
 									<RestfulForm
 										class="space-y-4"
-										action={urlWithReturnTo}
-										method="post"
+										action={formAction}
+										method="POST"
 									>
 										<div class="space-y-2">
 											<Label htmlFor="email">Email</Label>
@@ -103,6 +98,7 @@ export const loginHandlers = {
 												placeholder="kicks@example.com"
 												name="email"
 												class="bg-secondary border-border"
+												autoComplete="email"
 											/>
 										</div>
 										<div class="space-y-2">
@@ -121,6 +117,7 @@ export const loginHandlers = {
 												placeholder="••••••••"
 												class="bg-secondary border-border"
 												name="password"
+												autoComplete="current-password"
 											/>
 										</div>
 
@@ -135,11 +132,14 @@ export const loginHandlers = {
 							</Card>
 
 							<p className="mt-6 text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <a href={routes.auth.register.index.href()} className="text-primary hover:underline font-medium">
-            Sign up
-          </a>
-        </p>
+								Don't have an account?{" "}
+								<a
+									href={routes.auth.register.index.href()}
+									className="text-primary hover:underline font-medium"
+								>
+									Sign up
+								</a>
+							</p>
 						</div>
 					</div>
 				</Document>,

@@ -33,5 +33,5 @@ export const router = createRouter({ middleware })
 
 router.map(routes.home, homeHandlers)
 router.map(routes.auth, authHandlers)
-router.map(routes.sneakers, sneakerHandlers)
 router.map(routes.healthcheck, healthcheckHandlers)
+router.map(routes.sneakers, sneakerHandlers)

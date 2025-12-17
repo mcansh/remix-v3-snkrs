@@ -35,8 +35,6 @@ export const loginHandlers = {
 
 			let result = loginSchema.safeParse(decoded)
 
-			console.log({ result })
-
 			if (!result.success) {
 				console.error(result.error)
 				return createRedirectResponse(

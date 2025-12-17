@@ -5,9 +5,10 @@ import { renderDocument } from "#app/lib/html.js"
 import { routes } from "#app/routes.js"
 import { getCurrentUserSafely } from "#app/utils/context.js"
 import { createRedirectResponse } from "@remix-run/response/redirect"
+import { loadAuth } from "#app/middleware/auth.js";
 
 export const homeHandlers = {
-	middleware: [],
+	middleware: [loadAuth()],
 	action() {
 		let currentUser = getCurrentUserSafely()
 

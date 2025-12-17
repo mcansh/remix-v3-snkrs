@@ -20,6 +20,7 @@ import { Input } from "#app/components/ui/input.js"
 import { Button } from "#app/components/ui/button.js"
 import { safeRedirect } from "#app/lib/redirect.js"
 import { loadAuth } from "#app/middleware/auth.js"
+import { getCurrentUserSafely } from "#app/utils/context.js";
 
 export const loginHandlers = {
 	middleware: [loadAuth()],
@@ -57,6 +58,12 @@ export const loginHandlers = {
 		},
 
 		async index({ url, session }) {
+			let currentUser = getCurrentUserSafely()
+
+			if (currentUser) {
+				return createRedirectResponse(routes.home.href())
+			}
+
 			let error = session.get("error")
 
 			let formAction = routes.auth.login.action.href(undefined, {
@@ -104,12 +111,12 @@ export const loginHandlers = {
 										<div class="space-y-2">
 											<div class="flex items-center justify-between">
 												<Label htmlFor="password">Password</Label>
-												<button
-													type="button"
+												<a
+													href="#"
 													class="text-xs text-muted-foreground hover:text-primary transition-colors"
 												>
 													Forgot password?
-												</button>
+												</a>
 											</div>
 											<Input
 												id="password"

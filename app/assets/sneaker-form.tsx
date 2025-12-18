@@ -5,148 +5,154 @@ import { dom } from "@remix-run/events"
 import { RestfulForm } from "#app/components/restful-form.js"
 import type { Sneaker } from "#app/db/schema.js"
 import { routes } from "#app/routes.js"
+import { Button } from "#app/components/ui/button.js"
+import { Input } from "#app/components/ui/input.js"
+import { Label } from "#app/components/ui/label.js"
 
 export const SneakerForm = hydrated(
 	routes.assets.href({ path: "sneaker-form.js#SneakerForm" }),
 	function (this: Remix.Handle, { sneaker }: { sneaker?: Sneaker }) {
-		let action = sneaker
+		let formAction = sneaker
 			? routes.sneakers.update.href({ id: sneaker.id })
 			: routes.sneakers.create.href()
 
-		let imagePreview: HTMLImageElement | null = null
+		let imagePreview: string | null = null
 
 		return () => (
-			<RestfulForm
-				method={sneaker ? "put" : "post"}
-				action={action}
-				encType="multipart/form-data"
-			>
-				<fieldset class="w-full space-y-2 sm:grid sm:grid-cols-2 sm:items-center sm:gap-x-4 sm:gap-y-6 sm:space-y-0">
-					<label>
-						<span class="block text-sm font-medium text-gray-700">Brand</span>
-						<input
-							class="block w-full border rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							type="text"
-							placeholder="Nike"
-							name="brand"
-						/>
-					</label>
-					<label>
-						<span class="block text-sm font-medium text-gray-700">Model</span>
-						<input
-							class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							type="text"
-							placeholder="Air Max 1"
-							name="model"
-						/>
-					</label>
-					<label>
-						<span class="block text-sm font-medium text-gray-700">
-							Colorway
-						</span>
-						<input
-							class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							type="text"
-							placeholder="Anniversary Royal"
-							name="colorway"
-						/>
-					</label>
-					<label htmlFor="price">
-						<span class="block text-sm font-medium text-gray-700">
-							Price (in cents)
-						</span>
-						<input
-							id="price"
-							name="price"
-							placeholder="12000"
-							class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							// prefix="$"
-						/>
-					</label>
-					<label htmlFor="retailPrice">
-						<span class="block text-sm font-medium text-gray-700">
-							Retail Price
-						</span>
-						<input
-							id="retailPrice"
-							name="retailPrice"
-							placeholder="12000"
-							class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							// prefix="$"
-						/>
-					</label>
-					<label>
-						<span class="block text-sm font-medium text-gray-700">
-							Purchase Date
-						</span>
-						<input
-							class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							type="datetime-local"
-							name="purchaseDate"
-						/>
-					</label>
-					<label>
-						<span class="block text-sm font-medium text-gray-700">Size</span>
-						<input
-							class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							type="text"
-							inputMode="numeric"
-							placeholder="10"
-							name="size"
-							step={0.5}
-						/>
-					</label>
-					<label>
-						<span class="block text-sm font-medium text-gray-700">Image</span>
-
-						<div class="flex gap-2">
-							<span class="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm file:text-red-700">
-								Choose File
-							</span>
-
-							{imagePreview ? (
-								<img src={imagePreview.src} alt="Preview" class="size-40" />
-							) : null}
-							<input
-								type="file"
-								accept="image/*"
-								name="image"
-								class="hidden"
-								on={dom.change((event) => {
-									const files = event.currentTarget.files
-									if (!files) return
-									let file = files[0]
-									if (!file) return
-									const reader = new FileReader()
-									reader.onload = () => {
-										const image = new Image()
-										if (reader.result == null) return
-										if (reader.result instanceof ArrayBuffer) {
-											const uint8Array = new Uint8Array(reader.result)
-											const blob = new Blob([uint8Array], { type: file.type })
-											image.src = URL.createObjectURL(blob)
-										} else {
-											image.src = reader.result
-										}
-
-										image.onload = () => {
-											imagePreview = image
-											this.update()
-										}
-									}
-									reader.readAsDataURL(file)
-								})}
-							/>
+			<div data-component="Dialog" class="min-h-screen bg-background">
+				<div data-component="DialogContent" class="sm:max-w-125">
+					<div data-component="DialogHeader">
+						<div
+							data-component="DialogTitle"
+							class="text-2xl font-(family-name:--font-display)"
+						>
+							Add to Collection
 						</div>
-					</label>
-					<button
-						type="submit"
-						class="col-span-2 w-auto self-start rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-left text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-200"
-					>
-						{sneaker ? "Update" : "Add to collection"}
-					</button>
-				</fieldset>
-			</RestfulForm>
+						<div data-component="DialogDescription">
+							Enter the details of your new sneaker
+						</div>
+					</div>
+					<RestfulForm method="post" action={formAction}>
+						<div className="grid gap-4 py-4">
+							<div className="grid gap-2">
+								<Label>Sneaker Image</Label>
+								{imagePreview ? (
+									<div className="relative aspect-square w-full overflow-hidden rounded-lg border-2 border-border bg-secondary">
+										<img
+											src={imagePreview}
+											alt="Sneaker preview"
+											className="object-cover"
+										/>
+										<button
+											type="button"
+											// onClick={handleRemoveImage}
+											className="absolute right-2 top-2 rounded-full bg-background/80 p-1.5 backdrop-blur-sm transition-colors hover:bg-background"
+										>
+											<span>remove</span>
+											{/* <X className="h-4 w-4" /> */}
+										</button>
+									</div>
+								) : (
+									<label
+										htmlFor="image-upload"
+										className="flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-secondary/50 transition-colors hover:bg-secondary"
+									>
+										{/* <Upload className="h-8 w-8 text-muted-foreground" /> */}
+										<span className="text-sm text-muted-foreground">
+											Click to upload image
+										</span>
+										<span className="text-xs text-muted-foreground">
+											or we'll generate one for you
+										</span>
+									</label>
+								)}
+								<input
+									id="image-upload"
+									name="image"
+									type="file"
+									accept="image/*"
+									className="hidden"
+									on={dom.change((event) => {
+										const files = event.currentTarget.files
+										if (!files) return
+										let file = files.item(0)
+										if (!file) return
+										const reader = new FileReader()
+										reader.onload = () => {
+											const image = new Image()
+											if (reader.result == null) return
+											if (reader.result instanceof ArrayBuffer) {
+												const uint8Array = new Uint8Array(reader.result)
+												const blob = new Blob([uint8Array], { type: file.type })
+												image.src = URL.createObjectURL(blob)
+											} else {
+												image.src = reader.result
+											}
+
+											image.onload = () => {
+												imagePreview = image.src
+												this.update()
+											}
+										}
+										reader.readAsDataURL(file)
+									})}
+								/>
+							</div>
+
+							<div className="grid gap-2">
+								<Label htmlFor="brand">Brand</Label>
+								<Input
+									id="brand"
+									placeholder="Nike, Adidas, New Balance..."
+									required
+								/>
+							</div>
+							<div className="grid gap-2">
+								<Label htmlFor="model">Model</Label>
+								<Input
+									id="model"
+									placeholder="Air Jordan 1, Yeezy 350..."
+									required
+								/>
+							</div>
+							<div className="grid gap-2">
+								<Label htmlFor="colorway">Colorway</Label>
+								<Input
+									id="colorway"
+									placeholder="Chicago, Zebra, Panda..."
+									required
+								/>
+							</div>
+							<div className="grid grid-cols-2 gap-4">
+								<div className="grid gap-2">
+									<Label htmlFor="size">Size</Label>
+									<Input id="size" placeholder="10.5" required />
+								</div>
+								<div className="grid gap-2">
+									<Label htmlFor="price">Price ($)</Label>
+									<Input
+										id="price"
+										type="number"
+										step="0.01"
+										placeholder="170.00"
+										required
+									/>
+								</div>
+							</div>
+							<div className="grid gap-2">
+								<Label htmlFor="purchaseDate">Purchase Date</Label>
+								<Input id="purchaseDate" type="date" required />
+							</div>
+						</div>
+						<div data-component="DialogFooter">
+							<Button type="button" variant="outline">
+								Cancel
+							</Button>
+							<Button type="submit">Add Sneaker</Button>
+						</div>
+					</RestfulForm>
+				</div>
+			</div>
 		)
 	},
 )

@@ -32,9 +32,7 @@ export function RestfulForm({
 }: RestfulFormProps) {
 	method = method.toUpperCase() as FormMethod
 
-	if (method === "GET") {
-		return <form method="GET" {...props} />
-	}
+	if (method === "GET") return <form method="GET" {...props} />
 
 	return (
 		<form method="POST" {...props}>

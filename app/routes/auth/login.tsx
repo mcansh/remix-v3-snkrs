@@ -20,7 +20,7 @@ import { Input } from "#app/components/ui/input.js"
 import { Button } from "#app/components/ui/button.js"
 import { safeRedirect } from "#app/lib/redirect.js"
 import { loadAuth } from "#app/middleware/auth.js"
-import { getCurrentUserSafely } from "#app/utils/context.js";
+import { getCurrentUserSafely } from "#app/utils/context.js"
 
 export const loginHandlers = {
 	middleware: [loadAuth()],

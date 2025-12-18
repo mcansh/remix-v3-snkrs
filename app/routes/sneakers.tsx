@@ -5,20 +5,17 @@ import * as z from "zod/mini"
 
 import { SneakerForm } from "#app/assets/sneaker-form.js"
 import { SneakerGrid } from "#app/assets/sneaker-grid.js"
-import { EmptyState } from "#app/components/sneaker.js"
 import { db, schema } from "#app/db/index.js"
 import { renderDocument } from "#app/lib/html.js"
 import { requireAuth } from "#app/middleware/auth.js"
 import {
 	createSneaker,
-	getAllSneakers,
 	getSneakerById,
 	serializeSneaker,
 	updateSneaker,
 } from "#app/models/sneaker.js"
 import { routes } from "#app/routes.js"
 import { getCurrentUser } from "#app/utils/context.js"
-import { Button } from "#app/components/ui/button.js"
 import { CollectionStats } from "#app/components/collection-stats.js"
 import type { Sneaker } from "#app/db/schema.js"
 import { getUserByUsername } from "#app/models/user.js"
@@ -51,14 +48,15 @@ function sneakerUserAndIndexHandler({
 								Your personal collection tracker
 							</p>
 						</div>
-						<Button
+						<a
+							href={routes.sneakers.new.href()}
 							// onClick={() => setIsDialogOpen(true)}
-							size="lg"
+							// size="lg"
 							className="gap-2"
 						>
 							<img src="/images/plus.svg" alt="Add" class="size-5" />
 							Add Sneaker
-						</Button>
+						</a>
 					</div>
 				</div>
 			</header>
@@ -118,10 +116,7 @@ const sneakerNewHandler: BuildAction<"GET", typeof routes.sneakers.new> = {
 		return renderDocument(
 			<>
 				<title>Add a new sneaker to your collection</title>
-				<main class="container mx-auto h-full p-4 pb-6">
-					<h2 class="py-4 text-lg">Add a sneaker to your collection</h2>
-					<SneakerForm />
-				</main>
+				<SneakerForm />
 			</>,
 		)
 	},

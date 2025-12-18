@@ -142,15 +142,13 @@ export function serializeSneaker(
 
 export type SerializedSneaker = SerializeExtras<Sneaker> & { src_set: string }
 
-type SerializedSneakerOrSneaker<T> = T extends true
-	? SerializedSneaker
-	: Sneaker
+type MaybeSerializedSneaker<T> = T extends true ? SerializedSneaker : Sneaker
 
 export async function getSneakerById<T extends boolean = false>(
 	id: string,
 	serialize?: T,
 	options: { srcSetSizes?: [number, number, number] } = {},
-): Promise<SerializedSneakerOrSneaker<T> | null> {
+): Promise<MaybeSerializedSneaker<T> | null> {
 	let sneakers = await db
 		.select()
 		.from(schema.sneakers)
@@ -164,8 +162,8 @@ export async function getSneakerById<T extends boolean = false>(
 		return serializeSneaker(
 			sneaker,
 			options.srcSetSizes,
-		) as SerializedSneakerOrSneaker<T>
+		) as MaybeSerializedSneaker<T>
 	}
 
-	return sneaker as SerializedSneakerOrSneaker<T>
+	return sneaker as MaybeSerializedSneaker<T>
 }

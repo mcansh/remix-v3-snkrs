@@ -3,5 +3,5 @@
 	"printWidth": 80,
 	"ignorePatterns": ["pnpm-lock.yaml", "drizzle"],
 	"semi": false,
-	"useTabs": true,
+	"useTabs": true
 }

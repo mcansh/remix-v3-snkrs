@@ -8,9 +8,10 @@ const COMMON_FILES = new Set(["/robots.txt", "/sitemap.xml", "/favicon.ico"])
  * any user lookup or session work.
  */
 export function commonFiles(): Middleware {
-	return ({ url }) => {
+	return ({ url }, next) => {
 		if (COMMON_FILES.has(url.pathname)) {
 			return new Response(null, { status: 404 })
 		}
+		return next()
 	}
 }

@@ -14,9 +14,4 @@ export const routes = route({
 		param: "brand",
 		only: ["index", "show"],
 	}),
-	commonFiles: {
-		robotsTxt: { method: "GET", pattern: "/robots.txt" },
-		sitemapXml: { method: "GET", pattern: "/sitemap.xml" },
-		faviconIco: { method: "GET", pattern: "/favicon.ico" },
-	},
 })

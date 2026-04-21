@@ -80,8 +80,10 @@ export const loginHandlers = {
 					{returnTo ? (
 						<input type="hidden" name="return_to" value={returnTo} />
 					) : null}
-					<input type="email" name="email" />
-					<input type="password" name="password" />
+					<label for="email">Email</label>
+					<input type="email" id="email" name="email" />
+					<label for="password">Password</label>
+					<input type="password" id="password" name="password" />
 
 					<button class="inline-flex" type="submit">
 						Login

@@ -80,12 +80,8 @@ export const loginHandlers = {
 					{returnTo ? (
 						<input type="hidden" name="return_to" value={returnTo} />
 					) : null}
-					<input type="email" name="email" value="logan@mcan.sh" />
-					<input
-						type="password"
-						name="password"
-						value="mypasswordisbetterthanyours"
-					/>
+					<input type="email" name="email" />
+					<input type="password" name="password" />
 
 					<button class="inline-flex" type="submit">
 						Login

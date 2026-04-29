@@ -8,16 +8,8 @@
 	text-wrap: balance;
 }
 
-@utility text-trim-both {
-	text-box-trim: trim-both;
-}
-
-@utility text-trim-start {
-	text-box-trim: trim-start;
-}
-
-@utility text-trim-end {
-	text-box-trim: trim-end;
+@utility text-* {
+	text-box-trim: --value("trim-both", "trim-start", "trim-end");
 }
 
 @utility text-edge-auto {

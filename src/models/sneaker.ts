@@ -1,4 +1,4 @@
-import * as z from "zod/mini"
+import * as s from "remix/data-schema"
 import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
 
@@ -10,8 +10,8 @@ import { env } from "#src/lib/env.ts"
 import { formatDate, formatMoney } from "#src/lib/format.ts"
 
 export class CreateSneakerError extends Error {
-	sneaker: z.output<typeof insertSneakerSchema>
-	constructor(sneaker: z.output<typeof insertSneakerSchema>) {
+	sneaker: s.InferOutput<typeof insertSneakerSchema>
+	constructor(sneaker: s.InferOutput<typeof insertSneakerSchema>) {
 		super(`Failed to create sneaker`)
 		this.name = "CreateSneakerError"
 		this.sneaker = sneaker
@@ -29,7 +29,7 @@ export async function updateSneaker(
 		dates: ["purchase_date", "sold_date"],
 	})
 
-	let parsed = updateSneakerSchema.parse(decoded)
+	let parsed = s.parse(updateSneakerSchema, decoded)
 
 	let result = await env.db
 		.update(schema.sneakers)
@@ -41,9 +41,9 @@ export async function updateSneaker(
 			image: parsed.image,
 			purchase_price: parsed.purchase_price,
 			retail_price: parsed.retail_price,
-			purchase_date: parsed.purchase_date,
+			purchase_date: new Date(parsed.purchase_date),
 			sold: parsed.sold,
-			sold_date: parsed.sold_date,
+			sold_date: new Date(parsed.sold_date),
 			sold_price: parsed.sold_price,
 		})
 		.where(eq(schema.sneakers.id, id))
@@ -64,7 +64,7 @@ export async function createSneaker(
 		dates: ["purchase_date", "sold_date"],
 	})
 
-	let parsed = insertSneakerSchema.parse(decoded)
+	let parsed = s.parse(insertSneakerSchema, decoded)
 
 	let result = await env.db
 		.insert(schema.sneakers)
@@ -142,7 +142,7 @@ export function serializeSneaker(
 	})
 }
 
-type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
+export type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
 
 type SerializedSneakerOrSneaker<T> = T extends true
 	? SerializedSneaker

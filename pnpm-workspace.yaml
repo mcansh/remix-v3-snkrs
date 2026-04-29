@@ -1,6 +1,4 @@
 onlyBuiltDependencies:
+  - esbuild
   - sharp
   - workerd
-
-patchedDependencies:
-  '@hiogawa/vite-plugin-fullstack': patches/@hiogawa__vite-plugin-fullstack.patch

@@ -1,14 +1,10 @@
 {
 	"extends": "@tsconfig/vite-react/tsconfig.json",
 	"compilerOptions": {
-		"jsxImportSource": "@remix-run/dom",
+		"jsxImportSource": "remix/ui",
 		"strict": true,
 		"allowImportingTsExtensions": true,
-		"types": [
-			"vite/client",
-			"@hiogawa/vite-plugin-fullstack/types",
-			"@mcansh/vite-plugin-svg-sprite/client"
-		],
+		"types": ["vite/client", "@mcansh/vite-plugin-svg-sprite/client"],
 		"lib": ["ESNext", "DOM", "DOM.Iterable"]
 	}
 }

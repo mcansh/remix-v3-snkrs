@@ -1,7 +1,9 @@
-import * as z from "zod/mini"
-import type { Controller } from "@remix-run/fetch-router"
-import { createRedirectResponse } from "@remix-run/response/redirect"
-import { decode } from "decode-formdata"
+import * as s from "remix/data-schema"
+import * as f from "remix/data-schema/form-data"
+import { email } from "remix/data-schema/checks"
+import type { Controller } from "remix/fetch-router"
+import { redirect } from "remix/response/redirect"
+import { Session } from "remix/session"
 
 import { Document } from "#src/components/document.tsx"
 import { RestfulForm } from "#src/components/restful-form.tsx"
@@ -12,30 +14,32 @@ import { routes } from "#src/routes.ts"
 export const loginHandlers = {
 	middleware: [],
 	actions: {
-		async action({ formData, session }) {
-			let loginSchema = z.object({
-				email: z.email(),
-				password: z.string(),
-				return_to: z.optional(z.string()),
+		async action({ get }) {
+			let session = get(Session)
+			let formData = get(FormData)
+
+			let loginSchema = f.object({
+				email: f.field(s.string().pipe(email())),
+				password: f.field(s.string()),
+				return_to: f.field(s.optional(s.string())),
 			})
 
-			let decoded = decode(formData)
+			let result = s.parseSafe(loginSchema, formData)
 
-			let result = loginSchema.safeParse(decoded)
-
-			if (!result.success) {
-				console.error(result.error)
-				return createRedirectResponse(routes.auth.login.index.href())
+			if (result.success === false) {
+				console.error(result.issues)
+				return redirect(routes.auth.login.index.href())
 			}
 
-			let user = await authenticateUser(result.data.email, result.data.password)
-			let returnTo = result.data.return_to || routes.home.index.href()
+			let user = await authenticateUser(
+				result.value.email,
+				result.value.password,
+			)
+			let returnTo = result.value.return_to || routes.home.index.href()
 
 			if (!user) {
 				session.flash("error", "Invalid email or password. Please try again.")
-				return createRedirectResponse(
-					routes.auth.login.index.href(undefined, { returnTo }),
-				)
+				return redirect(routes.auth.login.index.href(undefined, { returnTo }))
 			}
 
 			session.set("userId", user.id)
@@ -58,10 +62,11 @@ export const loginHandlers = {
 			// 	)
 			// }
 
-			return createRedirectResponse(returnTo)
+			return redirect(returnTo)
 		},
 
-		async index({ url, session }) {
+		async index({ get, url }) {
+			let session = get(Session)
 			let returnTo = url.searchParams.get("returnTo")
 			let error = session.get("error")
 

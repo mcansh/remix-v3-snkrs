@@ -1,4 +1,4 @@
-import type { Controller } from "@remix-run/fetch-router"
+import type { Controller } from "remix/fetch-router"
 
 import { routes } from "#src/routes.ts"
 import { loginHandlers } from "./login"

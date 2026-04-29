@@ -1,5 +1,5 @@
-import { createCookie } from "@remix-run/cookie"
-import { createCookieSessionStorage } from "@remix-run/session/cookie-storage"
+import { createCookie } from "remix/cookie"
+import { createCookieSessionStorage } from "remix/session/cookie-storage"
 
 /**
  * Session cookie configuration for the bookstore demo.

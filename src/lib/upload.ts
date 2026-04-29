@@ -1,9 +1,12 @@
-import * as z from "zod/mini"
-import type { FileUpload } from "@remix-run/form-data-middleware"
+import * as s from "remix/data-schema"
+import * as checks from "remix/data-schema/checks"
+import type { FileUpload } from "remix/form-data-middleware"
 
 import { env } from "./env"
 
-let cloudinaryUploadResponseSchema = z.object({ secure_url: z.url() })
+let cloudinaryUploadResponseSchema = s.object({
+	secure_url: s.string().pipe(checks.url()),
+})
 
 export async function uploadHandler(file: FileUpload): Promise<string> {
 	// Generate unique key for this file
@@ -23,8 +26,10 @@ export async function uploadHandler(file: FileUpload): Promise<string> {
 	)
 
 	let data = await response.json()
-	let parsed = cloudinaryUploadResponseSchema.safeParse(data)
-	if (!parsed.success) throw new Error("Invalid response from Cloudinary")
+	let parsed = s.parseSafe(cloudinaryUploadResponseSchema, data)
+	if (parsed.success === false) {
+		throw new Error("Invalid response from Cloudinary")
+	}
 
-	return parsed.data.secure_url
+	return parsed.value.secure_url
 }

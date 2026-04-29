@@ -1,16 +1,16 @@
-import { getContext } from "@remix-run/async-context-middleware"
-import { createStorageKey } from "@remix-run/fetch-router"
+import { getContext } from "remix/async-context-middleware"
+import { createContextKey } from "remix/fetch-router"
 
 import type { User } from "#src/db/schema.ts"
 
 // Storage key for attaching user data to request context
-let USER_KEY = createStorageKey<User>()
+let USER_KEY = createContextKey<User>()
 
 /**
  * Get the current authenticated user from app storage.
  */
 export function getCurrentUser(): User {
-	return getContext().storage.get(USER_KEY)
+	return getContext().get(USER_KEY)
 }
 
 /**
@@ -29,5 +29,5 @@ export function getCurrentUserSafely(): User | null {
  * Set the current authenticated user in app storage.
  */
 export function setCurrentUser(user: User): void {
-	getContext().storage.set(USER_KEY, user)
+	getContext().set(USER_KEY, user)
 }

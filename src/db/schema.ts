@@ -1,7 +1,8 @@
+import * as s from "remix/data-schema"
+import * as f from "remix/data-schema/form-data"
 import { createId } from "@paralleldrive/cuid2"
 import { relations } from "drizzle-orm"
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core"
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod"
 
 // TODO: maybe make a user_sneakers table so we can reuse a lot of the core sneaker info
 export const sneakers = sqliteTable("sneakers", {
@@ -72,14 +73,34 @@ export const sneakersRelations = relations(sneakers, ({ one }) => {
 
 export type User = typeof users.$inferSelect
 export type UsersRelation = typeof usersRelations
-export let insertUserSchema = createInsertSchema(users)
-export let updateUserSchema = createUpdateSchema(users)
 
 export type Sneaker = typeof sneakers.$inferSelect
 export type SneakerRelation = typeof sneakersRelations
-export let insertSneakerSchema = createInsertSchema(sneakers).omit({
-	user_id: true,
+
+export const updateSneakerSchema = f.object({
+	brand: f.field(s.string()),
+	colorway: f.field(s.string()),
+	model: f.field(s.string()),
+	image: f.field(s.string()),
+	purchase_date: f.field(s.number()),
+	size: f.field(s.number()),
+	purchase_price: f.field(s.number()),
+	retail_price: f.field(s.number()),
+	sold: f.field(s.boolean()),
+	sold_date: f.field(s.number()),
+	sold_price: f.field(s.number()),
 })
-export let updateSneakerSchema = createUpdateSchema(sneakers).omit({
-	user_id: true,
+
+export const insertSneakerSchema = f.object({
+	brand: f.field(s.string()),
+	colorway: f.field(s.string()),
+	model: f.field(s.string()),
+	image: f.field(s.string()),
+	purchase_date: f.field(s.number()),
+	size: f.field(s.number()),
+	purchase_price: f.field(s.number()),
+	retail_price: f.field(s.number()),
+	sold: f.field(s.boolean()),
+	sold_date: f.field(s.number()),
+	sold_price: f.field(s.number()),
 })

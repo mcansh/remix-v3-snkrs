@@ -1,30 +1,20 @@
 import { cloudflare } from "@cloudflare/vite-plugin"
+import { remix } from "@mcansh/vite-plugin-remix"
 import { svgSprite } from "@mcansh/vite-plugin-svg-sprite"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vite"
 import devtoolsJson from "vite-plugin-devtools-json"
 
-import { remix } from "./vite-plugin-remix"
-
 export default defineConfig({
-	environments: {
-		client: {
-			build: {
-				rollupOptions: {
-					input: "src/entry.browser",
-				},
-			},
-		},
-	},
 	plugins: [
-		remix({ serverHandler: false }),
+		remix({
+			serverHandler: false,
+			clientEntry: "./src/entry.browser.ts",
+			serverEntry: "./src/entry.server.ts",
+		}),
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
 		devtoolsJson(),
 		tailwindcss(),
 		svgSprite(),
 	],
-	optimizeDeps: {
-		force: true,
-		noDiscovery: true,
-	},
 })

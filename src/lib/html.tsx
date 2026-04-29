@@ -1,27 +1,55 @@
-import type { Remix } from "@remix-run/dom"
-import { renderToStream } from "@remix-run/dom/server"
-import { createHtmlResponse } from "@remix-run/response/html"
+import type * as Remix from "remix/ui"
+import { getContext } from "remix/async-context-middleware"
+import type { Router } from "remix/fetch-router"
+import { createHtmlResponse } from "remix/response/html"
+import { renderToStream } from "remix/ui/server"
 
-import { Document } from "#src/components/document.tsx"
-import { router } from "#src/router.ts"
+export function render(node: Remix.RemixNode, init?: ResponseInit) {
+	let context = getContext()
+	let request = context.request
+	let router = context.router
 
-export function render(node: Remix.RemixNode, init?: ResponseInit): Response {
-	let body = renderToStream(node, {
-		async resolveFrame(src) {
-			const response = await router.fetch(new URL(src, "http://localhost"))
-			return (await response.text()) as any
+	let stream = renderToStream(node, {
+		resolveFrame(src) {
+			return resolveFrame(request, router, src)
 		},
-		onError(error, context) {
-			console.error("Error during render:", error, context)
-		},
+		onError: console.error,
 	})
 
-	return createHtmlResponse(body, init)
+	return createHtmlResponse(stream, init)
 }
 
-export function renderDocument(
-	children: Remix.RemixNode,
-	init?: ResponseInit,
-): Response {
-	return render(<Document>{children}</Document>, init)
+async function resolveFrame(request: Request, router: Router, src: string) {
+	let url = new URL(src, request.url)
+
+	let headers = new Headers()
+	headers.set("accept", "text/html")
+	headers.set("accept-encoding", "identity")
+
+	let cookie = request.headers.get("cookie")
+	if (cookie) headers.set("cookie", cookie)
+
+	let res = await router.fetch(
+		new Request(url, {
+			method: "GET",
+			headers,
+			signal: request.signal,
+		}),
+	)
+
+	if (!res.ok) {
+		return `<pre>Frame error: ${res.status} ${res.statusText}</pre>`
+	}
+
+	if (res.body) return res.body
+	return res.text()
+}
+
+export function renderFragment(node: Remix.RemixNode, init?: ResponseInit) {
+	let headers = new Headers(init?.headers)
+	if (!headers.has("Cache-Control")) {
+		headers.set("Cache-Control", "no-store")
+	}
+
+	return render(node, { ...init, headers })
 }

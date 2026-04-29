@@ -1,13 +1,13 @@
-import * as z from "zod/mini"
+import * as s from "remix/data-schema"
 import { defineConfig } from "drizzle-kit"
 
-let cloudflare = z.object({
-	CLOUDFLARE_ACCOUNT_ID: z.string(),
-	CLOUDFLARE_DATABASE_ID: z.string(),
-	CLOUDFLARE_D1_TOKEN: z.string(),
+let cloudflare = s.object({
+	CLOUDFLARE_ACCOUNT_ID: s.string(),
+	CLOUDFLARE_DATABASE_ID: s.string(),
+	CLOUDFLARE_D1_TOKEN: s.string(),
 })
 
-let env = cloudflare.parse(process.env)
+let env = s.parse(cloudflare, process.env)
 
 export default defineConfig({
 	out: "./drizzle",

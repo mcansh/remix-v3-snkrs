@@ -18,11 +18,10 @@ export function Document() {
 					<link rel="stylesheet" href={appStylesHref} />
 					{assets.css.map((attrs) => (
 						<link key={attrs.href} {...attrs} rel="stylesheet" />
-					))}
+          ))}
 					{assets.js.map((attrs) => (
 						<link key={attrs.href} {...attrs} rel="modulepreload" />
 					))}
-					<script async type="module" src={clientAssets.entry} />
 				</head>
 				<body>
 					<img
@@ -34,6 +33,7 @@ export function Document() {
 						fetch-priority="high"
 					/>
 					{children}
+					<script async type="module" src={clientAssets.entry} />
 				</body>
 			</html>
 		)

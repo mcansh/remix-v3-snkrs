@@ -7,7 +7,8 @@
 	"scripts": {
 		"build": "vite build",
 		"dev": "vite",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"test": "remix test"
 	},
 	"dependencies": {
 		"@brielov/crypto": "npm:@jsr/brielov__crypto@0.2.0",
@@ -35,6 +36,7 @@
 		"drizzle-kit": "0.31.10",
 		"lucide-static": "1.14.0",
 		"magic-string": "0.30.21",
+		"playwright": "1.59.1",
 		"prettier": "3.8.3",
 		"prettier-plugin-organize-imports": "4.3.0",
 		"prettier-plugin-packagejson": "3.0.2",

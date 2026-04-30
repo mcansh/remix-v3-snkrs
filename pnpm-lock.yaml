@@ -22,7 +22,7 @@ importers:
         version: 0.13.2
       '@mcansh/vite-plugin-remix':
         specifier: file:.yalc/@mcansh/vite-plugin-remix
-        version: file:.yalc/@mcansh/vite-plugin-remix(remix@3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))
+        version: file:.yalc/@mcansh/vite-plugin-remix(remix@3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(playwright@1.59.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))
       '@paralleldrive/cuid2':
         specifier: 3.3.0
         version: 3.3.0
@@ -37,7 +37,7 @@ importers:
         version: 0.45.2
       remix:
         specifier: 3.0.0-alpha.6
-        version: 3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
+        version: 3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(playwright@1.59.1)
       tailwind-merge:
         specifier: 3.5.0
         version: 3.5.0
@@ -78,6 +78,9 @@ importers:
       magic-string:
         specifier: 0.30.21
         version: 0.30.21
+      playwright:
+        specifier: 1.59.1
+        version: 1.59.1
       prettier:
         specifier: 3.8.3
         version: 3.8.3
@@ -2214,6 +2217,11 @@ packages:
     resolution: {integrity: sha512-Xr9F6z6up6Ws+NjzMCZc6WXg2YFRlrLP9NQDO3VQrWrfiojdhS56TzueT88ze0uBdCTwEIhQ3ptnmKeWGFAe0A==}
     engines: {node: '>=14.14'}
 
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -2441,6 +2449,16 @@ packages:
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
+
+  playwright-core@1.59.1:
+    resolution: {integrity: sha512-HBV/RJg81z5BiiZ9yPzIiClYV/QMsDCKUyogwH9p3MCP6IYjUFu/MActgYAvK0oWyV9NlwM3GLBjADyWgydVyg==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.59.1:
+    resolution: {integrity: sha512-C8oWjPR3F81yljW9o5OxcWzfh6avkVwDD2VYdwIGqTkl+OGFISgypqzfu7dOe4QNLL2aqcWBmI3PMtLIK233lw==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   postcss@8.5.12:
     resolution: {integrity: sha512-W62t/Se6rA0Az3DfCL0AqJwXuKwBeYg6nOaIgzP+xZ7N5BFCI7DYi1qs6ygUYT6rvfi6t9k65UMLJC+PHZpDAA==}
@@ -3308,12 +3326,12 @@ snapshots:
       change-case: 5.4.4
       type-fest: 4.41.0
 
-  '@mcansh/vite-plugin-remix@file:.yalc/@mcansh/vite-plugin-remix(remix@3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))':
+  '@mcansh/vite-plugin-remix@file:.yalc/@mcansh/vite-plugin-remix(remix@3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(playwright@1.59.1))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))':
     dependencies:
       '@hiogawa/vite-plugin-fullstack': 0.0.11(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))
       dedent: 1.7.2
       magic-string: 0.30.21
-      remix: 3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
+      remix: 3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(playwright@1.59.1)
       vite: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)
     transitivePeerDependencies:
       - babel-plugin-macros
@@ -3653,11 +3671,11 @@ snapshots:
       '@remix-run/fetch-router': 0.18.1
       '@remix-run/session': 0.4.1
 
-  '@remix-run/cli@0.1.0':
+  '@remix-run/cli@0.1.0(playwright@1.59.1)':
     dependencies:
       '@remix-run/tar-parser': 0.7.1
       '@remix-run/terminal': 0.1.0
-      '@remix-run/test': 0.2.0
+      '@remix-run/test': 0.2.0(playwright@1.59.1)
       semver: 7.7.4
     transitivePeerDependencies:
       - playwright
@@ -3797,7 +3815,7 @@ snapshots:
 
   '@remix-run/terminal@0.1.0': {}
 
-  '@remix-run/test@0.2.0':
+  '@remix-run/test@0.2.0(playwright@1.59.1)':
     dependencies:
       '@remix-run/terminal': 0.1.0
       es-module-lexer: 2.1.0
@@ -3810,6 +3828,8 @@ snapshots:
       source-map-js: 1.2.1
       tsx: 4.21.0
       v8-to-istanbul: 9.3.0
+    optionalDependencies:
+      playwright: 1.59.1
 
   '@remix-run/ui@0.1.0':
     dependencies:
@@ -4287,6 +4307,9 @@ snapshots:
       jsonfile: 6.2.0
       universalify: 2.0.1
 
+  fsevents@2.3.2:
+    optional: true
+
   fsevents@2.3.3:
     optional: true
 
@@ -4573,6 +4596,14 @@ snapshots:
 
   picomatch@4.0.4: {}
 
+  playwright-core@1.59.1: {}
+
+  playwright@1.59.1:
+    dependencies:
+      playwright-core: 1.59.1
+    optionalDependencies:
+      fsevents: 2.3.2
+
   postcss@8.5.12:
     dependencies:
       nanoid: 3.3.11
@@ -4610,14 +4641,14 @@ snapshots:
 
   readdirp@5.0.0: {}
 
-  remix@3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0):
+  remix@3.0.0-alpha.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(playwright@1.59.1):
     dependencies:
       '@remix-run/assert': 0.1.0
       '@remix-run/assets': 0.2.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
       '@remix-run/async-context-middleware': 0.2.1
       '@remix-run/auth': 0.2.0
       '@remix-run/auth-middleware': 0.1.1
-      '@remix-run/cli': 0.1.0
+      '@remix-run/cli': 0.1.0(playwright@1.59.1)
       '@remix-run/compression-middleware': 0.1.6
       '@remix-run/cookie': 0.5.1
       '@remix-run/cop-middleware': 0.1.1
@@ -4652,7 +4683,7 @@ snapshots:
       '@remix-run/static-middleware': 0.4.7
       '@remix-run/tar-parser': 0.7.1
       '@remix-run/terminal': 0.1.0
-      '@remix-run/test': 0.2.0
+      '@remix-run/test': 0.2.0(playwright@1.59.1)
       '@remix-run/ui': 0.1.0
     transitivePeerDependencies:
       - '@emnapi/core'

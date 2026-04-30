@@ -1,6 +1,6 @@
+import * as s from "remix/data-schema"
 import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
-import * as s from "remix/data-schema"
 
 import { schema } from "#app/db/index.ts"
 import type { Sneaker } from "#app/db/schema.ts"

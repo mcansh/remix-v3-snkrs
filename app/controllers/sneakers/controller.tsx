@@ -13,10 +13,10 @@ import { env } from "#app/lib/env.ts"
 import { render } from "#app/lib/html.tsx"
 import { requireAuth } from "#app/middleware/auth.ts"
 import {
-    createSneaker,
-    getAllSneakers,
-    getSneakerById,
-    updateSneaker,
+	createSneaker,
+	getAllSneakers,
+	getSneakerById,
+	updateSneaker,
 } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
 import { getCurrentUser } from "#app/utils/context.ts"

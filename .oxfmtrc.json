@@ -1,0 +1,16 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"sortTailwindcss": {},
+	"semi": false,
+	"useTabs": true,
+	"printWidth": 80,
+	"sortPackageJson": {},
+	"ignorePatterns": [
+		"pnpm-lock.yaml",
+		"drizzle",
+		".yalc",
+		"worker-configuration.d.ts",
+		".opencode",
+		".agents"
+	]
+}

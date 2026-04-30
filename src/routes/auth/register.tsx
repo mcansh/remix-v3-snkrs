@@ -97,8 +97,7 @@ export const registerHandlers = {
 		},
 		index() {
 			return render(
-				<Document>
-					<title>Hello, World!</title>
+				<Document head={<title>Hello, World!</title>}>
 					<h1>Hello, World!</h1>
 
 					<RestfulForm

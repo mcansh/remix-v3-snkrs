@@ -1,42 +1,39 @@
-import * as s from "remix/data-schema"
-import { isCuid } from "@paralleldrive/cuid2"
-import { and, eq } from "drizzle-orm"
-import type { BuildAction, Controller } from "remix/fetch-router"
-import { redirect } from "remix/response/redirect"
+import { and, eq } from "drizzle-orm";
+import * as s from "remix/data-schema";
+import type { BuildAction, Controller } from "remix/fetch-router";
+import { redirect } from "remix/response/redirect";
 
-import { Document } from "#src/components/document.tsx"
-import { RestfulForm } from "#src/components/restful-form.tsx"
-import { SneakerGrid } from "#src/components/sneaker-grid.tsx"
-import { schema } from "#src/db/index.ts"
-import type { Sneaker } from "#src/db/schema.ts"
-import { env } from "#src/lib/env.ts"
-import { render } from "#src/lib/html.tsx"
-import { requireAuth } from "#src/middleware/auth.ts"
+import { Document } from "#src/components/document.tsx";
+import { RestfulForm } from "#src/components/restful-form.tsx";
+import { SneakerGrid } from "#src/components/sneaker-grid.tsx";
+import { schema } from "#src/db/index.ts";
+import type { Sneaker } from "#src/db/schema.ts";
+import { env } from "#src/lib/env.ts";
+import { render } from "#src/lib/html.tsx";
+import { requireAuth } from "#src/middleware/auth.ts";
 import {
-	createSneaker,
-	getAllSneakers,
-	getSneakerById,
-	updateSneaker,
-} from "#src/models/sneaker.ts"
-import { routes } from "#src/routes.ts"
-import { getCurrentUser } from "#src/utils/context.ts"
+    createSneaker,
+    getAllSneakers,
+    getSneakerById,
+    updateSneaker,
+} from "#src/models/sneaker.ts";
+import { routes } from "#src/routes.ts";
+import { getCurrentUser } from "#src/utils/context.ts";
+import { isCuid2 } from "#src/utils/extra-schemas.ts";
 
 const sneakerIndexHandler = {
 	middleware: [requireAuth()],
 	async handler() {
 		let user = getCurrentUser()
 
-		let sneakersWithData = await getAllSneakers(user.id)
+		let sneakers = await getAllSneakers(user.id)
 
 		return render(
-			<Document>
+			<Document head={<title>Your Sneakers</title>}>
 				<div>
-					<title>Your Sneakers</title>
 					<h1>Welcome, {user.username}!</h1>
-					<p>Your sneakers:</p>
-
 					<div class="mt-4">
-						<SneakerGrid sneakers={sneakersWithData} />
+						<SneakerGrid sneakers={sneakers} />
 					</div>
 				</div>
 			</Document>,
@@ -56,18 +53,14 @@ const sneakerUserHandler = {
 				<Document>
 					<h1>User not found</h1>
 				</Document>,
-				{
-					status: 404,
-					statusText: "Not Found",
-				},
+				{ status: 404, statusText: "Not Found" },
 			)
 		}
 
 		let sneakers = await getAllSneakers(user.id)
 
 		return render(
-			<Document>
-				<title>{user.username}'s collection</title>
+			<Document head={<title>{user.username}'s collection</title>}>
 				<h1>Welcome to {user.username}'s collection!</h1>
 
 				<SneakerGrid sneakers={sneakers} />
@@ -98,8 +91,7 @@ const sneakerNewHandler = {
 		} satisfies Sneaker)
 
 		return render(
-			<Document>
-				<title>Add a new sneaker to your collection</title>
+			<Document head={<title>Add a new sneaker to your collection</title>}>
 				<SneakerForm sneaker={data} isEditing={false} />
 			</Document>,
 		)
@@ -115,16 +107,6 @@ const sneakerCreateHandler = {
 		return redirect(routes.sneakers.show.href({ id: sneakerId }))
 	},
 } satisfies BuildAction<"POST", typeof routes.sneakers.create>
-
-function isCuid2(): s.Check<string> {
-	return {
-		check(value) {
-			return isCuid(value)
-		},
-		code: "string.cuid",
-		message: "Expected valid CUID",
-	}
-}
 
 const sneakerDestroyHandler = {
 	middleware: [requireAuth()],
@@ -156,8 +138,7 @@ const sneakerEditHandler = {
 
 		if (!sneaker) {
 			return render(
-				<Document>
-					<title>404 Not Found</title>
+				<Document head={<title>404 Not Found</title>}>
 					<h1>404 Not Found</h1>
 					<p>Sorry, the sneaker you are looking for does not exist.</p>
 				</Document>,
@@ -166,9 +147,7 @@ const sneakerEditHandler = {
 		}
 
 		return render(
-			<Document>
-				<title>Edit Sneaker</title>
-
+			<Document head={<title>Edit Sneaker</title>}>
 				<SneakerForm sneaker={sneaker} isEditing={true} />
 			</Document>,
 		)
@@ -184,8 +163,7 @@ const sneakerShowHandler = {
 
 		if (!sneaker) {
 			return render(
-				<Document>
-					<title>404 Not Found</title>
+				<Document head={<title>404 Not Found</title>}>
 					<h1>404 Not Found</h1>
 				</Document>,
 				{ status: 404 },
@@ -193,8 +171,7 @@ const sneakerShowHandler = {
 		}
 
 		return render(
-			<Document>
-				<title>Show Sneaker</title>
+			<Document head={<title>Show Sneaker</title>}>
 				<div class="mt-4">
 					<h1>Show Sneaker {params.id}</h1>
 

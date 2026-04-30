@@ -10,7 +10,7 @@ describe("RestfulForm", () => {
 		t.after(cleanup)
 		let form = $("form") as HTMLFormElement
 		assert.equal(form.method, "get")
-		assert.equal($("input[type=\"hidden\"]"), null)
+		assert.equal($('input[type="hidden"]'), null)
 	})
 
 	it("renders a GET form when method is GET", (t) => {
@@ -18,7 +18,7 @@ describe("RestfulForm", () => {
 		t.after(cleanup)
 		let form = $("form") as HTMLFormElement
 		assert.equal(form.method, "get")
-		assert.equal($("input[type=\"hidden\"]"), null)
+		assert.equal($('input[type="hidden"]'), null)
 	})
 
 	it("renders a POST form when method is POST", (t) => {
@@ -26,14 +26,14 @@ describe("RestfulForm", () => {
 		t.after(cleanup)
 		let form = $("form") as HTMLFormElement
 		assert.equal(form.method, "post")
-		assert.equal($("input[type=\"hidden\"]"), null)
+		assert.equal($('input[type="hidden"]'), null)
 	})
 
 	it("renders a POST form with hidden _method input when method is PUT", (t) => {
 		let { $, cleanup } = render(<RestfulForm method="PUT" />)
 		t.after(cleanup)
 		let form = $("form") as HTMLFormElement
-		let hidden = $("input[type=\"hidden\"]") as HTMLInputElement
+		let hidden = $('input[type="hidden"]') as HTMLInputElement
 		assert.equal(form.method, "post")
 		assert.notEqual(hidden, null)
 		assert.equal(hidden.name, "_method")
@@ -44,7 +44,7 @@ describe("RestfulForm", () => {
 		let { $, cleanup } = render(<RestfulForm method="DELETE" />)
 		t.after(cleanup)
 		let form = $("form") as HTMLFormElement
-		let hidden = $("input[type=\"hidden\"]") as HTMLInputElement
+		let hidden = $('input[type="hidden"]') as HTMLInputElement
 		assert.equal(form.method, "post")
 		assert.notEqual(hidden, null)
 		assert.equal(hidden.name, "_method")
@@ -55,7 +55,7 @@ describe("RestfulForm", () => {
 		let { $, cleanup } = render(<RestfulForm method="PATCH" />)
 		t.after(cleanup)
 		let form = $("form") as HTMLFormElement
-		let hidden = $("input[type=\"hidden\"]") as HTMLInputElement
+		let hidden = $('input[type="hidden"]') as HTMLInputElement
 		assert.equal(form.method, "post")
 		assert.equal(hidden.name, "_method")
 		assert.equal(hidden.value, "PATCH")
@@ -66,7 +66,7 @@ describe("RestfulForm", () => {
 			<RestfulForm method="PUT" methodOverrideField="__method" />,
 		)
 		t.after(cleanup)
-		let hidden = $("input[type=\"hidden\"]") as HTMLInputElement
+		let hidden = $('input[type="hidden"]') as HTMLInputElement
 		assert.equal(hidden.name, "__method")
 		assert.equal(hidden.value, "PUT")
 	})
@@ -88,7 +88,7 @@ describe("RestfulForm", () => {
 			</RestfulForm>,
 		)
 		t.after(cleanup)
-		assert.notEqual($("[data-testid=\"title-input\"]"), null)
+		assert.notEqual($('[data-testid="title-input"]'), null)
 	})
 
 	it("renders children alongside the hidden method input for non-POST methods", (t) => {
@@ -98,7 +98,7 @@ describe("RestfulForm", () => {
 			</RestfulForm>,
 		)
 		t.after(cleanup)
-		assert.notEqual($("input[type=\"hidden\"]"), null)
-		assert.notEqual($("[data-testid=\"title-input\"]"), null)
+		assert.notEqual($('input[type="hidden"]'), null)
+		assert.notEqual($('[data-testid="title-input"]'), null)
 	})
 })

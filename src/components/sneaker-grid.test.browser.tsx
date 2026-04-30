@@ -1,10 +1,10 @@
-import * as assert from "remix/assert";
-import { describe, it } from "remix/test";
-import { render } from "remix/ui/test";
+import * as assert from "remix/assert"
+import { describe, it } from "remix/test"
+import { render } from "remix/ui/test"
 
-import type { SerializedSneaker } from "#src/models/sneaker.ts";
-import { routes } from "#src/routes.ts";
-import { SneakerGrid } from "./sneaker-grid.tsx";
+import type { SerializedSneaker } from "#src/models/sneaker.ts"
+import { routes } from "#src/routes.ts"
+import { SneakerGrid } from "./sneaker-grid.tsx"
 
 const baseSneaker: SerializedSneaker = {
 	id: "sneaker-1",
@@ -45,14 +45,16 @@ describe("SneakerGrid", () => {
 	})
 
 	it("renders the sneaker imagery and details", (t) => {
-		let { $, cleanup, container } = render(
-			<SneakerGrid sneakers={[baseSneaker]} />,
-		)
+		let { $, cleanup } = render(<SneakerGrid sneakers={[baseSneaker]} />)
 		t.after(cleanup)
-    let image = $("img") as HTMLImageElement
+		let image = $("img") as HTMLImageElement
 		let model = $("p[data-testid='sneaker.model']") as HTMLParagraphElement
-		let colorway = $("p[data-testid='sneaker.colorway']") as HTMLParagraphElement
-		let purchasePrice = $("p[data-testid='sneaker.purchase_price']") as HTMLParagraphElement
+		let colorway = $(
+			"p[data-testid='sneaker.colorway']",
+		) as HTMLParagraphElement
+		let purchasePrice = $(
+			"p[data-testid='sneaker.purchase_price']",
+		) as HTMLParagraphElement
 		assert.equal(image.src, baseSneaker.image)
 		assert.equal(image.srcset, baseSneaker.srcSet)
 		assert.equal(
@@ -83,8 +85,8 @@ describe("SneakerGrid", () => {
 		)
 
 		let form = $("form") as HTMLFormElement
-		let hidden = $("input[type=\"hidden\"]") as HTMLInputElement
-		let submit = $("button[type=\"submit\"]") as HTMLButtonElement
+		let hidden = $('input[type="hidden"]') as HTMLInputElement
+		let submit = $('button[type="submit"]') as HTMLButtonElement
 		assert.equal(form.method, "post")
 		assert.equal(
 			form.getAttribute("action"),

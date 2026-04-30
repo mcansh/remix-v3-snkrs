@@ -1,6 +1,6 @@
-import type { SerializedSneaker } from "#src/models/sneaker.ts";
-import { routes } from "#src/routes.ts";
-import { RestfulForm } from "./restful-form.tsx";
+import type { SerializedSneaker } from "#src/models/sneaker.ts"
+import { routes } from "#src/routes.ts"
+import { RestfulForm } from "./restful-form.tsx"
 
 type SneakerGridProps = {
 	sneakers: ReadonlyArray<SerializedSneaker>
@@ -54,9 +54,11 @@ export function SneakerGrid() {
 								</RestfulForm>
 							</div>
 
-							<p>{sneaker.model}</p>
-							<p>{sneaker.colorway}</p>
-							<p>{sneaker.purchase_price}</p>
+							<p data-testid="sneaker.model">{sneaker.model}</p>
+							<p data-testid="sneaker.colorway">{sneaker.colorway}</p>
+							<p data-testid="sneaker.purchase_price">
+								{sneaker.purchase_price}
+							</p>
 						</li>
 					)
 				})}

@@ -1,12 +1,12 @@
 import {
 	createSecureHeaders,
+	mergeHeaders,
 	NONE,
 	SELF,
-	mergeHeaders,
 } from "@mcansh/http-helmet"
 
-import { env } from "./lib/env"
-import { router } from "./router"
+import { env } from "./lib/env.ts"
+import { router } from "./router.ts"
 
 let securityHeaders = createSecureHeaders({
 	"Content-Security-Policy": {

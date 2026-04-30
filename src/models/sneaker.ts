@@ -77,7 +77,7 @@ export async function createSneaker(
 			purchase_price: parsed.purchase_price,
 			retail_price: parsed.retail_price,
 			user_id: userId,
-			purchase_date: parsed.purchase_date,
+			purchase_date: new Date(parsed.purchase_date),
 		})
 		.returning({ id: schema.sneakers.id })
 
@@ -88,18 +88,6 @@ export async function createSneaker(
 	}
 
 	return sneaker.id
-}
-
-type Serialize<T> = T extends Date
-	? string
-	: T extends object
-		? { [K in keyof T]: Serialize<T[K]> }
-		: T
-
-type SerializeExtras<T> = {
-	[K in keyof T]: K extends `${string}_date` | `${string}_price`
-		? string | null
-		: Serialize<T[K]>
 }
 
 export async function getAllSneakers(
@@ -120,7 +108,7 @@ export async function getAllSneakers(
 export function serializeSneaker(
 	sneaker: Sneaker,
 	imageSizes: [number, number, number] = [200, 400, 600],
-): SerializedSneaker {
+) {
 	let result = generateDensitySrcSet({
 		publicId: sneaker.image,
 		sizes: imageSizes,
@@ -128,6 +116,7 @@ export function serializeSneaker(
 
 	return Object.freeze({
 		...sneaker,
+		brand_slug: sneaker.brand.toLowerCase().replace(/\s+/g, "-"),
 		purchase_price: formatMoney(sneaker.purchase_price),
 		retail_price: formatMoney(sneaker.retail_price),
 		sold_price: sneaker.sold_price ? formatMoney(sneaker.sold_price) : null,
@@ -142,7 +131,7 @@ export function serializeSneaker(
 	})
 }
 
-export type SerializedSneaker = SerializeExtras<Sneaker> & { srcSet: string }
+export type SerializedSneaker = ReturnType<typeof serializeSneaker>
 
 type SerializedSneakerOrSneaker<T> = T extends true
 	? SerializedSneaker

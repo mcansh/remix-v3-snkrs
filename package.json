@@ -20,7 +20,7 @@
 		"clsx": "2.1.1",
 		"decode-formdata": "0.9.0",
 		"drizzle-orm": "0.45.2",
-		"remix": "3.0.0-alpha.6",
+		"remix": "3.0.0-beta.0",
 		"tailwind-merge": "3.5.0"
 	},
 	"devDependencies": {

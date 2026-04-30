@@ -1,15 +1,15 @@
 import * as s from "remix/data-schema"
-import * as f from "remix/data-schema/form-data"
 import { email } from "remix/data-schema/checks"
+import * as f from "remix/data-schema/form-data"
 import type { Controller } from "remix/fetch-router"
 import { redirect } from "remix/response/redirect"
 import { Session } from "remix/session"
 
-import { Document } from "#src/components/document.tsx"
-import { RestfulForm } from "#src/components/restful-form.tsx"
-import { render } from "#src/lib/html.tsx"
-import { authenticateUser } from "#src/models/user.ts"
-import { routes } from "#src/routes.ts"
+import { Document } from "#app/components/document.tsx"
+import { RestfulForm } from "#app/components/restful-form.tsx"
+import { render } from "#app/lib/html.tsx"
+import { authenticateUser } from "#app/models/user.ts"
+import { routes } from "#app/routes.ts"
 
 export const loginHandlers = {
 	middleware: [],

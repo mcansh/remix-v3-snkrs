@@ -1,5 +1,5 @@
-import type { SerializedSneaker } from "#src/models/sneaker.ts"
-import { routes } from "#src/routes.ts"
+import type { SerializedSneaker } from "#app/models/sneaker.ts"
+import { routes } from "#app/routes.ts"
 import { RestfulForm } from "./restful-form.tsx"
 
 type SneakerGridProps = {

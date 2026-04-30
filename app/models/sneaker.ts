@@ -1,13 +1,13 @@
-import * as s from "remix/data-schema"
 import { decode } from "decode-formdata"
 import { eq } from "drizzle-orm"
+import * as s from "remix/data-schema"
 
-import { schema } from "#src/db/index.ts"
-import type { Sneaker } from "#src/db/schema.ts"
-import { insertSneakerSchema, updateSneakerSchema } from "#src/db/schema.ts"
-import { generateDensitySrcSet } from "#src/lib/asset.ts"
-import { env } from "#src/lib/env.ts"
-import { formatDate, formatMoney } from "#src/lib/format.ts"
+import { schema } from "#app/db/index.ts"
+import type { Sneaker } from "#app/db/schema.ts"
+import { insertSneakerSchema, updateSneakerSchema } from "#app/db/schema.ts"
+import { generateDensitySrcSet } from "#app/lib/asset.ts"
+import { env } from "#app/lib/env.ts"
+import { formatDate, formatMoney } from "#app/lib/format.ts"
 
 export class CreateSneakerError extends Error {
 	sneaker: s.InferOutput<typeof insertSneakerSchema>

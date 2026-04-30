@@ -1,8 +1,8 @@
 import type { Controller } from "remix/fetch-router"
 
-import { routes } from "#src/routes.ts"
-import { loginHandlers } from "./login"
-import { registerHandlers } from "./register"
+import { routes } from "#app/routes.ts"
+import { loginHandlers } from "./login/controller"
+import { registerHandlers } from "./register/controller"
 
 export const authHandlers = {
 	middleware: [],

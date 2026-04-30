@@ -5,12 +5,12 @@ import { logger } from "remix/logger-middleware"
 import { methodOverride } from "remix/method-override-middleware"
 import { session } from "remix/session-middleware"
 
+import { authHandlers } from "./controllers/auth/controller.ts"
+import { brandHandlers } from "./controllers/brands/controller.tsx"
+import { homeHandlers } from "./controllers/home/controller.tsx"
+import { sneakerHandlers } from "./controllers/sneakers/controller.tsx"
 import { uploadHandler } from "./lib/upload.ts"
 import { routes } from "./routes"
-import { authHandlers } from "./routes/auth/index.ts"
-import { brandHandlers } from "./routes/brands.tsx"
-import { homeHandlers } from "./routes/home.tsx"
-import { sneakerHandlers } from "./routes/sneakers.tsx"
 import { sessionCookie, sessionStorage } from "./utils/session.ts"
 
 let middleware = [

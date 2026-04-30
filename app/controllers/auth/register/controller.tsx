@@ -1,19 +1,19 @@
-import * as s from "remix/data-schema"
-import * as f from "remix/data-schema/form-data"
 import { generateSalt, hash, toBase64 } from "@brielov/crypto"
 import { decode } from "decode-formdata"
+import * as s from "remix/data-schema"
 import { email, minLength } from "remix/data-schema/checks"
+import * as f from "remix/data-schema/form-data"
 import type { Controller } from "remix/fetch-router"
 import { redirect } from "remix/response/redirect"
 import { Session } from "remix/session"
 
-import { Document } from "#src/components/document.tsx"
-import { RestfulForm } from "#src/components/restful-form.tsx"
-import { schema } from "#src/db/index.ts"
-import { env } from "#src/lib/env.ts"
-import { render } from "#src/lib/html.tsx"
-import { getUserByEmail } from "#src/models/user.ts"
-import { routes } from "#src/routes.ts"
+import { Document } from "#app/components/document.tsx"
+import { RestfulForm } from "#app/components/restful-form.tsx"
+import { schema } from "#app/db/index.ts"
+import { env } from "#app/lib/env.ts"
+import { render } from "#app/lib/html.tsx"
+import { getUserByEmail } from "#app/models/user.ts"
+import { routes } from "#app/routes.ts"
 
 export const registerHandlers = {
 	actions: {

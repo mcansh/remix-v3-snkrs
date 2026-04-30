@@ -1,26 +1,26 @@
-import * as s from "remix/data-schema"
 import { and, eq } from "drizzle-orm"
+import * as s from "remix/data-schema"
 import type { BuildAction, Controller } from "remix/fetch-router"
 import { redirect } from "remix/response/redirect"
 
-import { Document } from "#src/components/document.tsx"
-import { RestfulForm } from "#src/components/restful-form.tsx"
-import { SneakerGrid } from "#src/components/sneaker-grid.tsx"
-import { getDemoSneakers } from "#src/data/demo-sneakers.ts"
-import { schema } from "#src/db/index.ts"
-import type { Sneaker } from "#src/db/schema.ts"
-import { env } from "#src/lib/env.ts"
-import { render } from "#src/lib/html.tsx"
-import { requireAuth } from "#src/middleware/auth.ts"
+import { Document } from "#app/components/document.tsx"
+import { RestfulForm } from "#app/components/restful-form.tsx"
+import { SneakerGrid } from "#app/components/sneaker-grid.tsx"
+import { getDemoSneakers } from "#app/data/demo-sneakers.ts"
+import { schema } from "#app/db/index.ts"
+import type { Sneaker } from "#app/db/schema.ts"
+import { env } from "#app/lib/env.ts"
+import { render } from "#app/lib/html.tsx"
+import { requireAuth } from "#app/middleware/auth.ts"
 import {
-	createSneaker,
-	getAllSneakers,
-	getSneakerById,
-	updateSneaker,
-} from "#src/models/sneaker.ts"
-import { routes } from "#src/routes.ts"
-import { getCurrentUser } from "#src/utils/context.ts"
-import { isCuid2 } from "#src/utils/extra-schemas.ts"
+    createSneaker,
+    getAllSneakers,
+    getSneakerById,
+    updateSneaker,
+} from "#app/models/sneaker.ts"
+import { routes } from "#app/routes.ts"
+import { getCurrentUser } from "#app/utils/context.ts"
+import { isCuid2 } from "#app/utils/extra-schemas.ts"
 
 const sneakerIndexHandler = {
 	middleware: [requireAuth()],

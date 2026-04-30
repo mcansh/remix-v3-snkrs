@@ -2,8 +2,8 @@ import * as assert from "remix/assert"
 import { describe, it } from "remix/test"
 import { render } from "remix/ui/test"
 
-import type { SerializedSneaker } from "#src/models/sneaker.ts"
-import { routes } from "#src/routes.ts"
+import type { SerializedSneaker } from "#app/models/sneaker.ts"
+import { routes } from "#app/routes.ts"
 import { SneakerGrid } from "./sneaker-grid.tsx"
 
 const baseSneaker: SerializedSneaker = {

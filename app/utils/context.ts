@@ -1,7 +1,7 @@
 import { getContext } from "remix/async-context-middleware"
 import { createContextKey } from "remix/fetch-router"
 
-import type { User } from "#src/db/schema.ts"
+import type { User } from "#app/db/schema.ts"
 
 // Storage key for attaching user data to request context
 let USER_KEY = createContextKey<User>()

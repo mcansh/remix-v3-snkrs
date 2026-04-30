@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm"
 import type { Controller } from "remix/fetch-router"
 
-import { Document } from "#src/components/document.tsx"
-import { SneakerGrid } from "#src/components/sneaker-grid.tsx"
-import { env } from "#src/lib/env.ts"
-import { render } from "#src/lib/html.tsx"
-import { serializeSneaker } from "#src/models/sneaker.ts"
-import { routes } from "#src/routes.ts"
-import { schema } from "../db"
+import { Document } from "#app/components/document.tsx"
+import { SneakerGrid } from "#app/components/sneaker-grid.tsx"
+import { env } from "#app/lib/env.ts"
+import { render } from "#app/lib/html.tsx"
+import { serializeSneaker } from "#app/models/sneaker.ts"
+import { routes } from "#app/routes.ts"
+import { schema } from "../../db"
 
 export const brandHandlers = {
 	middleware: [],

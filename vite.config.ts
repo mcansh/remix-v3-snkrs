@@ -7,11 +7,7 @@ import devtoolsJson from "vite-plugin-devtools-json"
 
 export default defineConfig({
 	plugins: [
-		remix({
-			serverHandler: false,
-			clientEntry: "./src/entry.browser.ts",
-			serverEntry: "./src/entry.server.ts",
-		}),
+		remix({ serverHandler: false }),
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
 		devtoolsJson(),
 		tailwindcss(),

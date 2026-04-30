@@ -1,4 +1,4 @@
-import type { SerializedSneaker } from "#src/models/sneaker.ts"
+import type { SerializedSneaker } from "#app/models/sneaker.ts"
 
 const demoBase: ReadonlyArray<
 	Omit<

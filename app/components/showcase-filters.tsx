@@ -21,7 +21,7 @@ export function ShowcaseFilters() {
 					Brand
 					<select
 						name="brand"
-						value={brand ?? ""}
+						defaultValue={brand ?? ""}
 						class="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 ring-2 ring-transparent outline-none focus-visible:ring-blue-500"
 					>
 						<option value="">All brands</option>
@@ -37,7 +37,7 @@ export function ShowcaseFilters() {
 					Sort
 					<select
 						name="sort"
-						value={sort}
+						defaultValue={sort}
 						class="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 ring-2 ring-transparent outline-none focus-visible:ring-blue-500"
 					>
 						<option value="desc">Newest first</option>
@@ -49,7 +49,7 @@ export function ShowcaseFilters() {
 					Per page
 					<select
 						name="perPage"
-						value={String(perPage)}
+						defaultValue={String(perPage)}
 						class="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 ring-2 ring-transparent outline-none focus-visible:ring-blue-500"
 					>
 						<option value="12">12</option>

@@ -1,9 +1,8 @@
+import { html } from "#test/utils.ts"
 import * as assert from "remix/assert"
 import { createTestServer } from "remix/node-fetch-server/test"
 import { describe, it } from "remix/test"
 import type * as remix from "remix/ui"
-import { renderToString } from "remix/ui/server"
-
 import { Pagination } from "./pagination.tsx"
 
 function Doc() {
@@ -24,14 +23,6 @@ let allSneakers = Array.from(
 	{ length: 13 },
 	(_, index) => `Sneaker ${index + 1}`,
 )
-
-function html(node: remix.RemixNode) {
-	return renderToString(node).then((body) => {
-		return new Response(body, {
-			headers: { "content-type": "text/html" },
-		})
-	})
-}
 
 function getPage(request: Request): number {
 	let url = new URL(request.url)

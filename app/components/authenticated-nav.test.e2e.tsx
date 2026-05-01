@@ -2,7 +2,8 @@ import * as assert from "remix/assert"
 import { createTestServer } from "remix/node-fetch-server/test"
 import { describe, it } from "remix/test"
 import type * as remix from "remix/ui"
-import { renderToString } from "remix/ui/server"
+
+import { html } from "#test/utils.ts"
 
 import { AuthenticatedNav } from "./authenticated-nav.tsx"
 
@@ -18,14 +19,6 @@ function Doc() {
 			</html>
 		)
 	}
-}
-
-function html(node: remix.RemixNode) {
-	return renderToString(node).then((body) => {
-		return new Response(body, {
-			headers: { "content-type": "text/html" },
-		})
-	})
 }
 
 describe("AuthenticatedNav e2e", () => {

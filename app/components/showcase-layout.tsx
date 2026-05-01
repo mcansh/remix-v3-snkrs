@@ -95,10 +95,18 @@ export function ShowcaseLayout() {
 						brands={brands}
 						sort={search.sort}
 						perPage={search.perPage}
+						resetHref={basePath}
 					/>
 				</section>
 
 				<section class="container">
+					<div class="mb-3 flex items-center justify-between text-sm text-slate-600">
+						<p>
+							Showing page {showcase.page}
+							{showcase.totalPages > 0 ? ` of ${showcase.totalPages}` : ""}
+						</p>
+						<p>{showcase.total} total pairs</p>
+					</div>
 					<SneakerGrid sneakers={showcase.sneakers} username={username} />
 					<Pagination
 						basePath={basePath}

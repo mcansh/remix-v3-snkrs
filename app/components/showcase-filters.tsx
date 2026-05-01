@@ -6,11 +6,13 @@ export function ShowcaseFilters() {
 		brands,
 		sort,
 		perPage,
+		resetHref,
 	}: {
 		brand: string | null
 		brands: ReadonlyArray<BrandFilterOption>
 		sort: "asc" | "desc"
 		perPage: 12 | 24
+		resetHref?: string
 	}) => {
 		return (
 			<form
@@ -63,6 +65,15 @@ export function ShowcaseFilters() {
 				>
 					Apply
 				</button>
+
+				{resetHref ? (
+					<a
+						href={resetHref}
+						class="inline-flex h-9 items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 no-underline transition-colors hover:border-slate-400 hover:text-slate-900 sm:col-span-2 lg:col-span-1 lg:self-end"
+					>
+						Reset
+					</a>
+				) : null}
 			</form>
 		)
 	}

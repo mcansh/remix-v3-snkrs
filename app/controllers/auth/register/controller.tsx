@@ -24,30 +24,109 @@ let registerSchema = f.object({
 	family_name: f.field(s.string()),
 })
 
+type RegisterValues = {
+	email?: string
+	username?: string
+	given_name?: string
+	family_name?: string
+}
+
+type RegisterErrors = {
+	email?: string
+	username?: string
+	password?: string
+	confirm_password?: string
+	given_name?: string
+	family_name?: string
+	general?: string
+}
+
+function getRegisterFieldErrors(issues: unknown): RegisterErrors {
+	if (!Array.isArray(issues)) return { general: "Please check your inputs." }
+
+	let errors: RegisterErrors = {}
+
+	for (let issue of issues) {
+		if (typeof issue !== "object" || issue === null) continue
+
+		let path = "path" in issue ? (issue.path as unknown) : null
+		let message = "message" in issue ? issue.message : null
+		let field = Array.isArray(path) ? path.at(0) : null
+
+		if (typeof field === "string" && typeof message === "string") {
+			if (
+				field === "email" ||
+				field === "username" ||
+				field === "password" ||
+				field === "confirm_password" ||
+				field === "given_name" ||
+				field === "family_name"
+			) {
+				errors[field] = message
+			}
+		}
+	}
+
+	if (
+		!errors.email &&
+		!errors.username &&
+		!errors.password &&
+		!errors.confirm_password &&
+		!errors.given_name &&
+		!errors.family_name
+	) {
+		errors.general = "Please check your inputs."
+	}
+
+	return errors
+}
+
 export const register = {
 	actions: {
 		async action({ get }) {
 			let session = get(Session)
 			let formData = get(FormData)
 			const salt = generateSalt()
+			let values: RegisterValues = {
+				email: typeof formData.get("email") === "string" ? String(formData.get("email")) : "",
+				username:
+					typeof formData.get("username") === "string"
+						? String(formData.get("username"))
+						: "",
+				given_name:
+					typeof formData.get("given_name") === "string"
+						? String(formData.get("given_name"))
+						: "",
+				family_name:
+					typeof formData.get("family_name") === "string"
+						? String(formData.get("family_name"))
+						: "",
+			}
 
 			let decoded = decode(formData)
 
 			let result = s.parseSafe(registerSchema, decoded)
 
 			if (result.success === false) {
-				session.flash("error", "Please fill in all required fields.")
+				session.flash("formErrors", getRegisterFieldErrors(result.issues))
+				session.flash("formValues", values)
 				return redirect(routes.auth.register.index.href())
 			}
 
 			// Check if user already exists
 			if (await getUserByEmail(result.value.email)) {
-				session.set("error", "An account with this email already exists.")
+				session.flash("formErrors", {
+					email: "An account with this email already exists.",
+				} satisfies RegisterErrors)
+				session.flash("formValues", values)
 				return redirect(routes.auth.register.index.href())
 			}
 
 			if (result.value.password !== result.value.confirm_password) {
-				session.flash("error", "Passwords do not match.")
+				session.flash("formErrors", {
+					confirm_password: "Passwords do not match.",
+				} satisfies RegisterErrors)
+				session.flash("formValues", values)
 				return redirect(routes.auth.register.index.href())
 			}
 
@@ -67,7 +146,10 @@ export const register = {
 			let createdUser = createdUsers.at(0)
 
 			if (!createdUser) {
-				session.flash("error", "Failed to create account. Please try again.")
+				session.flash("formErrors", {
+					general: "Failed to create account. Please try again.",
+				} satisfies RegisterErrors)
+				session.flash("formValues", values)
 				return redirect(routes.auth.register.index.href())
 			}
 
@@ -79,7 +161,8 @@ export const register = {
 		},
 		index({ get }) {
 			let session = get(Session)
-			let error = session.get("error")
+			let formErrors = session.get("formErrors") as RegisterErrors | undefined
+			let formValues = session.get("formValues") as RegisterValues | undefined
 
 			return render(
 				<Document head={<title>Create Account</title>}>
@@ -89,9 +172,9 @@ export const register = {
 							Set up your profile to start tracking your collection.
 						</p>
 
-						{typeof error === "string" ? (
+						{typeof formErrors?.general === "string" ? (
 							<div class="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-								{error}
+								{formErrors.general}
 							</div>
 						) : null}
 
@@ -108,8 +191,12 @@ export const register = {
 									type="text"
 									autoComplete="given-name"
 									required
+									defaultValue={formValues?.given_name ?? ""}
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.given_name ? (
+									<span class="text-xs text-rose-700">{formErrors.given_name}</span>
+								) : null}
 							</label>
 
 							<label class="grid gap-1.5 text-sm text-slate-700" for="family_name">
@@ -120,8 +207,12 @@ export const register = {
 									type="text"
 									autoComplete="family-name"
 									required
+									defaultValue={formValues?.family_name ?? ""}
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.family_name ? (
+									<span class="text-xs text-rose-700">{formErrors.family_name}</span>
+								) : null}
 							</label>
 
 							<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="email">
@@ -132,8 +223,12 @@ export const register = {
 									type="email"
 									autoComplete="email"
 									required
+									defaultValue={formValues?.email ?? ""}
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.email ? (
+									<span class="text-xs text-rose-700">{formErrors.email}</span>
+								) : null}
 							</label>
 
 							<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="username">
@@ -144,8 +239,12 @@ export const register = {
 									type="text"
 									autoComplete="username"
 									required
+									defaultValue={formValues?.username ?? ""}
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.username ? (
+									<span class="text-xs text-rose-700">{formErrors.username}</span>
+								) : null}
 							</label>
 
 							<label class="grid gap-1.5 text-sm text-slate-700" for="password">
@@ -159,6 +258,9 @@ export const register = {
 									minLength={8}
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.password ? (
+									<span class="text-xs text-rose-700">{formErrors.password}</span>
+								) : null}
 							</label>
 
 							<label class="grid gap-1.5 text-sm text-slate-700" for="confirm_password">
@@ -172,6 +274,11 @@ export const register = {
 									minLength={8}
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.confirm_password ? (
+									<span class="text-xs text-rose-700">
+										{formErrors.confirm_password}
+									</span>
+								) : null}
 							</label>
 
 							<div class="md:col-span-2">

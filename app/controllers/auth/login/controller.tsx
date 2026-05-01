@@ -20,22 +20,63 @@ let loginSchema = f.object({
 	return_to: f.field(s.optional(s.string())),
 })
 
+type LoginFormValues = {
+	email?: string
+}
+
+type LoginFormErrors = {
+	email?: string
+	password?: string
+	general?: string
+}
+
+function getFieldErrors(issues: unknown): LoginFormErrors {
+	if (!Array.isArray(issues)) return { general: "Please check your inputs." }
+
+	let errors: LoginFormErrors = {}
+
+	for (let issue of issues) {
+		if (typeof issue !== "object" || issue === null) continue
+
+		let path = "path" in issue ? (issue.path as unknown) : null
+		let message = "message" in issue ? issue.message : null
+		let field = Array.isArray(path) ? path.at(0) : null
+
+		if (typeof field === "string" && typeof message === "string") {
+			if (field === "email" || field === "password") {
+				errors[field] = message
+			}
+		}
+	}
+
+	if (!errors.email && !errors.password) {
+		errors.general = "Please check your inputs."
+	}
+
+	return errors
+}
+
 export const login = {
 	middleware: [],
 	actions: {
 		async action(context) {
 			let formData = context.get(FormData)
+			let session = context.get(Session)
 			let returnToFromForm = formData.get("return_to")
 			let returnTo =
 				typeof returnToFromForm === "string" && returnToFromForm.length > 0
 					? returnToFromForm
 					: routes.home.index.href()
+			let emailValue = formData.get("email")
+			let values: LoginFormValues = {
+				email: typeof emailValue === "string" ? emailValue : "",
+			}
 
 			let result = s.parseSafe(loginSchema, formData)
 
 			if (result.success === false) {
-				let session = context.get(Session)
-				session.flash("error", "Please enter a valid email and password.")
+				session.flash("formErrors", getFieldErrors(result.issues))
+				session.flash("formValues", values)
 				return redirect(routes.auth.login.index.href(undefined, { returnTo }))
 			}
 
@@ -46,13 +87,15 @@ export const login = {
 			returnTo = result.value.return_to || routes.home.index.href()
 
 			if (user == null) {
-				let session = context.get(Session)
-				session.flash("error", "Invalid email or password. Please try again.")
+				session.flash("formErrors", {
+					password: "Invalid email or password. Please try again.",
+				} satisfies LoginFormErrors)
+				session.flash("formValues", values)
 				return redirect(routes.auth.login.index.href(undefined, { returnTo }))
 			}
 
-			let session = completeAuth(context)
-			session.set("auth", { userId: user.id })
+			let authSession = completeAuth(context)
+			authSession.set("auth", { userId: user.id })
 
 			return redirect(getPostAuthRedirect(context.url))
 		},
@@ -60,7 +103,8 @@ export const login = {
 		async index({ get, url }) {
 			let session = get(Session)
 			let returnTo = url.searchParams.get("returnTo")
-			let error = session.get("error")
+			let formErrors = session.get("formErrors") as LoginFormErrors | undefined
+			let formValues = session.get("formValues") as LoginFormValues | undefined
 
 			let user = getCurrentUserSafely()
 
@@ -76,9 +120,9 @@ export const login = {
 							Welcome back. Enter your credentials to continue.
 						</p>
 
-						{typeof error === "string" ? (
+						{typeof formErrors?.general === "string" ? (
 							<div class="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-								{error}
+								{formErrors.general}
 							</div>
 						) : null}
 
@@ -99,8 +143,12 @@ export const login = {
 									type="email"
 									autoComplete="email"
 									required
+									defaultValue={formValues?.email ?? ""}
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.email ? (
+									<span class="text-xs text-rose-700">{formErrors.email}</span>
+								) : null}
 							</label>
 
 							<label class="grid gap-1.5 text-sm text-slate-700" for="password">
@@ -113,6 +161,11 @@ export const login = {
 									required
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
+								{formErrors?.password ? (
+									<span class="text-xs text-rose-700">
+										{formErrors.password}
+									</span>
+								) : null}
 							</label>
 
 							<button

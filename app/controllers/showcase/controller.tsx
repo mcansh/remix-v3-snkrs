@@ -89,8 +89,6 @@ async function renderShowcase(
 	let title = getShowcaseTitle(status, user.username)
 	let basePath = getShowcaseBasePath(status, user.username)
 
-	console.log({ search, showcase, basePath, status, title })
-
 	return render(
 		<Document head={<title>{title}</title>}>
 			<ShowcaseLayout

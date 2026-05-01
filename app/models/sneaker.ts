@@ -231,13 +231,13 @@ export async function getSneakersForShowcase(
 		serializeSneaker(sneaker, imageSizes),
 	)
 
-	return Object.freeze({
-		sneakers: Object.freeze(serialized),
+	return {
+		sneakers: serialized,
 		total,
 		page,
 		perPage,
 		totalPages,
-	})
+	}
 }
 
 export async function getBrandsForUser(

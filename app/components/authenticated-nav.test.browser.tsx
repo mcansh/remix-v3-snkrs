@@ -52,7 +52,9 @@ describe("AuthenticatedNav", () => {
 		)
 		t.after(cleanup)
 
-		let trigger = $("button[popovertarget='mobile-nav-menu']") as HTMLButtonElement
+		let trigger = $(
+			"button[popovertarget='mobile-nav-menu']",
+		) as HTMLButtonElement
 		assert.notEqual(trigger, null)
 		assert.equal(trigger.getAttribute("aria-haspopup"), "menu")
 

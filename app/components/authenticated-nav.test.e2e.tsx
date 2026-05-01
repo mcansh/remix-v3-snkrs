@@ -62,9 +62,12 @@ describe("AuthenticatedNav e2e", () => {
 		await page.getByRole("button", { name: "Menu" }).click()
 
 		let popover = page.locator("#mobile-nav-menu")
-		await assert.equal(await popover.count(), 1)
+		assert.equal(await popover.count(), 1)
 
-		await page.locator("#mobile-nav-menu").getByRole("link", { name: "Brands" }).click()
+		await page
+			.locator("#mobile-nav-menu")
+			.getByRole("link", { name: "Brands" })
+			.click()
 
 		let url = new URL(page.url())
 		assert.equal(url.pathname, "/brands")

@@ -1,9 +1,9 @@
-import { fromBase64, verify } from "@brielov/crypto";
-import { eq } from "drizzle-orm";
+import { fromBase64, verify } from "@brielov/crypto"
+import { eq } from "drizzle-orm"
 
-import { schema } from "#app/db/index.ts";
-import type { User } from "#app/db/schema.ts";
-import { env } from "#app/env.ts";
+import { schema } from "#app/db/index.ts"
+import type { User } from "#app/db/schema.ts"
+import { env } from "#app/env.ts"
 
 export async function getUserById(id: string): Promise<User | null> {
 	let user = await env.db.query.users.findFirst({

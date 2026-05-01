@@ -8,6 +8,8 @@ export default {
 	},
 	setup: "./test/setup.ts",
 	playwrightConfig: {
+		fullyParallel: true,
+		failOnFlakyTests: true,
 		projects: [
 			{
 				name: "chromium",

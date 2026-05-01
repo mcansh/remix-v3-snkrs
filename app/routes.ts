@@ -1,4 +1,4 @@
-import { form, resources, route } from "remix/fetch-router/routes";
+import { form, resources, route } from "remix/fetch-router/routes"
 
 export const routes = route({
 	home: {
@@ -10,8 +10,8 @@ export const routes = route({
 		register: form("/register"),
 		logout: form("/logout"),
 	},
-  sneakers: resources("/sneakers", {
-  	exclude: ['show']
+	sneakers: resources("/sneakers", {
+		exclude: ["show"],
 	}),
 	showcase: {
 		user: { method: "GET", pattern: "/:username/sneakers" },

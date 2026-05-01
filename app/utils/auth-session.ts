@@ -1,5 +1,5 @@
-import type { User } from "#app/db/schema.ts";
-import * as s from "remix/data-schema";
+import type { User } from "#app/db/schema.ts"
+import * as s from "remix/data-schema"
 
 export function normalizeEmail(email: string): string {
 	return email.trim().toLowerCase()

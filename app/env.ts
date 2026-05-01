@@ -1,9 +1,9 @@
-import { env as cf_env } from "cloudflare:workers";
-import { drizzle } from "drizzle-orm/d1";
-import * as s from "remix/data-schema";
-import { url } from "remix/data-schema/checks";
+import { env as cf_env } from "cloudflare:workers"
+import { drizzle } from "drizzle-orm/d1"
+import * as s from "remix/data-schema"
+import { url } from "remix/data-schema/checks"
 
-import * as schema from "#app/db/schema.ts";
+import * as schema from "#app/db/schema.ts"
 
 const envSchema = s.object({
 	CLOUDINARY_CLOUD_NAME: s.string(),

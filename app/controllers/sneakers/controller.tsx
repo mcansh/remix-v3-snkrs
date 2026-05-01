@@ -140,91 +140,144 @@ function SneakerForm<T extends boolean>() {
 		action: string
 	}) => {
 		return (
-			<RestfulForm
-				method={isEditing ? "put" : "post"}
-				action={action}
-				encType="multipart/form-data"
-			>
-				<fieldset>
-					<legend>{isEditing ? "Edit Sneaker" : "New Sneaker"}</legend>
+			<div class="mx-auto mt-8 w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_16px_40px_oklch(0.2_0.03_250/0.08)]">
+				<h1 class="text-2xl font-semibold text-slate-900">
+					{isEditing ? "Edit Sneaker" : "Add Sneaker"}
+				</h1>
+				<p class="mt-1 text-sm text-slate-600">
+					{isEditing
+						? "Update the details for this pair in your collection."
+						: "Add a new pair to your collection."}
+				</p>
 
-					<div>
-						<label for="brand">Brand:</label>
-						<input type="text" id="brand" name="brand" value={sneaker?.brand} />
-					</div>
+				<RestfulForm
+					method={isEditing ? "put" : "post"}
+					action={action}
+					encType="multipart/form-data"
+					class="mt-5 grid gap-4 md:grid-cols-2"
+				>
+					<label class="grid gap-1.5 text-sm text-slate-700" for="brand">
+						Brand
+						<input
+							type="text"
+							id="brand"
+							name="brand"
+							required
+							defaultValue={sneaker?.brand}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
+						/>
+					</label>
 
-					<div>
-						<label for="model">Model:</label>
-						<input type="text" id="model" name="model" value={sneaker?.model} />
-					</div>
+					<label class="grid gap-1.5 text-sm text-slate-700" for="model">
+						Model
+						<input
+							type="text"
+							id="model"
+							name="model"
+							required
+							defaultValue={sneaker?.model}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
+						/>
+					</label>
 
-					<div>
-						<label for="colorway">Colorway:</label>
+					<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="colorway">
+						Colorway
 						<input
 							type="text"
 							id="colorway"
 							name="colorway"
-							value={sneaker?.colorway}
+							required
+							defaultValue={sneaker?.colorway}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 						/>
-					</div>
+					</label>
 
-					<div>
-						<label for="size">Size:</label>
+					<label class="grid gap-1.5 text-sm text-slate-700" for="size">
+						Size
 						<input
-							type="text"
+							type="number"
 							inputMode="numeric"
 							id="size"
 							name="size"
-							value={sneaker?.size}
+							required
+							defaultValue={sneaker?.size}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 						/>
-					</div>
+					</label>
 
-					<div>
-						<label for="image">Image:</label>
+					<label class="grid gap-1.5 text-sm text-slate-700" for="purchase_date">
+						Purchase Date
+						<input
+							type="date"
+							id="purchase_date"
+							name="purchase_date"
+							required
+							defaultValue={
+								sneaker?.purchase_date?.toISOString().split("T")[0] ?? ""
+							}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
+						/>
+					</label>
+
+					<label class="grid gap-1.5 text-sm text-slate-700" for="purchase_price">
+						Purchase Price (in cents)
+						<input
+							type="number"
+							id="purchase_price"
+							name="purchase_price"
+							required
+							min={0}
+							defaultValue={sneaker?.purchase_price ?? ""}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
+						/>
+					</label>
+
+					<label class="grid gap-1.5 text-sm text-slate-700" for="retail_price">
+						Retail Price (in cents)
+						<input
+							type="number"
+							id="retail_price"
+							name="retail_price"
+							required
+							min={0}
+							defaultValue={sneaker?.retail_price ?? ""}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
+						/>
+					</label>
+
+					<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="image">
+						Image
 						<input
 							type="file"
 							id="image"
 							name="image"
 							accept="image/*"
-							value={sneaker?.image}
+							required={isEditing ? undefined : true}
+							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 						/>
-					</div>
+						{isEditing ? (
+							<p class="text-xs text-slate-500">
+								Leave empty to keep the existing image.
+							</p>
+						) : null}
+					</label>
 
-					<div>
-						<label for="purchase_price">Purchase Price (in cents):</label>
-						<input
-							type="number"
-							id="purchase_price"
-							name="purchase_price"
-							value={sneaker?.purchase_price ?? ""}
-						/>
+					<div class="md:col-span-2 mt-1 flex items-center gap-2">
+						<button
+							type="submit"
+							class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+						>
+							{isEditing ? "Update Sneaker" : "Create Sneaker"}
+						</button>
+						<a
+							href={routes.sneakers.index.href()}
+							class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 no-underline transition-colors hover:border-slate-400 hover:text-slate-900"
+						>
+							Cancel
+						</a>
 					</div>
-
-					<div>
-						<label for="retail_price">Retail Price (in cents):</label>
-						<input
-							type="number"
-							id="retail_price"
-							name="retail_price"
-							value={sneaker?.retail_price ?? ""}
-						/>
-					</div>
-
-					<div>
-						<label for="purchase_date">Purchase Date:</label>
-						<input
-							type="date"
-							id="purchase_date"
-							name="purchase_date"
-							value={sneaker?.purchase_date?.toISOString().split("T")[0] ?? ""}
-						/>
-					</div>
-
-					<button type="submit">
-						{isEditing ? "Update" : "Create"} Sneaker
-					</button>
-				</fieldset>
-			</RestfulForm>
+				</RestfulForm>
+			</div>
 		)
 	}
 }

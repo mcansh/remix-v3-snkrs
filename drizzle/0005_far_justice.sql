@@ -1,0 +1,1 @@
+ALTER TABLE `sneakers` ADD `brand_slug` text(255) NOT NULL;

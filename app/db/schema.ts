@@ -1,8 +1,8 @@
-import * as s from "remix/data-schema"
-import * as f from "remix/data-schema/form-data"
 import { createId } from "@paralleldrive/cuid2"
 import { relations } from "drizzle-orm"
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import * as s from "remix/data-schema"
+import * as f from "remix/data-schema/form-data"
 
 // TODO: maybe make a user_sneakers table so we can reuse a lot of the core sneaker info
 export const sneakers = sqliteTable("sneakers", {
@@ -10,6 +10,7 @@ export const sneakers = sqliteTable("sneakers", {
 		.primaryKey()
 		.$defaultFn(() => createId()),
 	brand: text().notNull(),
+	brand_slug: text({ length: 255 }).notNull(),
 	colorway: text({ length: 255 }).notNull(),
 	model: text({ length: 255 }).notNull(),
 	image: text({ length: 255 }).notNull(),

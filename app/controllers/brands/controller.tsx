@@ -1,13 +1,9 @@
-import { eq } from "drizzle-orm"
 import type { Controller } from "remix/fetch-router"
 
 import { Document } from "#app/components/document.tsx"
-import { SneakerGrid } from "#app/components/sneaker-grid.tsx"
-import { env } from "#app/lib/env.ts"
+import { env } from "#app/env.ts"
 import { render } from "#app/lib/html.tsx"
-import { serializeSneaker } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
-import { schema } from "../../db"
 
 export const brandHandlers = {
 	middleware: [],
@@ -41,19 +37,10 @@ export const brandHandlers = {
 		},
 
 		async show({ params }) {
-			let sneakers = await env.db.query.sneakers
-				.findMany({
-					where: eq(schema.sneakers.brand, params.brand),
-				})
-				.then((sneakers) => {
-					return sneakers.map((s) => serializeSneaker(s))
-				})
-
 			return render(
 				<Document>
 					<div class="container">
 						<h1>{params.brand}</h1>
-						<SneakerGrid sneakers={sneakers} />
 					</div>
 				</Document>,
 			)

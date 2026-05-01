@@ -1,59 +1,82 @@
-import type { Middleware } from "remix/fetch-router"
-import type { Route } from "remix/fetch-router/routes"
-import { createRedirectResponse as redirect } from "remix/response/redirect"
-import { Session } from "remix/session"
+import { createCredentialsAuthProvider } from "remix/auth";
+import {
+    auth,
+    createSessionAuthScheme,
+    requireAuth as requireAuthenticated,
+} from "remix/auth-middleware";
+import { redirect } from "remix/response/redirect";
 
-import { getUserById } from "../models/user.ts"
-import { routes } from "../routes.ts"
-import { setCurrentUser } from "../utils/context.ts"
+import { authenticateUser, getUserById } from "#app/models/user.ts";
+import { routes } from "#app/routes.ts";
+import type { AuthIdentity, AuthSession } from "#app/utils/auth-session.ts";
+import { normalizeEmail, parseAuthSession } from "#app/utils/auth-session.ts";
+import * as s from "remix/data-schema";
+import * as f from "remix/data-schema/form-data";
 
-/**
- * Middleware that optionally loads the current user if authenticated.
- * Does not redirect if not authenticated.
- * Attaches user (if any) to context.storage.
- */
-export function loadAuth(): Middleware {
-	return async ({ get }) => {
-		let session = get(Session)
-		let userId = session.get("userId")
+const loginSchema = f.object({
+	email: f.field(s.defaulted(s.string(), "")),
+	password: f.field(s.defaulted(s.string(), "")),
+})
 
-		// Only set current user if authenticated
-		if (typeof userId === "string") {
-			let user = await getUserById(userId)
-			if (user) setCurrentUser(user)
-		}
-	}
+export function loadAuth() {
+	return auth({
+		schemes: [
+			createSessionAuthScheme<AuthIdentity, AuthSession>({
+				read(session) {
+					return parseAuthSession(session.get("auth"))
+				},
+				async verify(value) {
+					let user = await getUserById(value.userId)
+
+					if (user == null) {
+						return null
+					}
+
+					return { user }
+				},
+			}),
+		],
+	})
 }
 
-export type RequireAuthOptions = {
-	/**
-	 * Where to redirect if the user is not authenticated.
-	 * Defaults to the login page.
-	 */
-	redirectTo?: Route
+export const passwordProvider = createCredentialsAuthProvider({
+	parse(context) {
+		let result = s.parse(loginSchema, context.get(FormData))
+
+		return {
+			email: normalizeEmail(result.email),
+			password: result.password,
+		}
+	},
+	async verify(input) {
+		return await authenticateUser(input.email, input.password)
+	},
+})
+
+export const requireAuth = requireAuthenticated<AuthIdentity>({
+	onFailure() {
+		return redirect(routes.auth.login.index.href())
+	},
+})
+
+export function getPostAuthRedirect(
+	url: URL,
+	fallback = routes.home.index.href(),
+): string {
+	return getSafeReturnTo(url.searchParams.get("returnTo")) ?? fallback
 }
 
-/**
- * Middleware that requires a user to be authenticated.
- * Redirects to login if not authenticated.
- * Attaches user to context.storage.
- */
-export function requireAuth(options?: RequireAuthOptions): Middleware {
-	let redirectRoute = options?.redirectTo ?? routes.auth.login.index
+export function getReturnToQuery(url: URL): { returnTo?: string } {
+	let returnTo = getSafeReturnTo(url.searchParams.get("returnTo"))
+	return returnTo ? { returnTo } : {}
+}
 
-	return async ({ get, url }) => {
-		let session = get(Session)
-		let userId = session.get("userId")
-		let user = typeof userId === "string" ? await getUserById(userId) : null
-
-		if (!user) {
-			// Capture the current URL to redirect back to after login
-			return redirect(
-				redirectRoute.href(undefined, { returnTo: url.pathname + url.search }),
-				302,
-			)
-		}
-
-		setCurrentUser(user)
+function getSafeReturnTo(returnTo: string | null): string | null {
+	if (returnTo == null || returnTo === "") {
+		return null
 	}
+
+	let isSafePath =
+		returnTo.startsWith("/") && returnTo.startsWith("//") === false
+	return isSafePath ? returnTo : null
 }

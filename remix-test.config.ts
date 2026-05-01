@@ -2,8 +2,9 @@ import type { RemixTestConfig } from "remix/test"
 
 export default {
 	glob: {
-		test: "**/*.test{,.browser}.tsx",
+		test: "**/*.test{,.browser,.e2e}.tsx",
 		browser: "**/*.test.browser.tsx",
+		e2e: "**/*.test.e2e.tsx",
 	},
 	setup: "./test/setup.ts",
 	playwrightConfig: {

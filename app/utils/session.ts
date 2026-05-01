@@ -1,20 +1,15 @@
 import { createCookie } from "remix/cookie"
 import { createCookieSessionStorage } from "remix/session/cookie-storage"
 
-/**
- * Session cookie configuration for the bookstore demo.
- * Uses secure defaults with a 30-day expiration.
- */
-export let sessionCookie = createCookie("session", {
-	secrets: ["s3cr3t-k3y-for-d3mo"],
+import { env } from "#app/env.ts"
+
+export const sessionCookie = createCookie("session", {
+	secrets: [env.SESSION_PASSWORD],
 	httpOnly: true,
 	sameSite: "Lax",
-	maxAge: 2592000, // 30 days
+	maxAge: 60 * 60 * 24 * 30, // 30 days
 	path: "/",
+	secure: import.meta.env.PROD,
 })
 
-/**
- * Filesystem-based session storage.
- * Sessions are stored in the app's tmp/sessions directory.
- */
-export let sessionStorage = createCookieSessionStorage()
+export const sessionStorage = createCookieSessionStorage()

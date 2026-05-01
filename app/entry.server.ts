@@ -5,7 +5,7 @@ import {
 	SELF,
 } from "@mcansh/http-helmet"
 
-import { env } from "./lib/env.ts"
+import { env } from "./env.ts"
 import { router } from "./router.ts"
 
 let securityHeaders = createSecureHeaders({

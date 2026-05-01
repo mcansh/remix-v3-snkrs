@@ -8,21 +8,23 @@ import { Session } from "remix/session"
 import { Document } from "#app/components/document.tsx"
 import { RestfulForm } from "#app/components/restful-form.tsx"
 import { render } from "#app/lib/html.tsx"
+import { getPostAuthRedirect } from "#app/middleware/auth.ts"
 import { authenticateUser } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
+import { getCurrentUserSafely } from "#app/utils/context.ts"
+import { completeAuth } from "remix/auth"
+
+let loginSchema = f.object({
+	email: f.field(s.string().pipe(email())),
+	password: f.field(s.string()),
+	return_to: f.field(s.optional(s.string())),
+})
 
 export const loginHandlers = {
 	middleware: [],
 	actions: {
-		async action({ get }) {
-			let session = get(Session)
-			let formData = get(FormData)
-
-			let loginSchema = f.object({
-				email: f.field(s.string().pipe(email())),
-				password: f.field(s.string()),
-				return_to: f.field(s.optional(s.string())),
-			})
+		async action(context) {
+			let formData = context.get(FormData)
 
 			let result = s.parseSafe(loginSchema, formData)
 
@@ -37,38 +39,28 @@ export const loginHandlers = {
 			)
 			let returnTo = result.value.return_to || routes.home.index.href()
 
-			if (!user) {
+			if (user == null) {
+				let session = context.get(Session)
 				session.flash("error", "Invalid email or password. Please try again.")
 				return redirect(routes.auth.login.index.href(undefined, { returnTo }))
 			}
 
-			session.set("userId", user.id)
+			let session = completeAuth(context)
+			session.set("auth", { userId: user.id })
 
-			// if (!user) {
-			// 	return render(
-			// 		<Document>
-			// 			<div class="card" style="max-width: 500px; margin: 2rem auto;">
-			// 				<div class="alert alert-error">
-			// 					Invalid email or password. Please try again.
-			// 				</div>
-			// 				<p>
-			// 					<a href={routes.auth.login.index.href()} class="btn">
-			// 						Back to Login
-			// 					</a>
-			// 				</p>
-			// 			</div>
-			// 		</Document>,
-			// 		{ status: 401 },
-			// 	)
-			// }
-
-			return redirect(returnTo)
+			return redirect(getPostAuthRedirect(context.url))
 		},
 
 		async index({ get, url }) {
 			let session = get(Session)
 			let returnTo = url.searchParams.get("returnTo")
 			let error = session.get("error")
+
+			let user = getCurrentUserSafely()
+
+			if (user) {
+				return redirect(routes.home.index.href())
+			}
 
 			return render(
 				<Document>

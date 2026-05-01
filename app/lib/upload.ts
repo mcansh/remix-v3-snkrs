@@ -2,7 +2,7 @@ import * as s from "remix/data-schema"
 import * as checks from "remix/data-schema/checks"
 import type { FileUpload } from "remix/form-data-middleware"
 
-import { env } from "./env.ts"
+import { env } from "../env.ts"
 
 let cloudinaryUploadResponseSchema = s.object({
 	secure_url: s.string().pipe(checks.url()),

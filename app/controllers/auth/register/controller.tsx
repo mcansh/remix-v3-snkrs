@@ -10,10 +10,19 @@ import { Session } from "remix/session"
 import { Document } from "#app/components/document.tsx"
 import { RestfulForm } from "#app/components/restful-form.tsx"
 import { schema } from "#app/db/index.ts"
-import { env } from "#app/lib/env.ts"
+import { env } from "#app/env.ts"
 import { render } from "#app/lib/html.tsx"
 import { getUserByEmail } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
+
+let registerSchema = f.object({
+	email: f.field(s.string().pipe(email())),
+	username: f.field(s.string()),
+	password: f.field(s.string().pipe(minLength(8))),
+	confirm_password: f.field(s.string().pipe(minLength(8))),
+	given_name: f.field(s.string()),
+	family_name: f.field(s.string()),
+})
 
 export const registerHandlers = {
 	actions: {
@@ -21,15 +30,6 @@ export const registerHandlers = {
 			let session = get(Session)
 			let formData = get(FormData)
 			const salt = generateSalt()
-
-			let registerSchema = f.object({
-				email: f.field(s.string().pipe(email())),
-				username: f.field(s.string()),
-				password: f.field(s.string().pipe(minLength(8))),
-				confirm_password: f.field(s.string().pipe(minLength(8))),
-				given_name: f.field(s.string()),
-				family_name: f.field(s.string()),
-			})
 
 			let decoded = decode(formData)
 
@@ -42,28 +42,8 @@ export const registerHandlers = {
 
 			// Check if user already exists
 			if (await getUserByEmail(result.value.email)) {
-				return render(
-					<Document>
-						<div class="card" style="max-width: 500px; margin: 2rem auto;">
-							<div class="alert alert-error">
-								An account with this email already exists.
-							</div>
-							<p>
-								<a href={routes.auth.register.index.href()} class="btn">
-									Back to Register
-								</a>
-								<a
-									href={routes.auth.login.index.href()}
-									class="btn btn-secondary"
-									style="margin-left: 0.5rem;"
-								>
-									Login
-								</a>
-							</p>
-						</div>
-					</Document>,
-					{ status: 400 },
-				)
+				session.set("error", "An account with this email already exists.")
+				return redirect(routes.auth.register.index.href())
 			}
 
 			if (result.value.password !== result.value.confirm_password) {
@@ -93,7 +73,9 @@ export const registerHandlers = {
 
 			session.set("userId", createdUser.id)
 
-			return redirect(routes.sneakers.user.href({ user: createdUser.username }))
+			return redirect(
+				routes.showcase.user.href({ username: createdUser.username }),
+			)
 		},
 		index() {
 			return render(

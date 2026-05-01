@@ -4,7 +4,7 @@ import type {
 } from "@mcansh/cld-apis-types"
 import { buildImageUrl, extractPublicId } from "@mcansh/cloudinary-build-url"
 
-import { env } from "./env"
+import { env } from "../env"
 
 export function generateAssetUrl(
 	publicIdOrUrl: string,

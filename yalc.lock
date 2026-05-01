@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "@mcansh/vite-plugin-remix": {
+      "signature": "3e837ff9c1b524ff7708e61f98514ac2",
+      "file": true
+    }
+  }
+}

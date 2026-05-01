@@ -3,7 +3,5 @@ node_modules
 .env
 .ds_store
 /dist/
-.yalc
-yalc.lock
 .coverage
 .dev.vars

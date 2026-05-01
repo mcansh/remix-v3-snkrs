@@ -20,7 +20,7 @@ let loginSchema = f.object({
 	return_to: f.field(s.optional(s.string())),
 })
 
-export const loginHandlers = {
+export const login = {
 	middleware: [],
 	actions: {
 		async action(context) {

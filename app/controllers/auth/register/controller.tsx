@@ -24,7 +24,7 @@ let registerSchema = f.object({
 	family_name: f.field(s.string()),
 })
 
-export const registerHandlers = {
+export const register = {
 	actions: {
 		async action({ get }) {
 			let session = get(Session)

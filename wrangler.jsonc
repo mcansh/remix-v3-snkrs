@@ -2,7 +2,7 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "remix-v3-snkrs",
 	"compatibility_date": "2025-10-12",
-	"main": "./src/entry.server",
+	"main": "./app/entry.server",
 	"compatibility_flags": ["nodejs_compat"],
 	"preview_urls": true,
 	"observability": {

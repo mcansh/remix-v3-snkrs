@@ -11,7 +11,7 @@ let env = s.parse(cloudflare, process.env)
 
 export default defineConfig({
 	out: "./drizzle",
-	schema: "./src/db/schema.ts",
+	schema: "./app/db/schema.ts",
 	dialect: "sqlite",
 	casing: "snake_case",
 	driver: "d1-http",

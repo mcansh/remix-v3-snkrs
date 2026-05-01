@@ -14,6 +14,7 @@
 			"binding": "db",
 			"database_name": "remix-v3-snkrs",
 			"database_id": "54573fc1-ee11-4b9b-8ac6-0ec0afffa586",
+			"migrations_dir": "drizzle",
 			"remote": true,
 		},
 	],

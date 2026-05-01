@@ -4,6 +4,7 @@ import {
 	type ShowcaseSearchState,
 	type ShowcaseStatus,
 } from "#app/components/showcase-layout.tsx"
+import { SneakerDetailViews } from "#app/components/sneaker-detail-views.tsx"
 import { schema } from "#app/db/index.ts"
 import { env } from "#app/env.ts"
 import { render } from "#app/lib/html.tsx"
@@ -13,6 +14,8 @@ import {
 	getSneakersForShowcase,
 } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
+import { TZDate } from "@date-fns/tz"
+import { differenceInDays } from "date-fns/differenceInDays"
 import { eq } from "drizzle-orm"
 import type { BuildAction, Controller } from "remix/fetch-router"
 
@@ -126,7 +129,7 @@ const sneakerUserSoldHandler = {
 
 const sneakerUserShowHandler = {
 	middleware: [],
-	async handler({ params }) {
+	async handler({ headers, params }) {
 		let user = await env.db.query.users.findFirst({
 			where: eq(schema.users.username, params.username),
 		})
@@ -153,44 +156,21 @@ const sneakerUserShowHandler = {
 			)
 		}
 
+		let daysSincePurchase: number | null = null
+		let timezone = headers.get("cf-timezone") ?? "UTC"
+
+		if (sneaker.purchase_date) {
+			let now = new TZDate(new Date(), timezone)
+			let purchaseDate = new TZDate(sneaker.purchase_date, timezone)
+			daysSincePurchase = differenceInDays(now, purchaseDate)
+		}
+
 		return render(
-			<Document head={<title>Show Sneaker</title>}>
-				<div class="mt-4">
-					<h1>Show Sneaker {params.sneakerId}</h1>
-
-					<div class="grid gap-4 md:grid-cols-3">
-						<div class="col-span-2">
-							<img
-								src={sneaker.image}
-								alt={sneaker.model}
-								class="aspect-square w-full"
-								srcSet={sneaker.srcSet}
-							/>
-							<h2>Brand</h2>
-							<p>{sneaker.brand}</p>
-						</div>
-						<div>
-							<h2>Model</h2>
-							<p>{sneaker.model}</p>
-
-							<h2>Colorway</h2>
-							<p>{sneaker.colorway}</p>
-
-							<h2>Purchase Date</h2>
-							<p>{sneaker.purchase_date}</p>
-
-							<h2>Purchase Price</h2>
-							<p>{sneaker.purchase_price}</p>
-
-							<h2>Size</h2>
-							<p>{sneaker.size}</p>
-						</div>
-					</div>
-
-					<div class="mt-10">
-						<pre>{JSON.stringify(sneaker, null, 2)}</pre>
-					</div>
-				</div>
+			<Document head={<title>{`${sneaker.brand} ${sneaker.model}`}</title>}>
+				<SneakerDetailViews
+					sneaker={{ ...sneaker, daysSincePurchase }}
+					username={user.username}
+				/>
 			</Document>,
 		)
 	},

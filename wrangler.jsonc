@@ -5,6 +5,7 @@
 	"main": "./app/entry.server",
 	"compatibility_flags": ["nodejs_compat"],
 	"preview_urls": true,
+	"keep_vars": true,
 	"observability": {
 		"enabled": true,
 	},

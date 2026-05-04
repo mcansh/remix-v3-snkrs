@@ -3,7 +3,7 @@ import { and, asc, desc, eq, sql } from "drizzle-orm"
 import * as s from "remix/data-schema"
 
 import { schema } from "#app/db/index.ts"
-import type { Sneaker } from "#app/db/schema.ts"
+import type { Brand, Sneaker } from "#app/db/schema.ts"
 import { insertSneakerSchema, updateSneakerSchema } from "#app/db/schema.ts"
 import { env } from "#app/env.ts"
 import { generateDensitySrcSet } from "#app/lib/asset.ts"
@@ -11,6 +11,46 @@ import { formatDate, formatMoney } from "#app/lib/format.ts"
 
 function slugifyBrand(brand: string): string {
 	return brand.trim().toLowerCase().replace(/\s+/g, "-")
+}
+
+async function findOrCreateBrandIdByName(brand: string): Promise<string> {
+	let normalizedName = brand.trim()
+	let slug = slugifyBrand(normalizedName)
+
+	let existing = await env.db.query.brands.findFirst({
+		where: eq(schema.brands.slug, slug),
+		columns: { id: true },
+	})
+
+	if (existing) return existing.id
+
+	try {
+		let inserted = await env.db
+			.insert(schema.brands)
+			.values({
+				name: normalizedName,
+				slug,
+			})
+			.returning({ id: schema.brands.id })
+
+		let brandRow = inserted.at(0)
+		if (brandRow) return brandRow.id
+	} catch {
+		let raced = await env.db.query.brands.findFirst({
+			where: eq(schema.brands.slug, slug),
+			columns: { id: true },
+		})
+
+		if (raced) return raced.id
+	}
+
+	throw new Error(`Failed to resolve brand id for ${normalizedName}`)
+}
+
+export async function getBrandBySlug(brandSlug: string) {
+	return env.db.query.brands.findFirst({
+		where: eq(schema.brands.slug, slugifyBrand(brandSlug)),
+	})
 }
 
 export class CreateSneakerError extends Error {
@@ -34,12 +74,12 @@ export async function updateSneaker(
 	})
 
 	let parsed = s.parse(updateSneakerSchema, decoded)
+	let brandId = await findOrCreateBrandIdByName(parsed.brand)
 
 	let result = await env.db
 		.update(schema.sneakers)
 		.set({
-			brand: parsed.brand,
-			brand_slug: slugifyBrand(parsed.brand),
+			brand_id: brandId,
 			model: parsed.model,
 			colorway: parsed.colorway,
 			size: parsed.size,
@@ -70,12 +110,12 @@ export async function createSneaker(
 	})
 
 	let parsed = s.parse(insertSneakerSchema, decoded)
+	let brandId = await findOrCreateBrandIdByName(parsed.brand)
 
 	let result = await env.db
 		.insert(schema.sneakers)
 		.values({
-			brand: parsed.brand,
-			brand_slug: slugifyBrand(parsed.brand),
+			brand_id: brandId,
 			model: parsed.model,
 			colorway: parsed.colorway,
 			size: parsed.size,
@@ -96,12 +136,17 @@ export async function createSneaker(
 	return sneaker.id
 }
 
+export type SneakerWithBrand = Sneaker & { brand: Brand | null }
+
 export async function getAllSneakers(
 	userId: string,
 	imageSizes: [number, number, number] = [200, 400, 600],
 ): Promise<ReadonlyArray<SerializedSneaker>> {
 	let sneakers = await env.db.query.sneakers.findMany({
 		where: eq(schema.sneakers.user_id, userId),
+		with: {
+			brand: true,
+		},
 	})
 
 	let sneakersWithData = sneakers.map((sneaker) => {
@@ -112,27 +157,34 @@ export async function getAllSneakers(
 }
 
 export function serializeSneaker(
-	sneaker: Sneaker,
+	sneaker: SneakerWithBrand,
 	imageSizes: [number, number, number] = [200, 400, 600],
 ) {
+	let { brand: brandRelation, ...rawSneaker } = sneaker
 	let result = generateDensitySrcSet({
-		publicId: sneaker.image,
+		publicId: rawSneaker.image,
 		sizes: imageSizes,
 	})
+	let brandName = brandRelation?.name ?? "Unknown"
+	let brandSlug = brandRelation?.slug ?? ""
 
 	return Object.freeze({
-		...sneaker,
-		purchase_price: formatMoney(sneaker.purchase_price),
-		retail_price: formatMoney(sneaker.retail_price),
-		sold_price: sneaker.sold_price ? formatMoney(sneaker.sold_price) : null,
-		purchase_date: sneaker.purchase_date
-			? formatDate(sneaker.purchase_date)
+		...rawSneaker,
+		brand: brandName,
+		brand_slug: brandSlug,
+		purchase_price: formatMoney(rawSneaker.purchase_price),
+		retail_price: formatMoney(rawSneaker.retail_price),
+		sold_price: rawSneaker.sold_price
+			? formatMoney(rawSneaker.sold_price)
 			: null,
-		sold_date: sneaker.sold_date ? formatDate(sneaker.sold_date) : null,
+		purchase_date: rawSneaker.purchase_date
+			? formatDate(rawSneaker.purchase_date)
+			: null,
+		sold_date: rawSneaker.sold_date ? formatDate(rawSneaker.sold_date) : null,
 		image: result.default,
 		srcSet: result.srcSet,
-		created_at: sneaker.created_at.toISOString(),
-		updated_at: sneaker.updated_at.toISOString(),
+		created_at: rawSneaker.created_at.toISOString(),
+		updated_at: rawSneaker.updated_at.toISOString(),
 	})
 }
 
@@ -140,25 +192,37 @@ export type SerializedSneaker = ReturnType<typeof serializeSneaker>
 
 type SerializedSneakerOrSneaker<T> = T extends true
 	? SerializedSneaker
-	: Sneaker
+	: SneakerWithBrand
 
 export async function getSneakerById<T extends boolean = false>(
 	id: string,
 	serialize?: T,
 	options: { srcSetSizes?: [number, number, number] } = {},
 ): Promise<SerializedSneakerOrSneaker<T> | null> {
-	let sneaker = await env.db.query.sneakers.findFirst({
-		where: eq(schema.sneakers.id, id),
-	})
-
-	if (!sneaker) return null
-
 	if (serialize === true) {
+		let sneaker = await env.db.query.sneakers.findFirst({
+			where: eq(schema.sneakers.id, id),
+			with: {
+				brand: true,
+			},
+		})
+
+		if (!sneaker) return null
+
 		return serializeSneaker(
 			sneaker,
 			options.srcSetSizes,
 		) as SerializedSneakerOrSneaker<T>
 	}
+
+	let sneaker = await env.db.query.sneakers.findFirst({
+		where: eq(schema.sneakers.id, id),
+		with: {
+			brand: true,
+		},
+	})
+
+	if (!sneaker) return null
 
 	return sneaker as SerializedSneakerOrSneaker<T>
 }
@@ -190,12 +254,32 @@ export async function getSneakersForShowcase(
 	imageSizes: [number, number, number] = [200, 400, 600],
 ): Promise<ShowcaseResult> {
 	let status = filters.status ?? "all"
-	let brand = filters.brand ?? null
+	let brandSlug = filters.brand ?? null
 	let sort = filters.sort ?? "desc"
 	let page = filters.page ?? 1
 	let perPage = filters.perPage ?? 12
 
 	let conditions = [eq(schema.sneakers.user_id, userId)]
+	let selectedBrandId: string | null = null
+
+	if (brandSlug) {
+		let brandRecord = await env.db.query.brands.findFirst({
+			where: eq(schema.brands.slug, slugifyBrand(brandSlug)),
+			columns: { id: true },
+		})
+
+		if (!brandRecord) {
+			return {
+				sneakers: [],
+				total: 0,
+				page,
+				perPage,
+				totalPages: 0,
+			}
+		}
+
+		selectedBrandId = brandRecord.id
+	}
 
 	if (status === "owned") {
 		conditions.push(eq(schema.sneakers.sold, false))
@@ -203,8 +287,8 @@ export async function getSneakersForShowcase(
 		conditions.push(eq(schema.sneakers.sold, true))
 	}
 
-	if (brand) {
-		conditions.push(eq(schema.sneakers.brand_slug, slugifyBrand(brand)))
+	if (selectedBrandId) {
+		conditions.push(eq(schema.sneakers.brand_id, selectedBrandId))
 	}
 
 	let whereClause = and(...conditions)
@@ -219,6 +303,9 @@ export async function getSneakersForShowcase(
 
 	let sneakers = await env.db.query.sneakers.findMany({
 		where: whereClause,
+		with: {
+			brand: true,
+		},
 		orderBy:
 			sort === "desc"
 				? [desc(schema.sneakers.purchase_date)]
@@ -243,31 +330,16 @@ export async function getSneakersForShowcase(
 export async function getBrandsForUser(
 	userId: string,
 ): Promise<ReadonlyArray<BrandFilterOption>> {
-	try {
-		let result = await env.db
-			.select({
-				brand: schema.sneakers.brand,
-				brand_slug: schema.sneakers.brand_slug,
-			})
-			.from(schema.sneakers)
-			.where(eq(schema.sneakers.user_id, userId))
-			.groupBy(schema.sneakers.brand, schema.sneakers.brand_slug)
-			.orderBy(asc(schema.sneakers.brand))
+	let result = await env.db
+		.select({
+			brand: schema.brands.name,
+			brand_slug: schema.brands.slug,
+		})
+		.from(schema.sneakers)
+		.innerJoin(schema.brands, eq(schema.sneakers.brand_id, schema.brands.id))
+		.where(eq(schema.sneakers.user_id, userId))
+		.groupBy(schema.brands.id, schema.brands.name, schema.brands.slug)
+		.orderBy(asc(schema.brands.name))
 
-		return Object.freeze(result)
-	} catch {
-		let fallback = await env.db
-			.select({ brand: schema.sneakers.brand })
-			.from(schema.sneakers)
-			.where(eq(schema.sneakers.user_id, userId))
-			.groupBy(schema.sneakers.brand)
-			.orderBy(asc(schema.sneakers.brand))
-
-		return Object.freeze(
-			fallback.map((entry) => ({
-				brand: entry.brand,
-				brand_slug: entry.brand.trim().toLowerCase().replace(/\s+/g, "-"),
-			})),
-		)
-	}
+	return Object.freeze(result)
 }

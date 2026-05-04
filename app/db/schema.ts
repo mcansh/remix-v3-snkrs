@@ -1,39 +1,63 @@
-import { createId } from "@paralleldrive/cuid2"
-import { relations } from "drizzle-orm"
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core"
-import * as s from "remix/data-schema"
-import * as f from "remix/data-schema/form-data"
+import { createId } from "@paralleldrive/cuid2";
+import { relations } from "drizzle-orm";
+import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import * as s from "remix/data-schema";
+import * as f from "remix/data-schema/form-data";
 
-// TODO: maybe make a user_sneakers table so we can reuse a lot of the core sneaker info
-export const sneakers = sqliteTable("sneakers", {
+const updatedAt = int({ mode: "timestamp" })
+		.notNull()
+		.$defaultFn(() => new Date())
+		.$onUpdateFn(() => new Date());
+
+const createdAt = int({ mode: "timestamp" })
+		.notNull()
+		.$defaultFn(() => new Date());
+
+export const brands = sqliteTable("brands", {
 	id: text("id", { length: 36 })
 		.primaryKey()
 		.$defaultFn(() => createId()),
-	brand: text().notNull(),
-	brand_slug: text({ length: 255 }).notNull(),
-	colorway: text({ length: 255 }).notNull(),
-	model: text({ length: 255 }).notNull(),
-	image: text({ length: 255 }).notNull(),
-	purchase_date: int({ mode: "timestamp" }),
-	size: int().notNull(),
-	purchase_price: int().notNull(),
-	retail_price: int().notNull(),
-	sold: int({ mode: "boolean" }).notNull().default(false),
-	// only include soldDate and soldPrice if sold is true
-	sold_date: int({ mode: "timestamp" }),
-	sold_price: int(),
-
-	created_at: int({ mode: "timestamp" })
-		.notNull()
-		.$defaultFn(() => new Date()),
-	updated_at: int({ mode: "timestamp" })
-		.notNull()
-		.$defaultFn(() => new Date()),
-
-	user_id: text()
-		.references(() => users.id, { onDelete: "cascade" })
-		.notNull(),
+	name: text({ length: 255 }).notNull().unique(),
+	slug: text({ length: 255 }).notNull().unique(),
+	created_at: createdAt,
+	updated_at: updatedAt,
 })
+
+export const sneakers = sqliteTable(
+	"sneakers",
+	{
+		id: text("id", { length: 36 })
+			.primaryKey()
+			.$defaultFn(() => createId()),
+		colorway: text({ length: 255 }).notNull(),
+		model: text({ length: 255 }).notNull(),
+		image: text({ length: 255 }).notNull(),
+		purchase_date: int({ mode: "timestamp" }),
+		size: int().notNull(),
+		purchase_price: int().notNull(),
+		retail_price: int().notNull(),
+		sold: int({ mode: "boolean" }).notNull().default(false),
+		// only include soldDate and soldPrice if sold is true
+		sold_date: int({ mode: "timestamp" }),
+		sold_price: int(),
+
+		created_at: createdAt,
+		updated_at: updatedAt,
+
+		brand_id: text()
+			.references(() => brands.id, { onDelete: "restrict" })
+			.notNull(),
+
+		user_id: text()
+			.references(() => users.id, { onDelete: "cascade" })
+			.notNull(),
+	},
+	(table) => {
+		return {
+			sneakersBrandIdIdx: index("sneakers_brand_id_idx").on(table.brand_id),
+		}
+	},
+)
 
 export const users = sqliteTable("users", {
 	id: text("id", { length: 36 })
@@ -46,13 +70,8 @@ export const users = sqliteTable("users", {
 	username: text({ length: 255 }).notNull(),
 	password_salt: text({ length: 255 }).notNull(),
 
-	created_at: int({ mode: "timestamp" })
-		.notNull()
-		.$defaultFn(() => new Date()),
-	updated_at: int({ mode: "timestamp" })
-		.notNull()
-		.$defaultFn(() => new Date())
-		.$onUpdateFn(() => new Date()),
+	created_at: createdAt,
+	updated_at: updatedAt,
 })
 
 export const usersRelations = relations(users, ({ many }) => {
@@ -62,9 +81,21 @@ export const usersRelations = relations(users, ({ many }) => {
 	}
 })
 
+export const brandsRelations = relations(brands, ({ many }) => {
+  return {
+    // a brand can have many sneakers
+		sneakers: many(sneakers),
+	}
+})
+
 export const sneakersRelations = relations(sneakers, ({ one }) => {
-	return {
-		// a sneaker can belong to a single user
+  return {
+  	// a sneaker belongs to a single brand
+		brand: one(brands, {
+			fields: [sneakers.brand_id],
+			references: [brands.id],
+		}),
+		// a sneaker belongs to a single user
 		user: one(users, {
 			fields: [sneakers.user_id],
 			references: [users.id],
@@ -74,6 +105,9 @@ export const sneakersRelations = relations(sneakers, ({ one }) => {
 
 export type User = typeof users.$inferSelect
 export type UsersRelation = typeof usersRelations
+
+export type Brand = typeof brands.$inferSelect
+export type BrandsRelation = typeof brandsRelations
 
 export type Sneaker = typeof sneakers.$inferSelect
 export type SneakerRelation = typeof sneakersRelations

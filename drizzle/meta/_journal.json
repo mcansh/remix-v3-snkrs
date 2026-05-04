@@ -43,6 +43,20 @@
       "when": 1777582506940,
       "tag": "0005_far_justice",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1777910579046,
+      "tag": "0006_little_texas_twister",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1777910982601,
+      "tag": "0007_brown_nico_minoru",
+      "breakpoints": true
     }
   ]
 }

@@ -17,6 +17,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "Jordan",
 		brand_slug: "jordan",
+		brand_id: "",
 		model: "Air Jordan 1 Retro High OG",
 		colorway: "Chicago (Lost and Found)",
 		image: "https://images.unsplash.com/photo-1549298916-b41d501d3772",
@@ -27,6 +28,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "Nike",
 		brand_slug: "nike",
+		brand_id: "",
 		model: "Dunk Low",
 		colorway: "Panda",
 		image: "https://images.unsplash.com/photo-1549298916-b41d501d3772",
@@ -37,6 +39,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "New Balance",
 		brand_slug: "new-balance",
+		brand_id: "",
 		model: "550",
 		colorway: "White/Team Red",
 		image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77",
@@ -47,6 +50,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "adidas",
 		brand_slug: "adidas",
+		brand_id: "",
 		model: "Samba OG",
 		colorway: "White/Black",
 		image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782",
@@ -57,6 +61,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "ASICS",
 		brand_slug: "asics",
+		brand_id: "",
 		model: "GEL-Kayano 14",
 		colorway: "Silver/Black",
 		image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77",
@@ -67,6 +72,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "Salomon",
 		brand_slug: "salomon",
+		brand_id: "",
 		model: "XT-6",
 		colorway: "Black/White",
 		image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782",
@@ -77,6 +83,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "Puma",
 		brand_slug: "puma",
+		brand_id: "",
 		model: "Suede Classic",
 		colorway: "Peacoat/White",
 		image: "https://images.unsplash.com/photo-1549298916-b41d501d3772",
@@ -87,6 +94,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "Reebok",
 		brand_slug: "reebok",
+		brand_id: "",
 		model: "Club C 85",
 		colorway: "Chalk/Green",
 		image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782",
@@ -97,6 +105,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "Vans",
 		brand_slug: "vans",
+		brand_id: "",
 		model: "Old Skool",
 		colorway: "Black/White",
 		image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77",
@@ -107,6 +116,7 @@ const demoBase: ReadonlyArray<
 	{
 		brand: "Converse",
 		brand_slug: "converse",
+		brand_id: "",
 		model: "Chuck 70",
 		colorway: "Parchment",
 		image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782",
@@ -146,6 +156,7 @@ export function getDemoSneakers(
 			id,
 			brand: base.brand,
 			brand_slug: base.brand_slug,
+			brand_id: base.brand_id,
 			model: base.model,
 			colorway: base.colorway,
 			image: base.image,

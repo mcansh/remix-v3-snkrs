@@ -10,7 +10,8 @@
 		"preview": "vite preview",
 		"test": "remix test",
 		"format": "oxfmt",
-		"lint": "oxlint"
+		"lint": "oxlint",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@brielov/crypto": "npm:@jsr/brielov__crypto@0.2.0",

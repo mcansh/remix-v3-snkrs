@@ -1,57 +1,45 @@
 # AGENTS.md
 
-## Stack and runtime (don’t guess defaults)
+## Runtime and package manager
 
-- Node `>=24` and pnpm `10.20.0` are required (`package.json`).
-- This is Remix v3 beta + Vite + Cloudflare Worker SSR, not React Router file routes.
-- Worker entrypoint is `app/entry.server.ts` via `wrangler.jsonc` `main: "./app/entry.server"`.
+- Use Node `>=24` and the pinned pnpm from `package.json` (`pnpm@10.33.2...`).
+- This is a single-package repo; `pnpm-workspace.yaml` only declares `onlyBuiltDependencies`.
+- Keep `@mcansh/vite-plugin-remix` on `file:.yalc/@mcansh/vite-plugin-remix` unless you intentionally change local yalc workflow.
+- `.npmrc` maps `@jsr` to `https://npm.jsr.io`; keep it if install/resolve behavior is touched.
 
-## Commands that are actually wired
+## App wiring that is easy to break
 
-- Dev server: `pnpm dev`
-- Production build: `pnpm build`
-- Preview build: `pnpm preview`
-- Tests (all types): `pnpm test`
-- Format (repo standard): `pnpm format` (uses `oxfmt`, not prettier)
-- Typecheck (no script): `pnpm exec tsc --noEmit`
+- App routes are **not** file-convention routes; they are declared in `app/routes.ts` (`remix/fetch-router/routes`).
+- Route handlers are mapped separately in `app/router.ts` via `router.map(...)`; route changes usually require edits in both files.
+- Worker runtime entrypoint is `app/entry.server.ts` (`wrangler.jsonc` `main: "./app/entry.server"`).
+- Vite uses `remix({ serverHandler: false })` in `vite.config.ts`; request handling stays in the worker router, not a generated server handler.
 
-## Fast, focused verification
+## Commands
 
-- Single browser test file: `pnpm test app/components/restful-form.test.browser.tsx --type browser`
-- Single E2E test file: `pnpm test app/components/pagination.test.e2e.tsx --type e2e`
-- Single server test file pattern: `pnpm test "**/*.test.tsx" --type server`
-- Test discovery is controlled by `remix-test.config.ts` glob patterns, and `test/setup.ts` polyfills `document.adoptedStyleSheets`.
+- Dev: `pnpm dev`
+- Build: `pnpm build`
+- Preview: `pnpm preview`
+- Lint: `pnpm lint`
+- Typecheck: `pnpm typecheck`
+- Test: `pnpm test`
+- Format: `pnpm format` (uses `oxfmt`, not Prettier)
 
-## Routing and request flow (critical)
+## Focused verification
 
-- Route definitions are centralized in `app/routes.ts` using `remix/fetch-router/routes`.
-- Route handlers are manually mapped in `app/router.ts` via `router.map(...)`.
-- If you add/change a route, update both `app/routes.ts` and the mapped controller exports.
-- Controller layout is by domain under `app/controllers/**`; data access lives in `app/models/**`.
+- Run one test file with Remix test runner: `pnpm test <path> --type browser|e2e|server`.
+- Test discovery is `**/*.test{,.browser,.e2e}.tsx` (`remix-test.config.ts`), so `*.test.ts` files are not in default test globs.
+- Browser tests rely on `test/setup.ts` polyfill for `document.adoptedStyleSheets`.
 
-## Data and env gotchas
+## Env, DB, and generated artifacts
 
-- DB is Cloudflare D1 through Drizzle ORM (`env.db` in `app/lib/env.ts`), schema in `app/db/schema.ts`.
-- App env parsing happens from `cloudflare:workers` in `app/lib/env.ts`; missing required vars throws at runtime.
-- Drizzle kit config (`drizzle.config.ts`) requires `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_DATABASE_ID`, `CLOUDFLARE_D1_TOKEN`.
-- Migrations are committed SQL in `drizzle/*.sql` with Drizzle metadata in `drizzle/meta/*`.
+- `app/env.ts` validates env from `cloudflare:workers`; missing/invalid vars throw at startup.
+- D1 binding name must stay `db` (`wrangler.jsonc` + `app/env.ts` expect that exact binding).
+- Drizzle schema source is `app/db/schema.ts`; migrations are in `drizzle/` (with `drizzle/meta/*` snapshots).
+- `drizzle.config.ts` requires `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_DATABASE_ID`, and `CLOUDFLARE_D1_TOKEN`.
+- `worker-configuration.d.ts` is Wrangler-generated (`wrangler types`); regenerate instead of hand-editing.
 
-## Repo conventions worth keeping
+## Lint/format constraints that commonly fail CI/local checks
 
-- Use `#` import aliases (configured via `package.json` imports `"#*": "./*"`), e.g. `#app/...`.
-- Formatting style is tabs + no semicolons (`.oxfmtrc.json`), and `drizzle`, `.yalc`, `.opencode`, `.agents` are formatter-ignored.
-- `@mcansh/vite-plugin-remix` is sourced from `file:.yalc/...`; avoid changing dependency manager assumptions without checking local yalc workflow.
-
-## Agent skills
-
-### Issue tracker
-
-Issues and PRDs are tracked in this repo's GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Triage uses the canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-This repo uses a single-context domain-doc layout (`CONTEXT.md` + `docs/adr/` at root). See `docs/agents/domain.md`.
+- Internal import alias is `#*` (for example `#app/...`) from `package.json` imports.
+- Local TS/TSX imports must include file extensions (`import/extensions` is enforced by oxlint).
+- `oxfmt` enforces tabs, no semicolons, import sorting, and Tailwind class sorting.

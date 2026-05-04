@@ -1,4 +1,3 @@
-import { generateSalt, hash, toBase64 } from "@brielov/crypto"
 import { decode } from "decode-formdata"
 import * as s from "remix/data-schema"
 import { email, minLength } from "remix/data-schema/checks"
@@ -7,10 +6,8 @@ import type { Controller } from "remix/fetch-router"
 import { redirect } from "remix/response/redirect"
 import { Session } from "remix/session"
 
-import { schema } from "#app/db/index.ts"
-import { env } from "#app/env.ts"
 import { render } from "#app/lib/html.tsx"
-import { getUserByEmail } from "#app/models/user.ts"
+import { createUser, getUserByEmail } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
 
 import { type RegisterErrors, type RegisterValues } from "./page.tsx"
@@ -70,7 +67,6 @@ export const register = {
 		async action({ get }) {
 			let session = get(Session)
 			let formData = get(FormData)
-			let salt = generateSalt()
 			let values: RegisterValues = {
 				email:
 					typeof formData.get("email") === "string"
@@ -117,20 +113,13 @@ export const register = {
 				return redirect(routes.auth.register.index.href())
 			}
 
-			let passwordHash = await hash(result.value.password, salt)
-			let createdUsers = await env.db
-				.insert(schema.users)
-				.values({
-					email: result.value.email,
-					family_name: result.value.family_name,
-					given_name: result.value.given_name,
-					username: result.value.username,
-					password: toBase64(passwordHash),
-					password_salt: toBase64(salt),
-				})
-				.returning()
-
-			let createdUser = createdUsers.at(0)
+			let createdUser = await createUser({
+				email: result.value.email,
+				family_name: result.value.family_name,
+				given_name: result.value.given_name,
+				password: result.value.password,
+				username: result.value.username,
+			})
 
 			if (!createdUser) {
 				session.flash("formErrors", {

@@ -1,20 +1,18 @@
 import { TZDate } from "@date-fns/tz"
 import { differenceInDays } from "date-fns/differenceInDays"
-import { eq } from "drizzle-orm"
 import type { BuildAction, Controller } from "remix/fetch-router"
 
 import type {
 	ShowcaseSearchState,
 	ShowcaseStatus,
 } from "#app/components/showcase-layout.tsx"
-import { schema } from "#app/db/index.ts"
-import { env } from "#app/env.ts"
 import { render } from "#app/lib/html.tsx"
 import {
 	getBrandsForUser,
 	getSneakerById,
 	getSneakersForShowcase,
 } from "#app/models/sneaker.ts"
+import { getUserByUsername } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
 
 import {
@@ -46,12 +44,6 @@ function parseShowcaseSearch(urlOrSearchParams: URL | URLSearchParams) {
 	}
 
 	return search
-}
-
-async function getUserByUsername(username: string) {
-	return env.db.query.users.findFirst({
-		where: eq(schema.users.username, username),
-	})
 }
 
 function getShowcaseTitle(status: ShowcaseStatus, username: string): string {
@@ -129,9 +121,7 @@ const sneakerUserSoldHandler = {
 const sneakerUserShowHandler = {
 	middleware: [],
 	async handler({ headers, params }) {
-		let user = await env.db.query.users.findFirst({
-			where: eq(schema.users.username, params.username),
-		})
+		let user = await getUserByUsername(params.username)
 
 		if (!user) {
 			return render(<ShowcaseNotFoundView />, { status: 404 })

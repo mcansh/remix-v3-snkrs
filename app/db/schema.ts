@@ -53,9 +53,7 @@ export const sneakers = sqliteTable(
 			.notNull(),
 	},
 	(table) => {
-		return {
-			sneakersBrandIdIdx: index("sneakers_brand_id_idx").on(table.brand_id),
-		}
+		return [index("sneakers_brand_id_idx").on(table.brand_id)]
 	},
 )
 

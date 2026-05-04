@@ -1,7 +1,7 @@
-import type * as Remix from "remix/ui"
 import { getContext } from "remix/async-context-middleware"
 import type { Router } from "remix/fetch-router"
 import { createHtmlResponse } from "remix/response/html"
+import type * as Remix from "remix/ui"
 import { renderToStream } from "remix/ui/server"
 
 export function render(node: Remix.RemixNode, init?: ResponseInit) {

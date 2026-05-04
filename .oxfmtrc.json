@@ -4,6 +4,9 @@
 	"semi": false,
 	"useTabs": true,
 	"printWidth": 80,
+	"sortImports": {
+		"internalPattern": ["#/"]
+	},
 	"sortPackageJson": {},
 	"ignorePatterns": [
 		"pnpm-lock.yaml",

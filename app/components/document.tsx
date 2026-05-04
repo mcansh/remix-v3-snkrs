@@ -3,11 +3,12 @@ import { getContext } from "remix/async-context-middleware"
 import type { RemixNode } from "remix/ui"
 import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite"
 
-import appStylesHref from "#app/app.css?url"
 import { AuthenticatedNav } from "#app/components/authenticated-nav.tsx"
 import clientAssets from "#app/entry.browser.ts?assets=client"
 import serverAssets from "#app/entry.server.ts?assets=ssr"
 import { getCurrentUserSafely } from "#app/utils/context.ts"
+
+import appStylesHref from "#app/app.css?url"
 
 export function Document() {
 	let assets = clientAssets.merge(serverAssets)

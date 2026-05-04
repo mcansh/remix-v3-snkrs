@@ -12,10 +12,10 @@ import { showcaseHandlers } from "./controllers/showcase/controller.tsx"
 import { sneakerHandlers } from "./controllers/sneakers/controller.tsx"
 import { uploadHandler } from "./lib/upload.ts"
 import { loadAuth } from "./middleware/auth.ts"
-import { routes } from "./routes"
+import { routes } from "./routes.ts"
 import { sessionCookie, sessionStorage } from "./utils/session.ts"
 
-let middleware = [
+const middleware = [
 	import.meta.env.DEV ? logger() : null,
 	asyncContext(),
 	formData({ maxFiles: 1, uploadHandler }),

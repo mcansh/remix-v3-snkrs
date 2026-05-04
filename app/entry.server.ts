@@ -8,7 +8,7 @@ import {
 import { env } from "./env.ts"
 import { router } from "./router.ts"
 
-let securityHeaders = createSecureHeaders({
+const securityHeaders = createSecureHeaders({
 	"Content-Security-Policy": {
 		"default-src": [NONE],
 		"connect-src": [SELF, import.meta.env.DEV ? "ws:" : undefined],

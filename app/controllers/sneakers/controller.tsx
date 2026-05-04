@@ -223,8 +223,12 @@ const sneakerEditHandler = {
 					sneaker={sneaker}
 					isEditing={true}
 					action={routes.sneakers.update.href({ id: sneaker.id })}
-					formErrors={session.get("formErrors") as SneakerFormErrors | undefined}
-					formValues={session.get("formValues") as SneakerFormValues | undefined}
+					formErrors={
+						session.get("formErrors") as SneakerFormErrors | undefined
+					}
+					formValues={
+						session.get("formValues") as SneakerFormValues | undefined
+					}
 				/>
 			</Document>,
 		)
@@ -333,7 +337,10 @@ function SneakerForm<T extends boolean>() {
 						) : null}
 					</label>
 
-					<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="colorway">
+					<label
+						class="grid gap-1.5 text-sm text-slate-700 md:col-span-2"
+						for="colorway"
+					>
 						Colorway
 						<input
 							type="text"
@@ -364,7 +371,10 @@ function SneakerForm<T extends boolean>() {
 						) : null}
 					</label>
 
-					<label class="grid gap-1.5 text-sm text-slate-700" for="purchase_date">
+					<label
+						class="grid gap-1.5 text-sm text-slate-700"
+						for="purchase_date"
+					>
 						Purchase Date
 						<input
 							type="date"
@@ -379,11 +389,16 @@ function SneakerForm<T extends boolean>() {
 							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 						/>
 						{formErrors?.purchase_date ? (
-							<span class="text-xs text-rose-700">{formErrors.purchase_date}</span>
+							<span class="text-xs text-rose-700">
+								{formErrors.purchase_date}
+							</span>
 						) : null}
 					</label>
 
-					<label class="grid gap-1.5 text-sm text-slate-700" for="purchase_price">
+					<label
+						class="grid gap-1.5 text-sm text-slate-700"
+						for="purchase_price"
+					>
 						Purchase Price (in cents)
 						<input
 							type="number"
@@ -391,11 +406,15 @@ function SneakerForm<T extends boolean>() {
 							name="purchase_price"
 							required
 							min={0}
-							defaultValue={formValues?.purchase_price ?? sneaker?.purchase_price ?? ""}
+							defaultValue={
+								formValues?.purchase_price ?? sneaker?.purchase_price ?? ""
+							}
 							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 						/>
 						{formErrors?.purchase_price ? (
-							<span class="text-xs text-rose-700">{formErrors.purchase_price}</span>
+							<span class="text-xs text-rose-700">
+								{formErrors.purchase_price}
+							</span>
 						) : null}
 					</label>
 
@@ -407,15 +426,22 @@ function SneakerForm<T extends boolean>() {
 							name="retail_price"
 							required
 							min={0}
-							defaultValue={formValues?.retail_price ?? sneaker?.retail_price ?? ""}
+							defaultValue={
+								formValues?.retail_price ?? sneaker?.retail_price ?? ""
+							}
 							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 						/>
 						{formErrors?.retail_price ? (
-							<span class="text-xs text-rose-700">{formErrors.retail_price}</span>
+							<span class="text-xs text-rose-700">
+								{formErrors.retail_price}
+							</span>
 						) : null}
 					</label>
 
-					<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="image">
+					<label
+						class="grid gap-1.5 text-sm text-slate-700 md:col-span-2"
+						for="image"
+					>
 						Image
 						<input
 							type="file"
@@ -435,7 +461,7 @@ function SneakerForm<T extends boolean>() {
 						) : null}
 					</label>
 
-					<div class="md:col-span-2 mt-1 flex items-center gap-2">
+					<div class="mt-1 flex items-center gap-2 md:col-span-2">
 						<button
 							type="submit"
 							class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"

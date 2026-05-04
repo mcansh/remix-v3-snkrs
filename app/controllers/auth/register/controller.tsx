@@ -15,7 +15,7 @@ import { render } from "#app/lib/html.tsx"
 import { getUserByEmail } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
 
-let registerSchema = f.object({
+const registerSchema = f.object({
 	email: f.field(s.string().pipe(email())),
 	username: f.field(s.string()),
 	password: f.field(s.string().pipe(minLength(8))),
@@ -86,9 +86,12 @@ export const register = {
 		async action({ get }) {
 			let session = get(Session)
 			let formData = get(FormData)
-			const salt = generateSalt()
+			let salt = generateSalt()
 			let values: RegisterValues = {
-				email: typeof formData.get("email") === "string" ? String(formData.get("email")) : "",
+				email:
+					typeof formData.get("email") === "string"
+						? String(formData.get("email"))
+						: "",
 				username:
 					typeof formData.get("username") === "string"
 						? String(formData.get("username"))
@@ -167,7 +170,9 @@ export const register = {
 			return render(
 				<Document head={<title>Create Account</title>}>
 					<div class="mx-auto mt-12 w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_16px_40px_oklch(0.2_0.03_250/0.08)]">
-						<h1 class="text-2xl font-semibold text-slate-900">Create account</h1>
+						<h1 class="text-2xl font-semibold text-slate-900">
+							Create account
+						</h1>
 						<p class="mt-1 text-sm text-slate-600">
 							Set up your profile to start tracking your collection.
 						</p>
@@ -183,7 +188,10 @@ export const register = {
 							action={routes.auth.register.action.href()}
 							class="mt-5 grid gap-4 md:grid-cols-2"
 						>
-							<label class="grid gap-1.5 text-sm text-slate-700" for="given_name">
+							<label
+								class="grid gap-1.5 text-sm text-slate-700"
+								for="given_name"
+							>
 								First name
 								<input
 									id="given_name"
@@ -195,11 +203,16 @@ export const register = {
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
 								{formErrors?.given_name ? (
-									<span class="text-xs text-rose-700">{formErrors.given_name}</span>
+									<span class="text-xs text-rose-700">
+										{formErrors.given_name}
+									</span>
 								) : null}
 							</label>
 
-							<label class="grid gap-1.5 text-sm text-slate-700" for="family_name">
+							<label
+								class="grid gap-1.5 text-sm text-slate-700"
+								for="family_name"
+							>
 								Last name
 								<input
 									id="family_name"
@@ -211,11 +224,16 @@ export const register = {
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
 								{formErrors?.family_name ? (
-									<span class="text-xs text-rose-700">{formErrors.family_name}</span>
+									<span class="text-xs text-rose-700">
+										{formErrors.family_name}
+									</span>
 								) : null}
 							</label>
 
-							<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="email">
+							<label
+								class="grid gap-1.5 text-sm text-slate-700 md:col-span-2"
+								for="email"
+							>
 								Email
 								<input
 									id="email"
@@ -231,7 +249,10 @@ export const register = {
 								) : null}
 							</label>
 
-							<label class="grid gap-1.5 text-sm text-slate-700 md:col-span-2" for="username">
+							<label
+								class="grid gap-1.5 text-sm text-slate-700 md:col-span-2"
+								for="username"
+							>
 								Username
 								<input
 									id="username"
@@ -243,7 +264,9 @@ export const register = {
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
 								{formErrors?.username ? (
-									<span class="text-xs text-rose-700">{formErrors.username}</span>
+									<span class="text-xs text-rose-700">
+										{formErrors.username}
+									</span>
 								) : null}
 							</label>
 
@@ -259,11 +282,16 @@ export const register = {
 									class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 								/>
 								{formErrors?.password ? (
-									<span class="text-xs text-rose-700">{formErrors.password}</span>
+									<span class="text-xs text-rose-700">
+										{formErrors.password}
+									</span>
 								) : null}
 							</label>
 
-							<label class="grid gap-1.5 text-sm text-slate-700" for="confirm_password">
+							<label
+								class="grid gap-1.5 text-sm text-slate-700"
+								for="confirm_password"
+							>
 								Confirm password
 								<input
 									id="confirm_password"

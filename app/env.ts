@@ -15,14 +15,14 @@ const envSchema = s.object({
 	SESSION_PASSWORD: s.string(),
 })
 
-let parsedEnv = s.parseSafe(envSchema, cf_env)
+const parsedEnv = s.parseSafe(envSchema, cf_env)
 
 if (parsedEnv.success === false) {
 	console.error(parsedEnv.issues)
 	throw new Error("Failed to parse environment variables")
 }
 
-export let env = {
+export const env = {
 	...parsedEnv.value,
 	db: drizzle(cf_env.db, { schema }),
 }

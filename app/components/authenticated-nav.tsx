@@ -1,6 +1,7 @@
+import { clientEntry, on, ref, type Handle } from "remix/ui"
+
 import type { User } from "#app/db/schema.ts"
 import { routes } from "#app/routes.ts"
-import { clientEntry, on, ref, type Handle } from "remix/ui"
 
 type NavLink = {
 	label: string
@@ -17,9 +18,9 @@ function isCurrentPath(pathname: string, href: string): boolean {
 	return normalizedPath === normalizedHref
 }
 
-let mobilePrimaryClass =
+const mobilePrimaryClass =
 	"block rounded-md bg-slate-900 px-3 py-2 text-sm text-white no-underline transition-colors hover:bg-slate-800 aria-[current=page]:bg-blue-700"
-let mobileLinkClass =
+const mobileLinkClass =
 	"block rounded-md px-3 py-2 text-sm text-slate-700 no-underline transition-colors hover:bg-slate-100 hover:text-slate-900 aria-[current=page]:bg-blue-50 aria-[current=page]:font-semibold aria-[current=page]:text-blue-700"
 
 const mobileMenuId = "mobile-nav-menu"

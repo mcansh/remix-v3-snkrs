@@ -1,10 +1,10 @@
 import type { Controller } from "remix/fetch-router"
+import { redirect } from "remix/response/redirect"
 
 import { Document } from "#app/components/document.tsx"
 import { render } from "#app/lib/html.tsx"
 import { routes } from "#app/routes.ts"
 import { getCurrentUserSafely } from "#app/utils/context.ts"
-import { redirect } from "remix/response/redirect"
 
 function HomePage() {
 	return () => {

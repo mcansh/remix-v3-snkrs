@@ -4,14 +4,14 @@ import {
 	createSessionAuthScheme,
 	requireAuth as requireAuthenticated,
 } from "remix/auth-middleware"
+import * as s from "remix/data-schema"
+import * as f from "remix/data-schema/form-data"
 import { redirect } from "remix/response/redirect"
 
 import { authenticateUser, getUserById } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
 import type { AuthIdentity, AuthSession } from "#app/utils/auth-session.ts"
 import { normalizeEmail, parseAuthSession } from "#app/utils/auth-session.ts"
-import * as s from "remix/data-schema"
-import * as f from "remix/data-schema/form-data"
 
 const loginSchema = f.object({
 	email: f.field(s.defaulted(s.string(), "")),

@@ -5,7 +5,7 @@ export const Counter = clientEntry(
 	function Counter(handle: Handle) {
 		let count = 0
 
-		const pressIncrement = on<HTMLButtonElement>("pointerdown", () => {
+		let pressIncrement = on<HTMLButtonElement>("pointerdown", () => {
 			count++
 			handle.update()
 		})

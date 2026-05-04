@@ -1,6 +1,7 @@
+import type { RemixNode } from "remix/ui"
+
 import type { SerializedSneaker } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
-import type { RemixNode } from "remix/ui"
 
 function ViewCard() {
 	return ({

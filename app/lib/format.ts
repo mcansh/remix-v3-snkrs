@@ -1,9 +1,9 @@
-let moneyFormatter = new Intl.NumberFormat("en-US", {
+const moneyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
 })
 
-let dateFormat = new Intl.DateTimeFormat("en-US", {
+const dateFormat = new Intl.DateTimeFormat("en-US", {
 	month: "short",
 	day: "numeric",
 	year: "numeric",

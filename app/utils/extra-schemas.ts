@@ -1,5 +1,5 @@
-import * as s from "remix/data-schema"
 import { isCuid } from "@paralleldrive/cuid2"
+import type * as s from "remix/data-schema"
 
 export function isCuid2(): s.Check<string> {
 	return {

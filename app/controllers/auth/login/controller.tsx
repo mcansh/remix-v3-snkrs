@@ -1,3 +1,4 @@
+import { completeAuth } from "remix/auth"
 import * as s from "remix/data-schema"
 import { email } from "remix/data-schema/checks"
 import * as f from "remix/data-schema/form-data"
@@ -12,9 +13,8 @@ import { getPostAuthRedirect } from "#app/middleware/auth.ts"
 import { authenticateUser } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
 import { getCurrentUserSafely } from "#app/utils/context.ts"
-import { completeAuth } from "remix/auth"
 
-let loginSchema = f.object({
+const loginSchema = f.object({
 	email: f.field(s.string().pipe(email())),
 	password: f.field(s.string()),
 	return_to: f.field(s.optional(s.string())),

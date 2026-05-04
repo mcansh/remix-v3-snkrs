@@ -1,13 +1,13 @@
-import * as s from "remix/data-schema"
 import { defineConfig } from "drizzle-kit"
+import * as s from "remix/data-schema"
 
-let cloudflare = s.object({
+const cloudflare = s.object({
 	CLOUDFLARE_ACCOUNT_ID: s.string(),
 	CLOUDFLARE_DATABASE_ID: s.string(),
 	CLOUDFLARE_D1_TOKEN: s.string(),
 })
 
-let env = s.parse(cloudflare, process.env)
+const env = s.parse(cloudflare, process.env)
 
 export default defineConfig({
 	out: "./drizzle",

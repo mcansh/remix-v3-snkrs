@@ -1,8 +1,10 @@
-import { html } from "#test/utils.ts"
 import * as assert from "remix/assert"
 import { createTestServer } from "remix/node-fetch-server/test"
 import { describe, it } from "remix/test"
 import type * as remix from "remix/ui"
+
+import { html } from "#test/utils.ts"
+
 import { Pagination } from "./pagination.tsx"
 
 function Doc() {
@@ -19,7 +21,7 @@ function Doc() {
 	}
 }
 
-let allSneakers = Array.from(
+const allSneakers = Array.from(
 	{ length: 13 },
 	(_, index) => `Sneaker ${index + 1}`,
 )

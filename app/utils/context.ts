@@ -1,7 +1,9 @@
-import type { User } from "#app/db/schema.ts"
 import { getContext } from "remix/async-context-middleware"
 import type { AuthState } from "remix/auth-middleware"
 import { Auth } from "remix/auth-middleware"
+
+import type { User } from "#app/db/schema.ts"
+
 import type { AuthIdentity } from "./auth-session"
 
 export function getCurrentUser(): User {

@@ -20,9 +20,9 @@ export function remix({
   serverEnvironments?: string[];
   serverHandler?: boolean;
 } = {}): PluginOption {
-  const environments = new Set(_environments);
-  const hasClientEntry = clientEntry !== false;
-  const clientReferences = new Set<string>();
+  let environments = new Set(_environments);
+  let hasClientEntry = clientEntry !== false;
+  let clientReferences = new Set<string>();
 
   return [
     fullstack({
@@ -34,16 +34,16 @@ export function remix({
       buildApp: {
         order: "pre",
         async handler(builder) {
-          const originalBuild = builder.build.bind(builder);
+          let originalBuild = builder.build.bind(builder);
           (builder as unknown as Record<string, unknown>).build = async (environment: unknown) => {
             if ((environment as { isBuilt?: boolean })?.isBuilt) return;
             return originalBuild(environment as Parameters<typeof builder.build>[0]);
           };
 
-          const b = builder as typeof builder & {
+          let b = builder as typeof builder & {
             writeAssetsManifest?: () => Promise<void>;
           };
-          const originalWrite = b.writeAssetsManifest;
+          let originalWrite = b.writeAssetsManifest;
           if (originalWrite) {
             b.writeAssetsManifest = async () => {
               try {
@@ -102,8 +102,8 @@ export function remix({
     {
       name: "remix-preview-server",
       async configurePreviewServer(server) {
-        const ssrOutDir = server.config.environments.ssr?.build?.outDir ?? "dist/ssr";
-        const entryPath = `${ssrOutDir}/index.js`;
+        let ssrOutDir = server.config.environments.ssr?.build?.outDir ?? "dist/ssr";
+        let entryPath = `${ssrOutDir}/index.js`;
 
         let mod;
         try {
@@ -112,8 +112,8 @@ export function remix({
           return;
         }
 
-        const router = mod.default ?? mod.router;
-        const { createRequestListener } = await import("remix/node-fetch-server");
+        let router = mod.default ?? mod.router;
+        let { createRequestListener } = await import("remix/node-fetch-server");
 
         return () => {
           server.middlewares.use(createRequestListener((request) => router.fetch(request)));
@@ -145,17 +145,17 @@ export function remix({
         if (!code.includes("import.meta.url")) return;
         if (!code.match(CLIENT_ENTRY_PATTERN)) return;
 
-        const program = this.parse(code);
-        const calls = findClientEntryCalls(program.body);
+        let program = this.parse(code);
+        let calls = findClientEntryCalls(program.body);
         if (calls.length === 0) return;
 
-        const isServer = environments.has(this.environment.name);
-        const ms = new MagicString(code);
+        let isServer = environments.has(this.environment.name);
+        let ms = new MagicString(code);
 
         if (isServer) {
-          const prepend = `import ___clientEntryAssets from "${id}?assets=client";\n`;
+          let prepend = `import ___clientEntryAssets from "${id}?assets=client";\n`;
           ms.prepend(prepend);
-          for (const call of [...calls].reverse()) {
+          for (let call of [...calls].reverse()) {
             ms.overwrite(
               call.metaUrlStart,
               call.metaUrlEnd,
@@ -163,7 +163,7 @@ export function remix({
             );
           }
         } else {
-          for (const call of [...calls].reverse()) {
+          for (let call of [...calls].reverse()) {
             ms.overwrite(
               call.metaUrlStart,
               call.metaUrlEnd,
@@ -183,9 +183,9 @@ export function remix({
       transform(code, id) {
         if (!code.match(/\buse client\b/)) return;
 
-        const program = this.parse(code);
+        let program = this.parse(code);
         if (hasDirective(program.body, "use client")) {
-          const ms = new MagicString(code);
+          let ms = new MagicString(code);
 
           if (environments.has(this.environment.name)) {
             transformUseClient(ms, program, id, clientReferences);
@@ -210,23 +210,23 @@ interface ClientEntryCall {
 }
 
 function findClientEntryCalls(body: Program["body"]): ClientEntryCall[] {
-  const results: ClientEntryCall[] = [];
+  let results: ClientEntryCall[] = [];
 
-  for (const node of body) {
+  for (let node of body) {
     if (node.type !== "ExportNamedDeclaration") continue;
     if (node.declaration?.type !== "VariableDeclaration") continue;
 
-    for (const declarator of node.declaration.declarations) {
+    for (let declarator of node.declaration.declarations) {
       if (declarator.id.type !== "Identifier") continue;
       if (declarator.init?.type !== "CallExpression") continue;
 
-      const call = declarator.init;
+      let call = declarator.init;
 
       if (call.callee.type !== "Identifier" || call.callee.name !== "clientEntry") continue;
 
       if (call.arguments.length < 2) continue;
 
-      const firstArg = call.arguments[0]!;
+      let firstArg = call.arguments[0]!;
       if (!firstArg) continue;
       if (firstArg.type !== "MemberExpression") continue;
       if (firstArg.object.type !== "MetaProperty") continue;
@@ -272,7 +272,7 @@ function transformUseClient(
   }
 
   let hasExports = false;
-  for (const exportedFunction of getExportedFunctions(program.body)) {
+  for (let exportedFunction of getExportedFunctions(program.body)) {
     hasExports = true;
     removeExport(ms, exportedFunction);
     reExportAsHydrated(ms, exportedFunction, id);
@@ -283,7 +283,7 @@ function transformUseClient(
 }
 
 function removeUseClient(ms: MagicString, program: Program) {
-  for (const node of program.body) {
+  for (let node of program.body) {
     if (
       node.type === "ExpressionStatement" &&
       "directive" in node &&
@@ -296,14 +296,14 @@ function removeUseClient(ms: MagicString, program: Program) {
 }
 
 function getExportedFunctions(body: Program["body"]): ExportedFunction[] {
-  const exportedFunctions: ExportedFunction[] = [];
+  let exportedFunctions: ExportedFunction[] = [];
 
-  for (const node of body) {
+  for (let node of body) {
     if (node.type !== "ExportNamedDeclaration") continue;
     if (!node.declaration) continue;
 
     if (node.declaration.type === "VariableDeclaration") {
-      for (const declarator of node.declaration.declarations) {
+      for (let declarator of node.declaration.declarations) {
         if (
           declarator.type === "VariableDeclarator" &&
           declarator.id.type === "Identifier" &&
@@ -339,8 +339,8 @@ function removeExport(ms: MagicString, exportedFunction: ExportedFunction) {
 }
 
 function reExportAsHydrated(ms: MagicString, exportedFunction: ExportedFunction, id: string) {
-  const functionName = exportedFunction.name;
-  const hydratedName = `${functionName}Hydrated`;
+  let functionName = exportedFunction.name;
+  let hydratedName = `${functionName}Hydrated`;
   let assetsName = `___${functionName}Assets`;
 
   let hydratedExport = ts`

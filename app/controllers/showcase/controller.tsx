@@ -1,3 +1,8 @@
+import { TZDate } from "@date-fns/tz"
+import { differenceInDays } from "date-fns/differenceInDays"
+import { eq } from "drizzle-orm"
+import type { BuildAction, Controller } from "remix/fetch-router"
+
 import { Document } from "#app/components/document.tsx"
 import {
 	ShowcaseLayout,
@@ -14,10 +19,6 @@ import {
 	getSneakersForShowcase,
 } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
-import { TZDate } from "@date-fns/tz"
-import { differenceInDays } from "date-fns/differenceInDays"
-import { eq } from "drizzle-orm"
-import type { BuildAction, Controller } from "remix/fetch-router"
 
 function parseShowcaseSearch(urlOrSearchParams: URL | URLSearchParams) {
 	let sp =

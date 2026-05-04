@@ -3,13 +3,10 @@ import { differenceInDays } from "date-fns/differenceInDays"
 import { eq } from "drizzle-orm"
 import type { BuildAction, Controller } from "remix/fetch-router"
 
-import { Document } from "#app/components/document.tsx"
-import {
-	ShowcaseLayout,
-	type ShowcaseSearchState,
-	type ShowcaseStatus,
+import type {
+	ShowcaseSearchState,
+	ShowcaseStatus,
 } from "#app/components/showcase-layout.tsx"
-import { SneakerDetailViews } from "#app/components/sneaker-detail-views.tsx"
 import { schema } from "#app/db/index.ts"
 import { env } from "#app/env.ts"
 import { render } from "#app/lib/html.tsx"
@@ -19,6 +16,13 @@ import {
 	getSneakersForShowcase,
 } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
+
+import {
+	renderShowcaseNotFoundView,
+	renderShowcaseUserNotFoundView,
+	renderShowcaseView,
+	renderSneakerDetailView,
+} from "./showcase-view.tsx"
 
 function parseShowcaseSearch(urlOrSearchParams: URL | URLSearchParams) {
 	let sp =
@@ -70,12 +74,10 @@ async function renderShowcase(
 	let user = await getUserByUsername(username)
 
 	if (!user) {
-		return render(
-			<Document>
-				<h1>User not found</h1>
-			</Document>,
-			{ status: 404, statusText: "Not Found" },
-		)
+		return render(renderShowcaseUserNotFoundView(), {
+			status: 404,
+			statusText: "Not Found",
+		})
 	}
 
 	let search = parseShowcaseSearch(url)
@@ -91,17 +93,15 @@ async function renderShowcase(
 	let basePath = getShowcaseBasePath(status, user.username)
 
 	return render(
-		<Document head={<title>{title}</title>}>
-			<ShowcaseLayout
-				username={user.username}
-				title={title}
-				status={status}
-				search={search}
-				brands={brands}
-				showcase={showcase}
-				basePath={basePath}
-			/>
-		</Document>,
+		renderShowcaseView({
+			username: user.username,
+			title,
+			status,
+			search,
+			brands,
+			showcase,
+			basePath,
+		}),
 	)
 }
 
@@ -134,12 +134,7 @@ const sneakerUserShowHandler = {
 		})
 
 		if (!user) {
-			return render(
-				<Document head={<title>404 Not Found</title>}>
-					<h1>404 Not Found</h1>
-				</Document>,
-				{ status: 404 },
-			)
+			return render(renderShowcaseNotFoundView(), { status: 404 })
 		}
 
 		let sneaker = await getSneakerById(params.sneakerId, true, {
@@ -147,12 +142,7 @@ const sneakerUserShowHandler = {
 		})
 
 		if (!sneaker || sneaker.user_id !== user.id) {
-			return render(
-				<Document head={<title>404 Not Found</title>}>
-					<h1>404 Not Found</h1>
-				</Document>,
-				{ status: 404 },
-			)
+			return render(renderShowcaseNotFoundView(), { status: 404 })
 		}
 
 		let daysSincePurchase: number | null = null
@@ -165,12 +155,10 @@ const sneakerUserShowHandler = {
 		}
 
 		return render(
-			<Document head={<title>{`${sneaker.brand} ${sneaker.model}`}</title>}>
-				<SneakerDetailViews
-					sneaker={{ ...sneaker, daysSincePurchase }}
-					username={user.username}
-				/>
-			</Document>,
+			renderSneakerDetailView({
+				sneaker: { ...sneaker, daysSincePurchase },
+				username: user.username,
+			}),
 		)
 	},
 } satisfies BuildAction<"GET", typeof routes.showcase.show>

@@ -1,0 +1,25 @@
+# Visit https://soloterm.com to learn more
+name: remix-v3-snkrs
+icon: null
+processes:
+  pnpm:test:
+    command: pnpm run test
+    working_dir: null
+    auto_start: false
+    auto_restart: false
+    restart_when_changed: []
+    env: {}
+  pnpm:dev:
+    command: pnpm run dev
+    working_dir: null
+    auto_start: false
+    auto_restart: false
+    restart_when_changed: []
+    env: {}
+  Drizzle Studio:
+    command: pnpm dlx drizzle-kit studio
+    working_dir: null
+    auto_start: false
+    auto_restart: false
+    restart_when_changed: []
+    env: {}

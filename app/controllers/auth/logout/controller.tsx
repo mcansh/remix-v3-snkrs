@@ -6,7 +6,7 @@ import { render } from "#app/lib/html.tsx"
 import { requireAuth } from "#app/middleware/auth.ts"
 import { routes } from "#app/routes.ts"
 
-import { renderLogoutView } from "./logout-view.tsx"
+import { LogoutView } from "./logout-view.tsx"
 
 export const logout = {
 	middleware: [requireAuth],
@@ -22,7 +22,7 @@ export const logout = {
 			let error = session.get("error")
 
 			return render(
-				renderLogoutView({ error: typeof error === "string" ? error : undefined }),
+				<LogoutView error={typeof error === "string" ? error : undefined} />,
 			)
 		},
 	},

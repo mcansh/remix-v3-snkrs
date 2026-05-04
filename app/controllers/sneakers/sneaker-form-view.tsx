@@ -1,8 +1,11 @@
 import { RestfulForm } from "#app/components/restful-form.tsx"
-import type { Sneaker } from "#app/db/schema.ts"
+import type { SneakerWithBrand } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
 
-import type { SneakerFormErrors, SneakerFormValues } from "./controller.ts"
+import type {
+	SneakerFormErrors,
+	SneakerFormValues,
+} from "./sneaker-form-types.ts"
 
 export function SneakerForm<T extends boolean>() {
 	return ({
@@ -12,7 +15,7 @@ export function SneakerForm<T extends boolean>() {
 		formErrors,
 		formValues,
 	}: {
-		sneaker?: T extends true ? Sneaker : never
+		sneaker?: T extends true ? SneakerWithBrand : never
 		isEditing: T
 		action: string
 		formErrors?: SneakerFormErrors
@@ -48,7 +51,7 @@ export function SneakerForm<T extends boolean>() {
 							id="brand"
 							name="brand"
 							required
-							defaultValue={formValues?.brand ?? sneaker?.brand}
+							defaultValue={formValues?.brand ?? sneaker?.brand?.name ?? ""}
 							class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
 						/>
 						{formErrors?.brand ? (

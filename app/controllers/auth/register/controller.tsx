@@ -17,7 +17,7 @@ import {
 	type RegisterErrors,
 	type RegisterValues,
 } from "./page.tsx"
-import { renderRegisterView } from "./register-view.tsx"
+import { RegisterView } from "./register-view.tsx"
 
 const registerSchema = f.object({
 	email: f.field(s.string().pipe(email())),
@@ -154,7 +154,9 @@ export const register = {
 			let formErrors = session.get("formErrors") as RegisterErrors | undefined
 			let formValues = session.get("formValues") as RegisterValues | undefined
 
-			return render(renderRegisterView({ formValues, formErrors }))
+			return render(
+				<RegisterView formValues={formValues} formErrors={formErrors} />,
+			)
 		},
 	},
 } satisfies Controller<typeof routes.auth.register>

@@ -18,34 +18,14 @@ import { routes } from "#app/routes.ts"
 import { getCurrentUser } from "#app/utils/context.ts"
 import { isCuid2 } from "#app/utils/extra-schemas.ts"
 
-import {
-	renderSneakerEditView,
-	renderSneakerNewView,
-	renderSneakerNotFoundView,
-	renderSneakersIndexView,
-} from "./sneakers-view.tsx"
-
-export type SneakerFormValues = {
-	brand?: string
-	model?: string
-	colorway?: string
-	size?: string
-	purchase_date?: string
-	purchase_price?: string
-	retail_price?: string
-}
-
-export type SneakerFormErrors = {
-	brand?: string
-	model?: string
-	colorway?: string
-	size?: string
-	purchase_date?: string
-	purchase_price?: string
-	retail_price?: string
-	image?: string
-	general?: string
-}
+import { SneakerEditView } from "./sneaker-edit-view.tsx"
+import type {
+	SneakerFormErrors,
+	SneakerFormValues,
+} from "./sneaker-form-types.ts"
+import { SneakerNewView } from "./sneaker-new-view.tsx"
+import { SneakerNotFoundView } from "./sneaker-not-found-view.tsx"
+import { SneakersIndexView } from "./sneakers-index-view.tsx"
 
 function getSneakerFormValues(formData: FormData): SneakerFormValues {
 	return {
@@ -115,7 +95,7 @@ const sneakerIndexHandler = {
 		let sneakers = await getAllSneakers(user.id)
 
 		return render(
-			renderSneakersIndexView({ username: user.username, sneakers }),
+			<SneakersIndexView username={user.username} sneakers={sneakers} />,
 		)
 	},
 } satisfies BuildAction<"GET", typeof routes.sneakers.index>
@@ -127,7 +107,9 @@ const sneakerNewHandler = {
 		let formErrors = session.get("formErrors") as SneakerFormErrors | undefined
 		let formValues = session.get("formValues") as SneakerFormValues | undefined
 
-		return render(renderSneakerNewView({ formErrors, formValues }))
+		return render(
+			<SneakerNewView formErrors={formErrors} formValues={formValues} />,
+		)
 	},
 } satisfies BuildAction<"GET", typeof routes.sneakers.new>
 
@@ -194,15 +176,15 @@ const sneakerEditHandler = {
 		let sneaker = await getSneakerById(params.id)
 
 		if (!sneaker) {
-			return render(renderSneakerNotFoundView(), { status: 404 })
+			return render(<SneakerNotFoundView />, { status: 404 })
 		}
 
 		return render(
-			renderSneakerEditView({
-				sneaker,
-				formErrors: session.get("formErrors") as SneakerFormErrors | undefined,
-				formValues: session.get("formValues") as SneakerFormValues | undefined,
-			}),
+			<SneakerEditView
+				sneaker={sneaker}
+				formErrors={session.get("formErrors") as SneakerFormErrors | undefined}
+				formValues={session.get("formValues") as SneakerFormValues | undefined}
+			/>,
 		)
 	},
 } satisfies BuildAction<"GET", typeof routes.sneakers.edit>

@@ -18,10 +18,10 @@ import {
 import { routes } from "#app/routes.ts"
 
 import {
-	renderShowcaseNotFoundView,
-	renderShowcaseUserNotFoundView,
-	renderShowcaseView,
-	renderSneakerDetailView,
+	ShowcaseNotFoundView,
+	ShowcaseUserNotFoundView,
+	ShowcaseView,
+	SneakerDetailView,
 } from "./showcase-view.tsx"
 
 function parseShowcaseSearch(urlOrSearchParams: URL | URLSearchParams) {
@@ -74,7 +74,7 @@ async function renderShowcase(
 	let user = await getUserByUsername(username)
 
 	if (!user) {
-		return render(renderShowcaseUserNotFoundView(), {
+		return render(<ShowcaseUserNotFoundView />, {
 			status: 404,
 			statusText: "Not Found",
 		})
@@ -93,15 +93,15 @@ async function renderShowcase(
 	let basePath = getShowcaseBasePath(status, user.username)
 
 	return render(
-		renderShowcaseView({
-			username: user.username,
-			title,
-			status,
-			search,
-			brands,
-			showcase,
-			basePath,
-		}),
+		<ShowcaseView
+			username={user.username}
+			title={title}
+			status={status}
+			search={search}
+			brands={brands}
+			showcase={showcase}
+			basePath={basePath}
+		/>,
 	)
 }
 
@@ -134,7 +134,7 @@ const sneakerUserShowHandler = {
 		})
 
 		if (!user) {
-			return render(renderShowcaseNotFoundView(), { status: 404 })
+			return render(<ShowcaseNotFoundView />, { status: 404 })
 		}
 
 		let sneaker = await getSneakerById(params.sneakerId, true, {
@@ -142,7 +142,7 @@ const sneakerUserShowHandler = {
 		})
 
 		if (!sneaker || sneaker.user_id !== user.id) {
-			return render(renderShowcaseNotFoundView(), { status: 404 })
+			return render(<ShowcaseNotFoundView />, { status: 404 })
 		}
 
 		let daysSincePurchase: number | null = null
@@ -155,10 +155,10 @@ const sneakerUserShowHandler = {
 		}
 
 		return render(
-			renderSneakerDetailView({
-				sneaker: { ...sneaker, daysSincePurchase },
-				username: user.username,
-			}),
+			<SneakerDetailView
+				sneaker={{ ...sneaker, daysSincePurchase }}
+				username={user.username}
+			/>,
 		)
 	},
 } satisfies BuildAction<"GET", typeof routes.showcase.show>

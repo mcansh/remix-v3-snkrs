@@ -13,7 +13,7 @@ import { routes } from "#app/routes.ts"
 import { getCurrentUserSafely } from "#app/utils/context.ts"
 
 import type { LoginFormErrors, LoginFormValues } from "./page.tsx"
-import { renderLoginView } from "./login-view.tsx"
+import { LoginView } from "./login-view.tsx"
 
 const loginSchema = f.object({
 	email: f.field(s.string().pipe(email())),
@@ -104,11 +104,11 @@ export const login = {
 			}
 
 			return render(
-				renderLoginView({
-					returnTo,
-					formErrors,
-					formValues,
-				}),
+				<LoginView
+					returnTo={returnTo}
+					formErrors={formErrors}
+					formValues={formValues}
+				/>,
 			)
 		},
 	},

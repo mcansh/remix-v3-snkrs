@@ -1,17 +1,17 @@
-import { createId } from "@paralleldrive/cuid2";
-import { relations } from "drizzle-orm";
-import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import * as s from "remix/data-schema";
-import * as f from "remix/data-schema/form-data";
+import { createId } from "@paralleldrive/cuid2"
+import { relations } from "drizzle-orm"
+import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import * as s from "remix/data-schema"
+import * as f from "remix/data-schema/form-data"
 
 const updatedAt = int({ mode: "timestamp" })
-		.notNull()
-		.$defaultFn(() => new Date())
-		.$onUpdateFn(() => new Date());
+	.notNull()
+	.$defaultFn(() => new Date())
+	.$onUpdateFn(() => new Date())
 
 const createdAt = int({ mode: "timestamp" })
-		.notNull()
-		.$defaultFn(() => new Date());
+	.notNull()
+	.$defaultFn(() => new Date())
 
 export const brands = sqliteTable("brands", {
 	id: text("id", { length: 36 })
@@ -80,15 +80,15 @@ export const usersRelations = relations(users, ({ many }) => {
 })
 
 export const brandsRelations = relations(brands, ({ many }) => {
-  return {
-    // a brand can have many sneakers
+	return {
+		// a brand can have many sneakers
 		sneakers: many(sneakers),
 	}
 })
 
 export const sneakersRelations = relations(sneakers, ({ one }) => {
-  return {
-  	// a sneaker belongs to a single brand
+	return {
+		// a sneaker belongs to a single brand
 		brand: one(brands, {
 			fields: [sneakers.brand_id],
 			references: [brands.id],

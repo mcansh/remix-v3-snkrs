@@ -12,8 +12,8 @@ import { authenticateUser } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
 import { getCurrentUserSafely } from "#app/utils/context.ts"
 
-import type { LoginFormErrors, LoginFormValues } from "./page.tsx"
 import { LoginView } from "./login-view.tsx"
+import type { LoginFormErrors, LoginFormValues } from "./page.tsx"
 
 const loginSchema = f.object({
 	email: f.field(s.string().pipe(email())),

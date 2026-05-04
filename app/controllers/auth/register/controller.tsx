@@ -13,10 +13,7 @@ import { render } from "#app/lib/html.tsx"
 import { getUserByEmail } from "#app/models/user.ts"
 import { routes } from "#app/routes.ts"
 
-import {
-	type RegisterErrors,
-	type RegisterValues,
-} from "./page.tsx"
+import { type RegisterErrors, type RegisterValues } from "./page.tsx"
 import { RegisterView } from "./register-view.tsx"
 
 const registerSchema = f.object({

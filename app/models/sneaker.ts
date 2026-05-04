@@ -142,18 +142,27 @@ export async function getAllSneakers(
 	userId: string,
 	imageSizes: [number, number, number] = [200, 400, 600],
 ): Promise<ReadonlyArray<SerializedSneaker>> {
-	let sneakers = await env.db.query.sneakers.findMany({
-		where: eq(schema.sneakers.user_id, userId),
-		with: {
-			brand: true,
-		},
+	let rows = await env.db
+		.select({
+			sneaker: schema.sneakers,
+			brand: schema.brands,
+		})
+		.from(schema.sneakers)
+		.leftJoin(schema.brands, eq(schema.sneakers.brand_id, schema.brands.id))
+		.where(eq(schema.sneakers.user_id, userId))
+
+	let sneakers = rows.map((row) => {
+		return {
+			...row.sneaker,
+			brand: row.brand,
+		}
 	})
 
 	let sneakersWithData = sneakers.map((sneaker) => {
 		return serializeSneaker(sneaker, imageSizes)
 	})
 
-	return Object.freeze(sneakersWithData)
+	return sneakersWithData
 }
 
 export function serializeSneaker(
@@ -168,7 +177,7 @@ export function serializeSneaker(
 	let brandName = brandRelation?.name ?? "Unknown"
 	let brandSlug = brandRelation?.slug ?? ""
 
-	return Object.freeze({
+	return {
 		...rawSneaker,
 		brand: brandName,
 		brand_slug: brandSlug,
@@ -185,7 +194,7 @@ export function serializeSneaker(
 		srcSet: result.srcSet,
 		created_at: rawSneaker.created_at.toISOString(),
 		updated_at: rawSneaker.updated_at.toISOString(),
-	})
+	}
 }
 
 export type SerializedSneaker = ReturnType<typeof serializeSneaker>
@@ -199,32 +208,34 @@ export async function getSneakerById<T extends boolean = false>(
 	serialize?: T,
 	options: { srcSetSizes?: [number, number, number] } = {},
 ): Promise<SerializedSneakerOrSneaker<T> | null> {
-	if (serialize === true) {
-		let sneaker = await env.db.query.sneakers.findFirst({
-			where: eq(schema.sneakers.id, id),
-			with: {
-				brand: true,
-			},
+	let row = await env.db
+		.select({
+			sneaker: schema.sneakers,
+			brand: schema.brands,
 		})
+		.from(schema.sneakers)
+		.leftJoin(schema.brands, eq(schema.sneakers.brand_id, schema.brands.id))
+		.where(eq(schema.sneakers.id, id))
+		.limit(1)
 
-		if (!sneaker) return null
+	let firstRow = row.at(0)
+
+	let joinedSneaker = firstRow
+		? { ...firstRow.sneaker, brand: firstRow.brand }
+		: null
+
+	if (serialize === true) {
+		if (!joinedSneaker) return null
 
 		return serializeSneaker(
-			sneaker,
+			joinedSneaker,
 			options.srcSetSizes,
 		) as SerializedSneakerOrSneaker<T>
 	}
 
-	let sneaker = await env.db.query.sneakers.findFirst({
-		where: eq(schema.sneakers.id, id),
-		with: {
-			brand: true,
-		},
-	})
+	if (!joinedSneaker) return null
 
-	if (!sneaker) return null
-
-	return sneaker as SerializedSneakerOrSneaker<T>
+	return joinedSneaker as SerializedSneakerOrSneaker<T>
 }
 
 export interface ShowcaseFilters {
@@ -301,17 +312,27 @@ export async function getSneakersForShowcase(
 	let total = countResult.at(0)?.count ?? 0
 	let totalPages = Math.ceil(total / perPage)
 
-	let sneakers = await env.db.query.sneakers.findMany({
-		where: whereClause,
-		with: {
-			brand: true,
-		},
-		orderBy:
+	let rows = await env.db
+		.select({
+			sneaker: schema.sneakers,
+			brand: schema.brands,
+		})
+		.from(schema.sneakers)
+		.leftJoin(schema.brands, eq(schema.sneakers.brand_id, schema.brands.id))
+		.where(whereClause)
+		.orderBy(
 			sort === "desc"
-				? [desc(schema.sneakers.purchase_date)]
-				: [asc(schema.sneakers.purchase_date)],
-		limit: perPage,
-		offset: (page - 1) * perPage,
+				? desc(schema.sneakers.purchase_date)
+				: asc(schema.sneakers.purchase_date),
+		)
+		.limit(perPage)
+		.offset((page - 1) * perPage)
+
+	let sneakers = rows.map((row) => {
+		return {
+			...row.sneaker,
+			brand: row.brand,
+		}
 	})
 
 	let serialized = sneakers.map((sneaker) =>
@@ -341,5 +362,5 @@ export async function getBrandsForUser(
 		.groupBy(schema.brands.id, schema.brands.name, schema.brands.slug)
 		.orderBy(asc(schema.brands.name))
 
-	return Object.freeze(result)
+	return result
 }

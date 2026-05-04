@@ -24,7 +24,10 @@ export const brandHandlers = {
 					count: sql<number>`count(*)`,
 				})
 				.from(schema.sneakers)
-				.innerJoin(schema.brands, eq(schema.sneakers.brand_id, schema.brands.id))
+				.innerJoin(
+					schema.brands,
+					eq(schema.sneakers.brand_id, schema.brands.id),
+				)
 				.where(eq(schema.sneakers.user_id, user.id))
 				.groupBy(schema.brands.id, schema.brands.name, schema.brands.slug)
 				.orderBy(asc(schema.brands.name))

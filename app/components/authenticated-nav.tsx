@@ -1,21 +1,13 @@
 import { clientEntry, on, ref, type Handle } from "remix/ui"
 
-import type { User } from "#app/db/schema.ts"
 import { routes } from "#app/routes.ts"
 
-type NavLink = {
+import { NavLink } from "./nav-link.tsx"
+
+type NavItem = {
 	label: string
 	href: string
 	primary: boolean
-}
-
-function isCurrentPath(pathname: string, href: string): boolean {
-	if (href === "/") return pathname === "/"
-
-	let normalizedPath = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname
-	let normalizedHref = href.endsWith("/") ? href.slice(0, -1) : href
-
-	return normalizedPath === normalizedHref
 }
 
 const mobilePrimaryClass =
@@ -23,11 +15,9 @@ const mobilePrimaryClass =
 const mobileLinkClass =
 	"block rounded-md px-3 py-2 text-sm text-slate-700 no-underline transition-colors hover:bg-slate-100 hover:text-slate-900 aria-[current=page]:bg-blue-50 aria-[current=page]:font-semibold aria-[current=page]:text-blue-700"
 
-const mobileMenuId = "mobile-nav-menu"
-
 export const MobileMenu = clientEntry(
 	import.meta.url,
-	function MobileMenu(handle: Handle<{ pathname: string; links: NavLink[] }>) {
+	function MobileMenu(handle: Handle) {
 		let mobileMenu: HTMLDivElement | null = null
 		let closeOnNavigate = on<HTMLElement>("click", (event) => {
 			let target = event.target
@@ -38,21 +28,25 @@ export const MobileMenu = clientEntry(
 			mobileMenu.hidePopover()
 		})
 
-		return () => {
-			let { pathname, links } = handle.props
-
+		return ({
+			links,
+			activePathname,
+		}: {
+			links: NavItem[]
+			activePathname: string
+		}) => {
 			return (
 				<div class="relative" mix={closeOnNavigate}>
 					<button
 						type="button"
-						popovertarget={mobileMenuId}
+						popovertarget={handle.id}
 						aria-haspopup="menu"
 						class="rounded-full border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition-colors hover:border-slate-400 hover:text-slate-900"
 					>
 						Menu
 					</button>
 					<div
-						id={mobileMenuId}
+						id={handle.id}
 						mix={[
 							ref((node) => {
 								mobileMenu = node
@@ -63,20 +57,19 @@ export const MobileMenu = clientEntry(
 					>
 						<nav aria-label="Primary" class="grid gap-1">
 							{links.map((link) => {
-								let isCurrent = isCurrentPath(pathname, link.href)
 								let className = link.primary
 									? mobilePrimaryClass
 									: mobileLinkClass
 
 								return (
-									<a
+									<NavLink
 										key={link.label}
 										href={link.href}
-										aria-current={isCurrent ? "page" : undefined}
 										class={className}
+										activePathname={activePathname}
 									>
 										{link.label}
-									</a>
+									</NavLink>
 								)
 							})}
 						</nav>
@@ -98,8 +91,14 @@ export const MobileMenu = clientEntry(
 )
 
 export function AuthenticatedNav() {
-	return ({ user, pathname }: { user: User; pathname: string }) => {
-		let links: NavLink[] = [
+	return ({
+		user,
+		pathname,
+	}: {
+		user: { username: string }
+		pathname: string
+	}) => {
+		let links = [
 			{
 				label: "My Sneakers",
 				href: routes.sneakers.index.href(),
@@ -120,7 +119,7 @@ export function AuthenticatedNav() {
 				href: routes.sneakers.new.href(),
 				primary: true,
 			},
-		]
+		] satisfies Array<NavItem>
 
 		let desktopPrimaryClass =
 			"rounded-full bg-slate-900 px-3 py-1.5 text-sm text-white no-underline transition-colors hover:bg-slate-800 aria-[current=page]:bg-blue-700 aria-[current=page]:font-semibold"
@@ -134,26 +133,25 @@ export function AuthenticatedNav() {
 						<div class="flex items-center gap-2">
 							<p class="text-sm text-slate-600">@{user.username}</p>
 						</div>
-						<MobileMenu links={links} pathname={pathname} />
+						<MobileMenu links={links} activePathname={pathname} />
 					</div>
 
 					<div class="hidden items-center justify-between gap-3 md:flex">
 						<nav aria-label="Primary" class="flex flex-wrap items-center gap-2">
 							{links.map((link) => {
-								let isCurrent = isCurrentPath(pathname, link.href)
 								let className = link.primary
 									? desktopPrimaryClass
 									: desktopLinkClass
 
 								return (
-									<a
+									<NavLink
 										key={link.label}
 										href={link.href}
-										aria-current={isCurrent ? "page" : undefined}
 										class={className}
+										activePathname={pathname}
 									>
 										{link.label}
-									</a>
+									</NavLink>
 								)
 							})}
 						</nav>

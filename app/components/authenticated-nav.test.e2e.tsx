@@ -28,20 +28,7 @@ describe("AuthenticatedNav e2e", () => {
 
 			return html(
 				<Doc>
-					<AuthenticatedNav
-						user={{
-							id: "u_1",
-							email: "logan@mcan.sh",
-							given_name: "Logan",
-							family_name: "McAnsh",
-							password: "hashed",
-							password_salt: "salt",
-							username: "logan",
-							created_at: new Date(),
-							updated_at: new Date(),
-						}}
-						pathname={pathname}
-					/>
+					<AuthenticatedNav user={{ username: "logan" }} pathname={pathname} />
 					<main id="main-content">
 						<h1>Page content</h1>
 					</main>
@@ -52,15 +39,13 @@ describe("AuthenticatedNav e2e", () => {
 		let page = await t.serve(server)
 
 		await page.goto("/sneakers")
-		await page.getByRole("button", { name: "Menu" }).click()
+		let trigger = page.getByRole("button", { name: "Menu" })
+		await trigger.click()
 
-		let popover = page.locator("#mobile-nav-menu")
+		let popover = page.locator(trigger.getAttribute("popovertarget"))
 		assert.equal(await popover.count(), 1)
 
-		await page
-			.locator("#mobile-nav-menu")
-			.getByRole("link", { name: "Brands" })
-			.click()
+		await page.locator("#").getByRole("link", { name: "Brands" }).click()
 
 		let url = new URL(page.url())
 		assert.equal(url.pathname, "/brands")

@@ -8,17 +8,7 @@ describe("AuthenticatedNav", () => {
 	it("marks current page link with aria-current", (t) => {
 		let { $, cleanup } = render(
 			<AuthenticatedNav
-				user={{
-					id: "u_1",
-					email: "logan@mcan.sh",
-					given_name: "Logan",
-					family_name: "McAnsh",
-					password: "hashed",
-					password_salt: "salt",
-					username: "logan",
-					created_at: new Date(),
-					updated_at: new Date(),
-				}}
+				user={{ username: "logan" }}
 				pathname="/sneakers/new"
 			/>,
 		)
@@ -37,28 +27,20 @@ describe("AuthenticatedNav", () => {
 		let { $, cleanup } = render(
 			<AuthenticatedNav
 				user={{
-					id: "u_1",
-					email: "logan@mcan.sh",
-					given_name: "Logan",
-					family_name: "McAnsh",
-					password: "hashed",
-					password_salt: "salt",
 					username: "logan",
-					created_at: new Date(),
-					updated_at: new Date(),
 				}}
 				pathname="/logan/sneakers"
 			/>,
 		)
 		t.after(cleanup)
 
-		let trigger = $(
-			"button[popovertarget='mobile-nav-menu']",
-		) as HTMLButtonElement
+		let trigger = $("button[popovertarget]") as HTMLButtonElement
 		assert.notEqual(trigger, null)
 		assert.equal(trigger.getAttribute("aria-haspopup"), "menu")
+		let id = trigger.getAttribute("popovertarget")
+		assert.notEqual(id, null)
 
-		let popover = $("#mobile-nav-menu") as HTMLElement
+		let popover = $(id) as HTMLElement
 		assert.notEqual(popover, null)
 		assert.equal(popover.getAttribute("popover"), "auto")
 	})

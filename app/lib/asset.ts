@@ -1,10 +1,10 @@
 import type {
-	TransformerOption,
-	TransformerVideoOption,
-} from "@mcansh/cld-apis-types"
-import { buildImageUrl, extractPublicId } from "@mcansh/cloudinary-build-url"
+    TransformerOption,
+    TransformerVideoOption,
+} from "@mcansh/cld-apis-types";
+import { buildImageUrl, extractPublicId } from "@mcansh/cloudinary-build-url";
 
-import { env } from "../env.ts"
+import { env } from "../env.ts";
 
 export function generateAssetUrl(
 	publicIdOrUrl: string,
@@ -39,7 +39,7 @@ export function generateDensitySrcSet({
 	transformations ??= {}
 	transformations.resize ??= {}
 
-	let publicId = /^https?:\/\/[^/]+\/publicIdOrUrl/.test(publicIdOrUrl)
+	let publicId = URL.canParse(publicIdOrUrl)
 		? extractPublicId(publicIdOrUrl)
 		: publicIdOrUrl
 
@@ -52,7 +52,7 @@ export function generateDensitySrcSet({
 			})
 		})
 
-	let defaultSrc = srcSet.at(1)
+	let defaultSrc = srcSet.at(0)
 
 	if (!defaultSrc) {
 		throw new Error("No default source found")

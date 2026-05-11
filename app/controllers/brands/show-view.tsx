@@ -1,5 +1,6 @@
 import { Document } from "#app/components/document.tsx"
-import type { getSneakersForShowcase } from "#app/models/sneaker.ts"
+import { generateDensitySrcSet } from "#app/lib/asset.ts"
+import type { SneakerWithBrand } from "#app/models/sneaker.ts"
 import { routes } from "#app/routes.ts"
 
 export function BrandShowView() {
@@ -9,7 +10,10 @@ export function BrandShowView() {
 		user,
 	}: {
 		brandLabel: string
-		showcase: Awaited<ReturnType<typeof getSneakersForShowcase>>
+		showcase: {
+			sneakers: Array<SneakerWithBrand>
+			total: number
+		}
 		user: { username: string }
 	}) => {
 		return (
@@ -25,7 +29,7 @@ export function BrandShowView() {
 									{brandLabel}
 								</h1>
 								<p class="mt-1 text-sm text-slate-600">
-									{showcase.total} pairs
+									{showcase.total} pair{showcase.total === 1 ? "" : "s"}
 								</p>
 							</div>
 							<a
@@ -42,33 +46,42 @@ export function BrandShowView() {
 							</div>
 						) : (
 							<ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-								{showcase.sneakers.map((sneaker) => (
-									<li key={sneaker.id}>
-										<a
-											href={routes.showcase.show.href({
-												username: user.username,
-												sneakerId: sneaker.id,
-											})}
-											class="block overflow-hidden rounded-xl border border-slate-200 bg-white text-inherit no-underline transition-colors hover:border-slate-300"
-										>
-											<img
-												src={sneaker.image}
-												srcSet={sneaker.srcSet}
-												alt={`${sneaker.brand} ${sneaker.model} - ${sneaker.colorway}`}
-												class="aspect-square w-full bg-slate-50 object-cover"
-											/>
-											<div class="grid gap-1 px-3 py-2.5">
-												<p class="text-sm font-semibold text-slate-900">
-													{sneaker.model}
-												</p>
-												<p class="text-sm text-slate-600">{sneaker.colorway}</p>
-												<p class="text-sm font-medium text-slate-900">
-													{sneaker.purchase_price}
-												</p>
-											</div>
-										</a>
-									</li>
-								))}
+								{showcase.sneakers.map((sneaker) => {
+									let srcSet = generateDensitySrcSet({
+										publicId: sneaker.image,
+										sizes: [400, 800, 1200],
+									})
+
+									return (
+										<li key={sneaker.id}>
+											<a
+												href={routes.showcase.show.href({
+													username: user.username,
+													sneakerId: sneaker.id,
+												})}
+												class="block overflow-hidden rounded-xl border border-slate-200 bg-white text-inherit no-underline transition-colors hover:border-slate-300"
+											>
+												<img
+													src={srcSet.default}
+													srcSet={srcSet.srcSet}
+													alt={`${sneaker.brand.name} ${sneaker.model} - ${sneaker.colorway}`}
+													class="aspect-square w-full bg-slate-50 object-cover"
+												/>
+												<div class="grid gap-1 px-3 py-2.5">
+													<p class="text-sm font-semibold text-slate-900">
+														{sneaker.model}
+													</p>
+													<p class="text-sm text-slate-600">
+														{sneaker.colorway}
+													</p>
+													<p class="text-sm font-medium text-slate-900">
+														{sneaker.purchase_price}
+													</p>
+												</div>
+											</a>
+										</li>
+									)
+								})}
 							</ul>
 						)}
 					</div>

@@ -70,7 +70,7 @@ export function ShowcaseLayout() {
 		title: string
 		status: ShowcaseStatus
 		search: ShowcaseSearchState
-		brands: ReadonlyArray<BrandFilterOption>
+		brands: Array<BrandFilterOption>
 		showcase: ShowcaseResult
 		basePath: string
 	}) => {

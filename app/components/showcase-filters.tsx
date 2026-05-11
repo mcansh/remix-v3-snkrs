@@ -9,7 +9,7 @@ export function ShowcaseFilters() {
 		resetHref,
 	}: {
 		brand: string | null
-		brands: ReadonlyArray<BrandFilterOption>
+		brands: Array<BrandFilterOption>
 		sort: "asc" | "desc"
 		perPage: 12 | 24
 		resetHref?: string

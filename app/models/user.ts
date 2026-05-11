@@ -1,9 +1,15 @@
-import { fromBase64, generateSalt, hash, toBase64, verify } from "@brielov/crypto";
-import { eq } from "drizzle-orm";
+import {
+	fromBase64,
+	generateSalt,
+	hash,
+	toBase64,
+	verify,
+} from "@brielov/crypto"
+import { eq } from "drizzle-orm"
 
-import { schema } from "#app/db/index.ts";
-import type { User } from "#app/db/schema.ts";
-import { env } from "#app/env.ts";
+import { schema } from "#app/db/index.ts"
+import type { User } from "#app/db/schema.ts"
+import { env } from "#app/env.ts"
 
 export async function getUserById(id: string): Promise<User | null> {
 	let user = await env.db.query.users.findFirst({
@@ -21,7 +27,9 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 	return user ? user : null
 }
 
-export async function getUserByUsername(username: string): Promise<User | null> {
+export async function getUserByUsername(
+	username: string,
+): Promise<User | null> {
 	let user = await env.db.query.users.findFirst({
 		where: eq(schema.users.username, username),
 	})

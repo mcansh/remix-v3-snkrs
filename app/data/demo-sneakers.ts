@@ -1,6 +1,6 @@
-import type { SerializedSneaker } from "#app/models/sneaker.ts"
+import type { SerializedSneaker } from "#app/models/sneaker.ts";
 
-const demoBase: ReadonlyArray<
+const demoBase: Array<
 	Omit<
 		SerializedSneaker,
 		| "id"
@@ -144,7 +144,7 @@ const demoDates = [
 export function getDemoSneakers(
 	userId: string,
 	count = 10,
-): ReadonlyArray<SerializedSneaker> {
+): Array<SerializedSneaker> {
 	let now = new Date().toISOString()
 
 	return Array.from({ length: count }, (_, index) => {

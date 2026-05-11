@@ -1,6 +1,6 @@
 import { Document } from "#app/components/document.tsx"
 import { SneakerGrid } from "#app/components/sneaker-grid.tsx"
-import type { SerializedSneaker } from "#app/models/sneaker.ts"
+import type { SneakerWithBrand } from "#app/models/sneaker.ts"
 
 export function SneakersIndexView() {
 	return ({
@@ -8,7 +8,7 @@ export function SneakersIndexView() {
 		sneakers,
 	}: {
 		username: string
-		sneakers: ReadonlyArray<SerializedSneaker>
+		sneakers: Array<SneakerWithBrand>
 	}) => {
 		return (
 			<Document head={<title>Your Sneakers</title>}>

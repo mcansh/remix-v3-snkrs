@@ -6,7 +6,6 @@ const envSchema = z.object({
 	CLOUDINARY_UPLOAD_URL: z.url(),
 	CLOUDINARY_URL: z.url({ pattern: /^cloudinary:\/\// }),
 	DEFAULT_USER: z.string(),
-	SENTRY_DSN: z.string(),
 	SESSION_PASSWORD: z.string(),
 	DATABASE_URL: z.url({ pattern: /^postgres:\/\// }),
 })

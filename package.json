@@ -13,8 +13,8 @@
 		"dev": "pnpm run \"/^dev:.*/\"",
 		"dev:browser": "node --run browser -- --sourcemap --watch",
 		"dev:css": "node --run css -- --watch",
-		"dev:server": "NODE_ENV=development tsx watch --env-file .env server.ts",
-		"start": "tsx server.ts",
+		"dev:server": "NODE_ENV=development tsx watch --env-file .env --import ./instrument.ts server.ts",
+		"start": "tsx --import ./instrument.ts server.ts",
 		"test": "NODE_ENV=test tsx --test",
 		"typecheck": "tsgo --noEmit",
 		"format": "oxfmt"
@@ -45,6 +45,7 @@
 		"@remix-run/session": "0.4.1",
 		"@remix-run/session-middleware": "0.1.1",
 		"@remix-run/static-middleware": "0.4.0",
+		"@sentry/node": "10.22.0",
 		"class-variance-authority": "0.7.1",
 		"clsx": "2.1.1",
 		"decode-formdata": "0.9.0",

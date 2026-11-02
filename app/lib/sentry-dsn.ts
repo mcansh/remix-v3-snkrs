@@ -14,8 +14,10 @@ export type Reporting =
 
 /**
  * Shared init payload. `tracesSampleRate` is the literal `0`.
+ * `tracesSampler` always returns `0` because `@sentry/core` 10.22.0
+ * `sampleSpan` prefers a sampled incoming parent over `tracesSampleRate: 0`.
  * `skipOpenTelemetrySetup` is `true` because a defined `tracesSampleRate`,
- * including `0`, makes `hasSpansEnabled` true in `@sentry/core` 10.22.0.
+ * including `0`, makes `hasSpansEnabled` true.
  * Node adds `defaultIntegrations: getDefaultIntegrationsWithoutPerformance()`
  * in `instrument.ts`. That list is Node-only and must not live in this file.
  */
@@ -23,6 +25,7 @@ export type ErrorOnlyOptions = {
 	readonly dsn: SentryDsn
 	readonly tracesSampleRate: 0
 	readonly skipOpenTelemetrySetup: true
+	readonly tracesSampler: () => 0
 }
 
 const invalidSentryDsnMessage =
@@ -58,6 +61,15 @@ export function reportingFrom(raw: unknown): Reporting {
 	return { mode: "errors", dsn: raw as SentryDsn }
 }
 
+function neverSample(): 0 {
+	return 0
+}
+
 export function errorOnlyOptions(dsn: SentryDsn): ErrorOnlyOptions {
-	return { dsn, tracesSampleRate: 0, skipOpenTelemetrySetup: true }
+	return {
+		dsn,
+		tracesSampleRate: 0,
+		skipOpenTelemetrySetup: true,
+		tracesSampler: neverSample,
+	}
 }

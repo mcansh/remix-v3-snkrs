@@ -12,7 +12,19 @@ export type ErrorOnlyOptions = {
 	readonly skipOpenTelemetrySetup: true
 }
 
-const invalidDsnMessage = "SENTRY_DSN must be unset, empty, or an http(s) URL"
+const invalidDsnMessage =
+	"SENTRY_DSN must be unset, empty, or an http(s) Sentry DSN"
+
+function isSentryDsnUrl(url: URL): boolean {
+	if (url.protocol !== "http:" && url.protocol !== "https:") {
+		return false
+	}
+	if (url.username === "") {
+		return false
+	}
+	let projectId = url.pathname.split("/").filter(Boolean).at(-1)
+	return projectId !== undefined
+}
 
 export function reportingFrom(raw: unknown): Reporting {
 	if (raw === undefined || raw === "") {
@@ -30,7 +42,7 @@ export function reportingFrom(raw: unknown): Reporting {
 		throw new Error(invalidDsnMessage)
 	}
 
-	if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+	if (!isSentryDsnUrl(parsed)) {
 		throw new Error(invalidDsnMessage)
 	}
 

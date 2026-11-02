@@ -1,15 +1,11 @@
-# Errors
+# remix-v3-snkrs
 
-`SENTRY_DSN` is the Sentry DSN for this app.
+## Errors
 
-When `SENTRY_DSN` is unset or `""`, Railway and the Worker boot without initializing the Sentry SDK.
+Set the `SENTRY_DSN` secret to an `http` or `https` Sentry DSN to send production errors to Sentry. A DSN needs a public key and a project ID, for example `https://public@example.com/1`.
 
-When `SENTRY_DSN` is an `http` or `https` URL, the SDK initializes with `tracesSampleRate: 0` and OpenTelemetry performance setup skipped. Handler crashes are sent. Traces, replays, profiles, and logs are not.
+Leave the secret unset, or set it to an empty string, and the Worker still boots. The isolate exports the raw fetch handler. `withSentry` is not called, so the SDK does not initialize.
 
-Railway reads the variable from the service environment. The Worker reads it from a secret, set with `wrangler secret put SENTRY_DSN`. `wrangler.jsonc` has no `SENTRY_DSN` var. Source files do not contain a DSN value.
+Reporting is errors only. The trace sample rate is `0`. Replay, profiling, and logs stay off.
 
-A throw from a route handler is sent. On Railway, the `catch` in `server.ts` reports it and still returns a 500. On the Worker, `withSentry` reports it and rethrows.
-
-A throw while Railway is still importing `app/lib/env.ts` or the router is sent only when `SENTRY_DSN` was already a valid URL at process start.
-
-Failures caught inside the healthcheck, render `onError`, and frame fetches are not sent.
+Do not put `SENTRY_DSN` in `wrangler.jsonc` vars. Omit it from `.dev.vars` for a local no-op. A non-empty value that is not an `http` or `https` Sentry DSN fails isolate start. This Worker does not run the Railway Node server.

@@ -96,10 +96,10 @@ describe("errorOnlyOptions", () => {
 			throw new Error("expected errors")
 		}
 
-		assert.deepEqual(errorOnlyOptions(reporting.dsn), {
-			dsn,
-			tracesSampleRate: 0,
-			skipOpenTelemetrySetup: true,
-		})
+		let options = errorOnlyOptions(reporting.dsn)
+		assert.equal(options.dsn, dsn)
+		assert.equal(options.tracesSampleRate, 0)
+		assert.equal(options.skipOpenTelemetrySetup, true)
+		assert.equal(options.tracesSampler(), 0)
 	})
 })

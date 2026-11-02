@@ -10,6 +10,7 @@ export type ErrorOnlyOptions = {
 	readonly dsn: SentryDsn
 	readonly tracesSampleRate: 0
 	readonly skipOpenTelemetrySetup: true
+	readonly tracesSampler: () => 0
 }
 
 const invalidDsnMessage =
@@ -49,12 +50,16 @@ export function reportingFrom(raw: unknown): Reporting {
 	return { mode: "errors", dsn: raw as SentryDsn }
 }
 
+function neverSample(): 0 {
+	return 0
+}
+
 export function errorOnlyOptions(dsn: SentryDsn): ErrorOnlyOptions {
-	// A defined tracesSampleRate, including 0, enables span recording in
-	// @sentry/core 10.22.0. skipOpenTelemetrySetup stops the Cloudflare tracer.
+	// tracesSampler wins over a sampled incoming sentry-trace in sampleSpan 10.22.0.
 	return {
 		dsn,
 		tracesSampleRate: 0,
 		skipOpenTelemetrySetup: true,
+		tracesSampler: neverSample,
 	}
 }

@@ -1,15 +1,13 @@
-# Errors
+# remix-v3-snkrs
 
-`SENTRY_DSN` is the Sentry DSN for this app.
+## Errors
 
-When `SENTRY_DSN` is unset or `""`, Railway and the Worker boot without initializing the Sentry SDK.
+Set `SENTRY_DSN` to an `http` or `https` Sentry DSN to send production errors to Sentry. A DSN needs a public key and a project ID, for example `https://public@example.com/1`.
 
-When `SENTRY_DSN` is an `http` or `https` URL, the SDK initializes with `tracesSampleRate: 0` and OpenTelemetry performance setup skipped. Handler crashes are sent. Traces, replays, profiles, and logs are not.
+Leave `SENTRY_DSN` unset, or set it to an empty string, and the process still boots. The SDK does not initialize.
 
-Railway reads the variable from the service environment. The Worker reads it from a secret, set with `wrangler secret put SENTRY_DSN`. `wrangler.jsonc` has no `SENTRY_DSN` var. Source files do not contain a DSN value.
+Reporting is errors only. The trace sample rate is `0`. Replay, profiling, and logs stay off.
 
-A throw from a route handler is sent. On Railway, the `catch` in `server.ts` reports it and still returns a 500. On the Worker, `withSentry` reports it and rethrows.
+`pnpm start` and `pnpm dev:server` load `instrument.ts` before `server.ts`. Keep the `--import` flag on both scripts. Handler throws are reported from the HTTP listener, which still responds with status 500.
 
-A throw while Railway is still importing `app/lib/env.ts` or the router is sent only when `SENTRY_DSN` was already a valid URL at process start.
-
-Failures caught inside the healthcheck, render `onError`, and frame fetches are not sent.
+A non-empty value that is not an `http` or `https` Sentry DSN stops the process at startup. This Railway process does not wrap the Cloudflare Worker.

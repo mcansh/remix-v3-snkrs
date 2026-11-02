@@ -1,6 +1,6 @@
 declare const sentryDsnBrand: unique symbol
 
-/** Branded http(s) URL. Only `reportingFrom` creates one. */
+/** Branded http(s) Sentry DSN. Only `reportingFrom` creates one. */
 export type SentryDsn = string & { readonly [sentryDsnBrand]: true }
 
 /**
@@ -26,7 +26,18 @@ export type ErrorOnlyOptions = {
 }
 
 const invalidSentryDsnMessage =
-	"SENTRY_DSN must be unset, empty, or an http(s) URL"
+	"SENTRY_DSN must be unset, empty, or an http(s) Sentry DSN"
+
+function isSentryDsnUrl(url: URL): boolean {
+	if (url.protocol !== "http:" && url.protocol !== "https:") {
+		return false
+	}
+	if (url.username === "") {
+		return false
+	}
+	let projectId = url.pathname.split("/").filter(Boolean).at(-1)
+	return projectId !== undefined
+}
 
 export function reportingFrom(raw: unknown): Reporting {
 	if (raw === undefined || raw === "") {
@@ -41,7 +52,7 @@ export function reportingFrom(raw: unknown): Reporting {
 	} catch {
 		throw new Error(invalidSentryDsnMessage)
 	}
-	if (url.protocol !== "http:" && url.protocol !== "https:") {
+	if (!isSentryDsnUrl(url)) {
 		throw new Error(invalidSentryDsnMessage)
 	}
 	return { mode: "errors", dsn: raw as SentryDsn }

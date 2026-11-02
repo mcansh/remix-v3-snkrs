@@ -6,6 +6,7 @@ import {
 	SELF,
 } from "@mcansh/http-helmet"
 import { createRequestListener } from "@remix-run/node-fetch-server"
+import * as Sentry from "@sentry/node"
 
 import { env } from "#app/lib/env.js"
 import { router } from "#app/router.js"
@@ -36,6 +37,7 @@ let server = http.createServer(
 			return response
 		} catch (error) {
 			console.error(error)
+			Sentry.captureException(error)
 			return new Response("Internal Server Error", { status: 500 })
 		}
 	}),

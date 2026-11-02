@@ -21,6 +21,7 @@
 		"@mcansh/http-helmet": "0.13.2",
 		"@mcansh/vite-plugin-remix": "file:.yalc/@mcansh/vite-plugin-remix",
 		"@paralleldrive/cuid2": "3.3.0",
+		"@sentry/cloudflare": "10.22.0",
 		"@sindresorhus/slugify": "^3.0.0",
 		"clsx": "2.1.1",
 		"date-fns": "4.1.0",

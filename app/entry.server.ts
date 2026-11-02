@@ -7,6 +7,7 @@ import {
 
 import { env } from "./env.ts"
 import { router } from "./router.ts"
+import { reportHandlerErrors } from "./sentry.ts"
 
 const securityHeaders = createSecureHeaders({
 	"Content-Security-Policy": {
@@ -21,7 +22,7 @@ const securityHeaders = createSecureHeaders({
 	},
 })
 
-export default {
+const handler = {
 	async fetch(request) {
 		let response = await router.fetch(request)
 		let headers = mergeHeaders(response.headers, securityHeaders)
@@ -32,6 +33,8 @@ export default {
 		})
 	},
 } satisfies ExportedHandler
+
+export default reportHandlerErrors(handler)
 
 if (import.meta.hot) {
 	import.meta.hot.accept()

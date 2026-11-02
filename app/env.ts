@@ -11,7 +11,6 @@ const envSchema = s.object({
 	CLOUDINARY_UPLOAD_URL: s.string().pipe(url()),
 	CLOUDINARY_URL: s.string().pipe(url()),
 	DEFAULT_USER: s.string(),
-	SENTRY_DSN: s.string().pipe(url()),
 	SESSION_PASSWORD: s.string(),
 })
 

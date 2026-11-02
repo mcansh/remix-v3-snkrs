@@ -29,6 +29,9 @@ importers:
       '@paralleldrive/cuid2':
         specifier: 3.3.0
         version: 3.3.0
+      '@sentry/cloudflare':
+        specifier: 10.22.0
+        version: 10.22.0
       '@sindresorhus/slugify':
         specifier: ^3.0.0
         version: 3.0.0
@@ -43,7 +46,7 @@ importers:
         version: 0.9.0
       drizzle-orm:
         specifier: 0.45.2
-        version: 0.45.2
+        version: 0.45.2(@opentelemetry/api@1.10.0)
       remix:
         specifier: 3.0.0-beta.0
         version: 3.0.0-beta.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(playwright@1.59.1)
@@ -83,7 +86,7 @@ importers:
         version: 0.31.10
       drizzle-seed:
         specifier: ^0.3.1
-        version: 0.3.1(drizzle-orm@0.45.2)
+        version: 0.3.1(drizzle-orm@0.45.2(@opentelemetry/api@1.10.0))
       lucide-static:
         specifier: 1.14.0
         version: 1.14.0
@@ -1020,6 +1023,10 @@ packages:
   '@noble/hashes@2.2.0':
     resolution: {integrity: sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg==}
     engines: {node: '>= 20.19.0'}
+
+  '@opentelemetry/api@1.10.0':
+    resolution: {integrity: sha512-lMkyes8iHrG+mk6WH7X70MdCLI2RS0FwNBY1PyQ8UemaijE2m5mv5A0Niy3HtbYTFrgkUEQjFMXmSAk2hQDuPQ==}
+    engines: {node: '>=8.0.0'}
 
   '@oxc-minify/binding-android-arm-eabi@0.121.0':
     resolution: {integrity: sha512-RcQXLj3JLLVm41n80/6+7OUion2PSQWOH5EUvlD9kCWSF1fWLXCNX1A6t/+nFNjeyaCXZ3YbIWwCTiGXhxxHEw==}
@@ -2063,6 +2070,19 @@ packages:
 
   '@rolldown/pluginutils@1.0.0-rc.17':
     resolution: {integrity: sha512-n8iosDOt6Ig1UhJ2AYqoIhHWh/isz0xpicHTzpKBeotdVsTEcxsSA/i3EVM7gQAj0rU27OLAxCjzlj15IWY7bg==}
+
+  '@sentry/cloudflare@10.22.0':
+    resolution: {integrity: sha512-uyONKTs5chatOnHC1xoEN7Dy4QhdQop9CB0IYVQ1K4EVpCskKKtoqWglB2NxkDNN7B8UerRuCHFiFHrKuHodPQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@cloudflare/workers-types': ^4.x
+    peerDependenciesMeta:
+      '@cloudflare/workers-types':
+        optional: true
+
+  '@sentry/core@10.22.0':
+    resolution: {integrity: sha512-V1oeHbrOKzxadsCmgtPku3v3Emo/Bpb3VSuKmlLrQefiHX98MWtjJ3XDGfduzD5/dCdh0r/OOLwjcmrO/PZ2aw==}
+    engines: {node: '>=18'}
 
   '@sindresorhus/is@7.2.0':
     resolution: {integrity: sha512-P1Cz1dWaFfR4IR+U13mqqiGsLFf1KbayybWwdd2vfctdV6hDpUkgCY0nKOLLTMSoRd/jJNjtbqzf13K8DCCXQw==}
@@ -3531,6 +3551,8 @@ snapshots:
 
   '@noble/hashes@2.2.0': {}
 
+  '@opentelemetry/api@1.10.0': {}
+
   '@oxc-minify/binding-android-arm-eabi@0.121.0':
     optional: true
 
@@ -4205,6 +4227,13 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-rc.17': {}
 
+  '@sentry/cloudflare@10.22.0':
+    dependencies:
+      '@opentelemetry/api': 1.10.0
+      '@sentry/core': 10.22.0
+
+  '@sentry/core@10.22.0': {}
+
   '@sindresorhus/is@7.2.0': {}
 
   '@sindresorhus/slugify@3.0.0':
@@ -4466,13 +4495,15 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.21.0
 
-  drizzle-orm@0.45.2: {}
+  drizzle-orm@0.45.2(@opentelemetry/api@1.10.0):
+    optionalDependencies:
+      '@opentelemetry/api': 1.10.0
 
-  drizzle-seed@0.3.1(drizzle-orm@0.45.2):
+  drizzle-seed@0.3.1(drizzle-orm@0.45.2(@opentelemetry/api@1.10.0)):
     dependencies:
       pure-rand: 6.1.0
     optionalDependencies:
-      drizzle-orm: 0.45.2
+      drizzle-orm: 0.45.2(@opentelemetry/api@1.10.0)
 
   enhanced-resolve@5.21.0:
     dependencies:
